@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+<!-- not used
+	<key>MESSAGE_DELIVERED</key>
+	<string>Mesaj pentru %@\rtrimis la %@\rlivrat %@</string>
+	<key>MESSAGE_DELIVERED_SHORT</key>
+	<string>Mesaj livrat</string>
+	<key>MESSAGE_GENERIC</key>
+	<string>Mesaj pentru %@ trimis la %@ status=%@</string>
+	<key>MESSAGE_GENERIC_SHORT</key>
+	<string>Mesaj trimis la %@ status=%@</string>
+	<key>MESSAGE_NOT_DELIVERED</key>
+	<string>Mesaj pentru %@ în așteptare</string>
+	<key>MESSAGE_NOT_DELIVERED_SHORT</key>
+	<string>Mesaj în așteptare</string>
+	<key>STATUS_64</key>
+	<string>Eroare de procedură</string>
+	<key>STATUS_65</key>
+	<string>Destinație incompatibilă</string>
+	<key>STATUS_70</key>
+	<string>expirat</string>
+	<key>unicode</key>
+	<false/>
+	-->
+
+	<key>DATE</key>
+	<string>la %DATE%</string>
+	<key>DELIVERED</key>
+	<string>livrat %DATESPEC% %TIMESPEC%</string>
+	<key>STATUS</key>
+	<string>code=%STATUS%</string>
+	<key>STATUS_48</key>
+	<string>în aşteptarea</string>
+	<key>STATUS_70</key>
+	<string>expirat</string>
+	<key>SUBMIT</key>
+	<string>trimis %DATESPEC% %TIMESPEC%</string>
+	<key>TIME</key>
+	<string>%TIME%</string>
+	<key>TITLE</key>
+	<string>➜ %SURNAME% %NAME%</string>
+	<key>TODAY</key>
+	<string>astăzi</string>
+	<key>YESTERDAY</key>
+	<string>ieri</string>
+</dict>
+</plist>

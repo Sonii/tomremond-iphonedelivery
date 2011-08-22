@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>MESSAGE_DELIVERED</key>
+	<string>رسالة إلى %@ مسلمة بتاريخ \r%@\r لصادرة في \r%@</string>
+	<key>MESSAGE_DELIVERED_SHORT</key>
+	<string>رسالة مسلمة</string>
+	<key>MESSAGE_GENERIC</key>
+	<string>رسالة إلى %@ مصدرة بتاريخ %@ حالة=%@</string>
+	<key>MESSAGE_GENERIC_SHORT</key>
+	<string>%@=رسالة مسلمة بتاريخ %@ حالة</string>
+	<key>MESSAGE_NOT_DELIVERED</key>
+	<string>رسالة إلى %@\r في حالة إنتظار</string>
+	<key>MESSAGE_NOT_DELIVERED_SHORT</key>
+	<string>رسالة في حالة إنتظار</string>
+	<key>STATUS_70</key>
+	<string>انتهت</string>
+	<key>STATUS</key>
+	<string>code=%STATUS%</string>
+	<key>STATUS_48</key>
+	<string>ريثما</string>
+	<key>DATE</key>
+	<string>%DATE% </string>
+	<key>DELIVERED</key>
+	<string>أصدر %DATESPEC% %TIMESPEC%</string>
+	<key>SUBMIT</key>
+	<string>مبعوث %DATESPEC% %TIMESPEC%</string>
+	<key>TIME</key>
+	<string>%TIME% </string>
+	<key>TITLE</key>
+	<string>➜ %SURNAME% %NAME%</string>
+	<key>TODAY</key>
+	<string>اليوم</string>
+	<key>YESTERDAY</key>
+	<string>أمس</string>
+</dict>
+</plist>

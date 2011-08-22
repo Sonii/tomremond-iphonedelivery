@@ -1,0 +1,132 @@
+/*
+ Copyright (C) 2011 - F. Guillemé
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+#import <Foundation/Foundation.h>
+#import <CoreFoundation/CoreFoundation.h>
+#import <AudioToolbox/AudioToolbox.h>
+#import "NSData+serial.h"
+
+#include "debug.h"
+#include "notify.h"
+
+/*
+   calls a remote method and pass it data
+   return a data
+   */
+static NSData *remote_call(NSString *method, NSData *data) {
+	CFDataRef d = NULL, rv = NULL;
+	if (data != nil) d = CFDataCreate(NULL, [data bytes], [data length]);
+    CFMessagePortRef port = CFMessagePortCreateRemote(NULL, (CFStringRef)method);
+    if (port != NULL) {
+        CFMessagePortSendRequest (port, 0, d, 1.0, 1.0, kCFRunLoopDefaultMode, &rv);
+        CFRelease(port);
+    }
+	if (d != NULL) CFRelease(d);
+	return [[NSData dataWithBytes:CFDataGetBytePtr(rv) length:CFDataGetLength(rv)] retain];
+}
+
+/** 
+ * @brief send a signal to another process
+ * 
+ * @param method to call
+ * @param payload data (itis a serialized dictionary)
+ */
+static void remote_signal(NSString *method, NSData *data) {
+	CFDataRef d = NULL;
+	if (data != nil) d = CFDataCreate(NULL, [data bytes], [data length]);
+    CFMessagePortRef port = CFMessagePortCreateRemote(NULL, (CFStringRef)method);
+    if (port != NULL) {
+        CFMessagePortSendRequest (port, 0, d, 1.0, 0, NULL, NULL);
+        CFRelease(port);
+    }
+	if (d != NULL) CFRelease(d);
+}
+
+/** 
+ * @brief notify about a submit Used to bind a number to a SMSC ref
+ * 
+ * @param ref 
+ * @param when 
+ * @param who 
+ */
+void notify_submit(int ref, time_t when, const char *who) {
+	char tmp[32];
+	strftime(tmp, sizeof(tmp), "%D %T", localtime(&when));
+	LOG("SMS submited to %s at %s ref = %d", who, tmp, ref);
+
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+		NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
+			[NSString stringWithUTF8String:who], @"WHO",
+			[NSNumber numberWithInt:when], @"WHEN",
+			[NSNumber numberWithInt:ref], @"REF",
+			nil];
+		NSData *data = [NSData serializeFromDictionary:dict];
+		remote_signal(@"id.submit", data);
+	[pool release];
+}
+
+void notify_report(int ref, time_t when_sent, time_t when_delivered, const char *who, uint8_t status, 
+		NSString *message, uint8_t *payload, size_t size) { 
+	char tmp1[32];
+	char tmp2[32];
+	static int last_ref = -1;
+
+	if (ref== last_ref) return;	// reject duplicates
+
+	last_ref = ref;
+	strftime(tmp1, sizeof(tmp1), "%D %T", localtime(&when_sent));
+	strftime(tmp2, sizeof(tmp2), "%D %T", localtime(&when_delivered));
+	LOG("Report from %s sent at %s delivered at %s ref = %d status %d", who, tmp1, tmp2, ref, status);
+
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+		NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
+			message, @"MESSAGE",
+			[NSString stringWithUTF8String:who], @"WHO",
+			[NSNumber numberWithInt:when_sent], @"WHENSENT",
+			[NSNumber numberWithInt:when_delivered], @"WHENDELIVERED",
+			[NSNumber numberWithInt:ref], @"REF",
+			[NSNumber numberWithInt:status], @"STATUS",
+			[NSData dataWithBytes:payload length:size], @"PAYLOAD",
+			nil];
+		NSData *data = [NSData serializeFromDictionary:dict];
+		remote_signal(@"id.report", data);
+	[pool release];
+}
+
+void notify_started() {
+	remote_signal(@"id.start", NULL);
+}
+
+bool report_enabled() {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	bool rc = true;
+	NSData *data = remote_call(@"id.enabled", NULL);
+	NSDictionary *dict = [data unserialize];
+	rc = data == nil ? true : [[dict objectForKey:@"ENABLED"] boolValue];
+	[pool release];
+	return rc;
+}
+
+bool notify_received(uint8_t *payload, size_t size) {
+	NSData *data = [[NSData alloc] initWithBytes:payload length:size];
+	remote_signal(@"id.receive", data);
+	[data release];
+	return true;
+}
+// vim: set ts=4 expandtab

@@ -1,0 +1,11 @@
+Package: com.guilleme.iphonedelivery
+Name: iPhoneDelivery
+Version: 0.5beta1
+Architecture: iphoneos-arm
+Description: Delivery report for iOS5
+Maintainer: F. Guillemé
+Author: F. Guillemé
+Section: System
+Tag: role::hacker
+Pre-Depends: firmware (>= 5.0)
+Depends: mobilesubstrate , coreutils, sqlite3

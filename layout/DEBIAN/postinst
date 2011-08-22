@@ -1,0 +1,50 @@
+#!/bin/sh
+declare -a cydia
+cydia=($CYDIA)
+
+SMS_DATABASE="/var/mobile/Library/SMS/sms.db"
+
+# alter SMS database to insert a few column used to store our info
+# so we can link a report to a message and display its details
+#
+# smsc_ref: the transient ref returned by the SMSC. 
+# s_date: the SMSC date the sms was submited
+# r_date: the SMSC date the sms was delivered
+# delivery_status : the status code found in the report
+sqlite3 $SMS_DATABASE '.schema message' | grep -q smsc_ref
+if [ $? -eq 1 ]; then
+	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN smsc_ref INTEGER DEFAULT NULL'
+fi
+sqlite3 $SMS_DATABASE '.schema message' | grep -q s_date
+if [ $? -eq 1 ]; then
+	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN s_date INTEGER DEFAULT NULL'
+fi
+sqlite3 $SMS_DATABASE '.schema message' | grep -q r_date
+if [ $? -eq 1 ]; then
+	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN r_date INTEGER DEFAULT NULL'
+fi
+sqlite3 $SMS_DATABASE '.schema message' | grep -q delivery_status
+if [ $? -eq 1 ]; then
+	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN delivery_status INTEGER DEFAULT NULL'
+fi
+
+# check if mobilesubstrate hooks CommCenterClassic
+PLIST=/System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
+plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES $PLIST | grep MobileSubstrate
+if [ $? -ne 0 ]; then
+	echo "Interpose MobileSubstrate to CommCenterClassic"
+	plutil -key EnvironmentVariables -dict $PLIST
+	plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES \
+		   -setValue /Library/MobileSubstrate/MobileSubstrate.dylib \
+	 	$PLIST
+fi
+
+launchctl unload /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
+launchctl load /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
+
+mv /var/stash/Applications/Preferences.app/{,ID2}Settings.plist
+mv /var/stash/Applications/Preferences.app/{ID,}Settings.plist
+
+if [[ ${CYDIA+@} ]]; then
+eval "echo 'finish:restart' >& ${cydia[0]}"
+fi

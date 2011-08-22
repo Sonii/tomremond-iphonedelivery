@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>DATE</key>
+	<string>on %DATE% </string>
+	<key>DELIVERED</key>
+	<string>delivered %DATESPEC% %TIMESPEC%</string>
+	<key>STATUS</key>
+	<string>code=%STATUS%</string>
+	<key>STATUS_48</key>
+	<string>pending</string>
+	<key>STATUS_64</key>
+	<string>Remote procedure error</string>
+	<key>STATUS_65</key>
+	<string>Incompatible destination</string>
+	<key>STATUS_70</key>
+	<string>expired</string>
+	<key>SUBMIT</key>
+	<string>sent %DATESPEC% %TIMESPEC%</string>
+	<key>TIME</key>
+	<string>at %TIME%</string>
+	<key>TITLE</key>
+	<string>➜ %SURNAME% %NAME%</string>
+	<key>TODAY</key>
+	<string>today</string>
+	<key>YESTERDAY</key>
+	<string>yesterday</string>
+</dict>
+</plist>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+<!-- not used
+	<key>MESSAGE_DELIVERED</key>
+	<string>Mensaje para %@\renviado el %@\rrecibido el %@</string>
+	<key>MESSAGE_DELIVERED_SHORT</key>
+	<string>Mensaje entregado</string>
+	<key>MESSAGE_GENERIC</key>
+	<string>Mensaje para %@\renviado el %@,\restatuto=%@</string>
+	<key>MESSAGE_GENERIC_SHORT</key>
+	<string>Mensaje enviado el %@, estatuto=%@</string>
+	<key>MESSAGE_NOT_DELIVERED</key>
+	<string>Mensaje para %@ en espera</string>
+	<key>MESSAGE_NOT_DELIVERED_SHORT</key>
+	<string>Mensaje en espera</string>
+-->
+	<key>STATUS_64</key>
+	<string>Remote procedure error</string>
+	<key>STATUS_65</key>
+	<string>Incompatible destination</string>
+	<key>STATUS_70</key>
+	<string>expirado</string>
+
+	<key>DATE</key>
+	<string>el %DATE% </string>
+	<key>DELIVERED</key>
+	<string>recibido %DATESPEC% %TIMESPEC%</string>
+	<key>STATUS</key>
+	<string>code=%STATUS%</string>
+	<key>STATUS_48</key>
+	<string>pending</string>
+	<key>SUBMIT</key>
+	<string>enviado %DATESPEC% %TIMESPEC%</string>
+	<key>TIME</key>
+	<string>%TIME%</string>
+	<key>TITLE</key>
+	<string>➜ %SURNAME% %NAME%</string>
+	<key>TODAY</key>
+	<string>hoy</string>
+	<key>YESTERDAY</key>
+	<string>ayer</string>
+</dict>
+</plist>

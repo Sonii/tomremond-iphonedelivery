@@ -1,0 +1,6 @@
+.*swp
+*.deb
+.theos
+.DS_Store
+obj
+_

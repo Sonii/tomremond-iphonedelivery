@@ -1,0 +1,18 @@
+#!/bin/sh
+declare -a cydia
+cydia=($CYDIA)
+
+plutil -key EnvironmentVariables -remove /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
+
+launchctl unload /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
+launchctl load /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
+
+mv /var/stash/Applications/Preferences.app/{,ID}Settings.plist
+mv /var/stash/Applications/Preferences.app/{ID2,}Settings.plist
+
+if [[ ${CYDIA+@} ]]; then
+eval "echo 'finish:restart' >& ${cydia[0]}"
+#else
+#launchctl stop com.apple.SpringBoard
+#launchctl start com.apple.SpringBoard
+fi
