@@ -14,29 +14,12 @@
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-
-#ifndef RUN_CLANG_STATIC_ANALYZER
 #import <UIKit/UIKit.h>
-#else
-#import <AppKit/AppKit.h>
-#endif
-
 #import <QuartzCore/QuartzCore.h>
 
 #import "DeliveryDateView.h"
 
-#if DEBUG
-#define  NSLog(arg...) NSLog(arg)
-#else
-#define NSLog(arg...) do { } while (0)
-#endif
-
 #define max(a,b) ((a) < (b) ? (b) : (a))
-
-#define TAG 9876
-
-static UIView *current_view = NULL;
-static int current_rowid = -1;
 
 static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radius)
 {
@@ -58,83 +41,50 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 }
 
 @implementation DeliveryDateView;
-+(void)setRowid:(int)rowid {
-    current_rowid = rowid;
-}
 
-+(int)rowid {
-    return current_rowid;
-}
-
--(id)initWithDate:(NSDate *)d forBalloonRect:(CGRect)balloon andRowid:(int)rowid {
-    NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
+-(id)initWithDate:(NSDate *)d1  date:(NSDate *)d2 view:(UIView *)v {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
 
     [dateFormatter setLocale:[NSLocale currentLocale]];
-    [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
-    [dateFormatter setTimeStyle:NSDateFormatterNoStyle];
 
-    text1 =  [dateFormatter stringFromDate:d];
+    [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
+    [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+
+    text1 =  [dateFormatter stringFromDate:d1];
 
     NSLog(@"text1 = %@", text1);
 
-    [dateFormatter setDateStyle:NSDateFormatterNoStyle];
-    [dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
+    [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
+    [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
 
-    text2 =  [dateFormatter stringFromDate:d];
+    text2 =  [dateFormatter stringFromDate:d2];
+
+	[dateFormatter release];
 
     NSLog(@"text2 = %@", text2);
 
-    font = [UIFont systemFontOfSize:13.0];
+    font = [UIFont systemFontOfSize:10.0];
     CGSize sz1, sz2;
     
     sz1 = [text1 sizeWithFont:font];
     sz2 = [text2 sizeWithFont:font];
 
-    bool vertical = true;
-	
-	switch ([[UIDevice currentDevice] orientation]) {
-	case UIDeviceOrientationLandscapeLeft:
-	case UIDeviceOrientationLandscapeRight:
-		vertical = false;
-		break;
-	default:
-        if (CGRectGetWidth(balloon) < 160)
-			vertical = false;
-		break;
-	}
-
-    rect1 = CGRectMake(0, 0, vertical?max(sz1.width,sz2.width):sz1.width, sz1.height);
-    if (vertical) {
-        rect2 = CGRectMake(0, 0, max(sz1.width,sz2.width), sz2.height);
-        rect2 = CGRectOffset(rect2, 0, CGRectGetHeight(rect1)); 
-    }
-    else {
-        rect2 = CGRectMake(0, 0, sz2.width, max(sz1.height,sz2.height));
-        rect2 = CGRectOffset(rect2, 8, 0);
-        rect2 = CGRectOffset(rect2, CGRectGetWidth(rect1), 0);
-    }
-
-    rect1 = CGRectOffset(rect1, 6, 4);
-    rect2 = CGRectOffset(rect2, 6, 4);
+    rect1 = CGRectMake(3, 2, sz1.width + 8, sz1.height);
+    rect2 = CGRectMake(3, 1 + sz1.height, sz2.width + 8 , sz2.height);
 
     CGRect r = CGRectUnion(rect1, rect2);
-
-    r = CGRectOffset(r, CGRectGetMinX(balloon), 0);     // set its left to the left side of the balloon
-    r = CGRectOffset(r, -CGRectGetWidth(r), 0);         // shift it left so it is immediately left of the ballon
-    r = CGRectOffset(r, -14,  3);                       // slide it left and down
-    r = CGRectInset(r, -7, -5);                         // make it slightly bigger
+	r.size.width += 6;
+	r.size.height += 4;
 
     [text1 retain];
     [text2 retain];
 
-    current_rowid = rowid;
-    current_view = self;
+	// put it on the left
+	r = CGRectOffset(r, -max(sz1.width, sz2.width) - 20, 0.0);
 
-    [super initWithFrame:r];
+    self = [super initWithFrame:r];
 
-    self.tag=TAG;
-    self.opaque=NO;
-    self.clearsContextBeforeDrawing=NO;
+    self.opaque = NO;
 
     return self;
 }
@@ -146,6 +96,8 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 }
 
 -(void)drawRect:(CGRect)rect {
+	[super drawRect:rect];
+
     UIColor *bg = [UIColor whiteColor],
             *fg = [UIColor blueColor];
 
@@ -159,20 +111,6 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
     [fg set];
     [text1 drawInRect:rect1 withFont:font lineBreakMode:UILineBreakModeWordWrap alignment:UITextAlignmentCenter];
     [text2 drawInRect:rect2 withFont:font lineBreakMode:UILineBreakModeWordWrap alignment:UITextAlignmentCenter];
-}
-
-+(bool)undisplay:(UIView *)v {
-    bool res = true;
-
-    if (current_view != nil) {
-        if ([v viewWithTag:TAG] == current_view)
-            res = false;
-        [current_view removeFromSuperview];
-        [current_view release];
-        current_rowid = -1;
-        current_view = NULL;
-    }
-    return res;
 }
 @end
 // vim: set ts=4 sw=4 ts=4 sts=4 ff=unix expandtab

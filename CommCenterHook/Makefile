@@ -1,5 +1,5 @@
 include theos/makefiles/common.mk
-DEBUG=NO
+#DEBUG=NO
 VPATH = ../Common
 
 LIBRARY_NAME = libidcc

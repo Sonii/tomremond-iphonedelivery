@@ -5,6 +5,7 @@ extern "C" {
 }
 
 #import "MarkView.h"
+#import "DeliveryDateView.h"
 #import <dispatch/dispatch.h>
 
 @interface CKSMSMessage
@@ -18,12 +19,16 @@ extern "C" {
 @interface CKTranscriptController 
 -(id)bubbleData;
 -(void)updateTranscript;
+-(UITableViewCell *)tableView:(id)tv cellForRowAtIndexPath:(NSIndexPath *)path;
 @end
 
 static id currentTranscript = nil;
 static bool showSmileys = YES;
 
 bool showMark = YES;
+
+static NSIndexPath *inspectedPath = nil;
+static UIView *lastDateView = nil;
 
 ;
 /** 
@@ -92,76 +97,85 @@ static void readDefaults() {
 
 %hook CKTranscriptBubbleData
 -(NSString *)textAtIndex:(NSInteger)index {
-    %log;
     NSString *s = %orig;
     if (showSmileys) s = replaceSmileys(s);
     return s;
 }
 %end
 
-#if 0
-static NSString *get_localized_deliver(NSDate *d) {
-    Localizer *localizer = [[Localizer alloc] init];
-	NSString *s = [localizer getString:@"DELIVERED"];
-
-	s = [s stringByReplacingOccurrencesOfString:@"%DATESPEC%" withString:[localizer formatDate:d
-								style:NSDateFormatterMediumStyle]];
-	s = [s stringByReplacingOccurrencesOfString:@"%TIMESPEC%" withString:[localizer formatTime:d
-								style:NSDateFormatterNoStyle]];
-    [localizer release];
-	return s;
-}
-#endif
-
 %hook CKTranscriptController
--(void)messageCellTappedBalloon:(id)cell {
+-(void)tableView:(UITableView *)tv willSelectRowAtIndexPath:(NSIndexPath*)path {
     %log;
     %orig;
-#if 0
-            UILabel *label = [[[UILabel alloc] initWithFrame:v.frame] autorelease];
-            //label.text = get_localized_deliver([NSDate dateWithTimeIntervalSince1970:date+delay]);
-            label.text = [[NSDate dateWithTimeIntervalSince1970:date+delay] description];
-            label.opaque = NO;
-            label.font =[UIFont systemFontOfSize:9];
-            label.textColor = [UIColor grayColor];
-            label.backgroundColor = [UIColor clearColor];
-            [cell.contentView addSubview:label];
-#endif
+    [inspectedPath release];
+    inspectedPath = [path retain];
+
+    [currentTranscript updateTranscript];
 }
 
 -(UITableViewCell *)tableView:(id)tv cellForRowAtIndexPath:(NSIndexPath *)path {
-    %log;
     UITableViewCell *cell = %orig;
 
     currentTranscript = self;
 
     if ([cell class] == objc_getClass("CKMessageCell")) {
         CKMessageCell *mcell = (CKMessageCell *)cell;
-        CGRect balloon_frame = [mcell balloonView].frame;
+        UIView *bv = [mcell balloonView];
+        CGRect balloon_frame = bv.frame;
 
         CKTranscriptBubbleData *data = [self bubbleData];
-        int rowid = [[data messageAtIndex:path.row] rowID]; NSLog(@"rowID = %d", rowid);
+        int rowid = [[data messageAtIndex:path.row] rowID];
         if (rowid > 0) {
             dispatch_async(dispatch_get_current_queue(), ^{
             int ref = 0, status = 0, delay = 0;
             time_t date = 0;
             int rc = get_delivery_info_for_rowid(rowid, &ref, &date, &delay, &status);
 
-            NSLog(@"rc=%d ref=%d status = %d date = %d delay = %d", rc, ref, status, date, delay);
+//            NSLog(@"rc=%d ref=%d status = %d date = %d delay = %d", rc, ref, status, date, delay);
 
-            int code = 3;
-            if (date != 0 && delay >= 0 && status == 0)
+
+            if (rc == 0) {
+                int code = 3;
+                if (date != 0 && delay >= 0 && status == 0)
                 code = 1;
-            else if (date != 0 && ref >= 0)
+                else if (date != 0 && ref >= 0)
                 code = 0;
-            else if (status == 70)
+                else if (status == 70)
                 code = 2;
 
-            MarkView *iv = [[MarkView alloc] init:code cell:mcell status:status];
-            iv.alpha = 0.0;
-            [[mcell balloonView] addSubview:iv];
-            [UIView animateWithDuration:0.2 animations:^{ iv.alpha = 1.0; }];
-            [iv release];
+#define TAG 5329
+
+	            // remove any present stamp
+                UIView *vv = [bv viewWithTag:TAG];
+                if (vv != nil) [vv removeFromSuperview];
+
+                if (inspectedPath.row == path.row && date != 0 && delay != -1 && status == 0) {
+                    NSDate *d1 = [NSDate dateWithTimeIntervalSince1970:date];
+                    NSDate *d2 = [NSDate dateWithTimeIntervalSince1970:date + delay];
+
+                    DeliveryDateView *iv = [[DeliveryDateView alloc] initWithDate:d1 date:d2 view:bv];
+                    iv.alpha = 0.0;
+                    iv.tag = TAG;
+
+                    NSLog(@"date view = %@", iv);
+		            mcell.clipsToBounds = NO;
+                    [bv addSubview:iv];
+                    [UIView animateWithDuration:0.2 animations:^{ iv.alpha = 1.0; }];
+                    [lastDateView removeFromSuperview];
+                    [lastDateView release];
+                    lastDateView = iv;
+                }
+                else {
+                    MarkView *iv = [[MarkView alloc] init:code cell:mcell status:status];
+                    iv.alpha = 0.0;
+                    iv.tag = TAG;
+
+		            mcell.clipsToBounds = NO;
+                    [bv addSubview:iv];
+                    [UIView animateWithDuration:0.2 animations:^{ iv.alpha = 1.0; }];
+                    [iv release];
+                }
+            }
             });
         }
     }

@@ -21,8 +21,6 @@
 
 #import "MarkView.h"
 
-#define TAG 5329
-
 extern bool showMark;
 
 static UIImage *get_image_for_status(int status) {
@@ -57,11 +55,6 @@ static UIImage *get_image_for_status(int status) {
 
 @implementation MarkView
 -(id)init:(int)state cell:(CKMessageCell*)cell status:(uint16_t)status {
-	// remove any present mark
-    UIView *vv = [cell viewWithTag:TAG];
-    if (vv != nil) [vv removeFromSuperview];
-
-
     UIImage *im = get_image_for_status(state);
 	CGRect balloon_frame = [cell balloonView].frame;
     CGRect frame;
@@ -79,7 +72,6 @@ static UIImage *get_image_for_status(int status) {
 	if (status != 1002 && status != 1004)
     	self.image = im;
     self.backgroundColor = [UIColor clearColor];
-    self.tag = TAG;
     [self sizeToFit];
 
 	if (state == 3 && status != 0 && status != 1002 && status != 1004) {

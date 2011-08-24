@@ -3,10 +3,7 @@
 	CGRect rect1, rect2;
 	UIFont *font;
 }
-+(void)setRowid:(int)rowid;
-+(int)rowid;
-+(bool)undisplay:UIView;
--(id)initWithDate:(NSDate *)date forBalloonRect:(CGRect)r andRowid:(int)rowid;
+-(id)initWithDate:(NSDate *)d1  date:(NSDate *)d2 view:(UIView *)v;
 -(void)drawRect:(CGRect)rect;
 @end
 // vim: ft=objc ts=4 expandtab
