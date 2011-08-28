@@ -23,41 +23,21 @@
 
 extern "C"{
 #include "database.h"
+// In Bulletin.m
+void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSString *sectionID);
+void setDeliveryVibrate(bool v);
+void setDeliverySound(NSString *s);
+void setSpringBoard(id o);
+
 }
+
+#include <objc/runtime.h>
 
 #ifndef DEBUG
 #define NSLog(arg...)
 #endif
 
-@interface SpringBoard {
-}
--(BOOL)isLocked;
-@end
-
 @interface UIAlertViewController : NSObject<UIAlertViewDelegate>
-@end
-
-@interface SBBulletinBannerController {
-}
-+(id)sharedInstance;
--(void) observer:(id)o addBulletin:(id)b forFeed:(id)f;
-@end
-
-@interface SBAwayController {
-}
-+(id)sharedAwayController;
--(id)awayView;
--(id)bulletinController;        // pretend it belongs here to get rid of a warning
-@end
-
-@interface BBBulletin : NSObject {
-}
--(id)init;
--(void)setTitle:(id)title;
--(void)setSubtitle:(id)subtitle;
--(void)setMessage:(id)message;
--(void)setSectionID:(id)section;
--(void)setDefaultAction:(id)action;
 @end
 
 @interface SBSMSClass0Alert : NSObject
@@ -67,10 +47,9 @@ extern "C"{
 -(void)setDelegate;
 @end
 
-static SpringBoard *springboard;
 static Localizer *localizer;
-static bool vibrate, enabled, alert_method;
-static SystemSoundID sound;
+static Boolean deliveryEnabled;
+static int deliveryAlertMethod;
 
 @implementation UIAlertViewController
 - (void)alertView:(UIAlertView *)av clickedButtonAtIndex:(int)index {
@@ -83,59 +62,47 @@ static SystemSoundID sound;
 /** 
  * @brief tell MobileSMS it needs to refresh the transcript
  */
-static void refreshMobileSMS() {
+static void refreshMobileSMS(NSDictionary *d) {
     CFStringRef s= CFSTR("iphonedelivery.refresh");
     CFNotificationCenterRef nc = CFNotificationCenterGetDarwinNotifyCenter();
 
     if (nc != nil) CFNotificationCenterPostNotification(nc, s, NULL, NULL, NO);
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:(NSString *)s object:nil userInfo:d];
 }
 
 /** 
  * @brief read the settings
  */
 static void readDefaults() {
+    Boolean vibrate =  YES;
+    Boolean enabled =  YES;
+    int alert_method = 2;       // default is notification center
     Boolean exists;
     CFStringRef app = CFSTR("com.guilleme.deliveryreports");
-
-    // set the default values
-    vibrate = YES;
-    enabled = YES;
-    alert_method = 2;         // notif center
-    sound = 0;
 
     NSLog(@"%s", __FUNCTION__);
 
     CFPreferencesSynchronize(app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
     enabled = CFPreferencesGetAppBooleanValue(CFSTR("dr-enabled"), app, &exists);
     if (!exists) enabled = true;
+    deliveryEnabled = enabled;
+
     vibrate = CFPreferencesGetAppBooleanValue(CFSTR("dr-vibrate"), app, &exists);
     if (!exists) vibrate = true;
+    setDeliveryVibrate(vibrate);
 
     CFPropertyListRef value = CFPreferencesCopyValue(CFSTR("dr-style"), app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
     if (value) {
         CFNumberGetValue((CFNumberRef)value, kCFNumberIntType, &alert_method);
     }
-    NSLog(@"style = %d value = %@", alert_method, value);
+    deliveryAlertMethod = alert_method;
 
-    // regarding the sound it is more appropriate to create it here
-    if (sound)  {
-        AudioServicesDisposeSystemSoundID(sound);
-        sound = 0;
-    }
+    NSLog(@"style = %d value = %@", deliveryAlertMethod, value);
 
     CFPropertyListRef p = CFPreferencesCopyValue(CFSTR("dr-sound"), app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
     if (p != nil) {
-        CFStringRef s = (CFStringRef)p;
-        NSLog(@"sound = %@", (NSString*)s);
-
-#if 0
-        NSURL *sound_url = [NSURL URLWithString:(NSString *)s];
-        NSLog(@"sound URL=%@", sound_url);
-        if (sound_url != nil) {
-            AudioServicesCreateSystemSoundID((CFURLRef)sound_url, &sound);
-            NSLog(@"sound = %@", sound);
-        }
-#endif
+        setDeliverySound((NSString *)(CFStringRef)p);
     }
 }
 
@@ -201,45 +168,10 @@ static CFDataRef handle_submit (
         } while (0);
 #endif
         set_ref_for_last_sent_sms(who, ref);    
-        refreshMobileSMS();
+        refreshMobileSMS(dict);
         [dict release];
     }
     return nil;
-}
-
-static void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSString *sectionID) {
-    // dynamicaly get the class so we don´t need to link to a unavailable framework
-    Class bf(objc_getClass("BBBulletin"));
-    Class cf(objc_getClass("SBBulletinBannerController"));
-    Class ca(objc_getClass("SBAwayController"));
-
-    if ([springboard isLocked]) {
-        // build a bulletin
-        BBBulletin *b = [[bf alloc] init];
-        [b setTitle:title];
-        [b setSubtitle:message];
-        [b setMessage:subtitle];
-        [b setSectionID:sectionID];
-
-        NSLog(@"%@ %@", b, [cf sharedInstance]);
-
-        // and as a popup on the away screen
-        [[[[ca sharedAwayController] awayView] bulletinController] observer:0 addBulletin:b forFeed:0];
-        [b release];
-    }
-    else {
-        // build a bulletin
-        BBBulletin *b = [[bf alloc] init];
-        [b setTitle:title];
-        [b setMessage:[NSString stringWithFormat:@"%@ %@", subtitle, message]];
-        [b setSectionID:sectionID];
-
-        NSLog(@"%@ %@", b, [cf sharedInstance]);
-
-        // publish it as a banner
-        [[cf  sharedInstance] observer:0 addBulletin:b forFeed:0];
-        [b release];
-    }
 }
 
 static CFDataRef handle_report (
@@ -274,7 +206,7 @@ static CFDataRef handle_report (
 
             update_sms_for_delivery(who, ref, status, s_date, d_date );
 
-            switch (alert_method) {
+            switch (deliveryAlertMethod) {
             case 2:
                 showBulletin(
                         get_person([dict objectForKey:@"WHO"]),
@@ -304,7 +236,7 @@ static CFDataRef handle_report (
             if (status > 63)
                 update_sms_for_delivery(who, ref, status, s_date, NULL );
 
-            switch (alert_method) {
+            switch (deliveryAlertMethod) {
             case 2:
                 showBulletin(
                     get_person([dict objectForKey:@"WHO"]),
@@ -327,6 +259,7 @@ static CFDataRef handle_report (
             }
 
         }
+        refreshMobileSMS(dict);
 
         [dict release];
         NSLog(@"CommCenter has received a report %@", dict);
@@ -334,16 +267,7 @@ static CFDataRef handle_report (
         [Localizer release];
         [pool release];
 
-        refreshMobileSMS();
 
-        // play a sound
-        if (vibrate) {
-            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
-        	//AudioServicesAddSystemSoundCompletion( kSystemSoundID_Vibrate, CFRunLoopGetCurrent(), NULL, CompletionCallback, NULL);
-        }
-        if (sound) {
-            AudioServicesPlaySystemSound(sound);
-        }
     }
     return nil;
 }
@@ -374,7 +298,7 @@ static CFDataRef handle_enabled (
    void *info
 ) {
     readDefaults();
-    NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:enabled]
+    NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:deliveryEnabled]
                                                      forKey:@"ENABLED"];
     NSData *d = [NSData serializeFromDictionary:dict];
     return (CFDataRef)d;
@@ -393,7 +317,7 @@ static void register_port_handler(CFStringRef str, CFMessagePortCallBack cb)  {
 
 -(void) applicationDidFinishLaunching:(id)appl {
     %orig;
-    springboard = appl;
+    setSpringBoard(appl);
     NSLog(@"%s", appl);
     register_port_handler(CFSTR("id.submit"), handle_submit);
     register_port_handler(CFSTR("id.report"), handle_report);
