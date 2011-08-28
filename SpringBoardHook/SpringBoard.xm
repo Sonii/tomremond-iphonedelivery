@@ -15,23 +15,14 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #import <UIKit/UIKit.h>
-#import <AudioToolbox/AudioToolbox.h>
-#include <objc/runtime.h>
 #import "Date+extra.h"
 #import "NSData+serial.h"
 #import "Localizer.h"
 
 extern "C"{
-#include "database.h"
-// In Bulletin.m
-void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSString *sectionID);
-void setDeliveryVibrate(bool v);
-void setDeliverySound(NSString *s);
-void setSpringBoard(id o);
-
+#import "database.h"
+#import "Bulletin.h"
 }
-
-#include <objc/runtime.h>
 
 #ifndef DEBUG
 #define NSLog(arg...)
