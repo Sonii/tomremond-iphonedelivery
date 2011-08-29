@@ -258,7 +258,9 @@ static bool vibrate;
 static NSString *sound;
 
 void setDeliveryVibrate(bool v) { vibrate = v; }
+bool getDeliveryVibrate() { return vibrate; }
 void setDeliverySound(NSString *s) { [sound release]; sound = [s retain]; }
+NSString *getDeliverySound() { return sound; }
 void setSpringBoard(id o) { springboard = o; }
 
 void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSString *sectionID) {

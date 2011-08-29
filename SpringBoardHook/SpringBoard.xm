@@ -15,9 +15,12 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #import <UIKit/UIKit.h>
+#import <AudioToolbox/AudioToolbox.h>
+#import <objc/runtime.h>
 #import "Date+extra.h"
 #import "NSData+serial.h"
 #import "Localizer.h"
+#import "SpringBoard.h"
 
 extern "C"{
 #import "database.h"
@@ -27,16 +30,6 @@ extern "C"{
 #ifndef DEBUG
 #define NSLog(arg...)
 #endif
-
-@interface UIAlertViewController : NSObject<UIAlertViewDelegate>
-@end
-
-@interface SBSMSClass0Alert : NSObject
--(void)initWithString:(NSString *)string;
--(void)activate;
--(void)deactivate;
--(void)setDelegate;
-@end
 
 static Localizer *localizer;
 static Boolean deliveryEnabled;
@@ -165,6 +158,17 @@ static CFDataRef handle_submit (
     return nil;
 }
 
+static void playVibeAndSound() {
+    bool vibrate = getDeliveryVibrate();
+    if (vibrate) {
+        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+    }
+    NSString *s = getDeliverySound();
+    if (s != nil) {
+        AudioServicesPlaySystemSound([[TLToneManager sharedRingtoneManager] soundIDForToneIdentifier:s]);
+    }
+}
+
 static CFDataRef handle_report (
    CFMessagePortRef local,
    SInt32 msgid,
@@ -198,14 +202,36 @@ static CFDataRef handle_report (
             update_sms_for_delivery(who, ref, status, s_date, d_date );
 
             switch (deliveryAlertMethod) {
-            case 2:
+            case 0:     // no alert
+                playVibeAndSound();
+                break;
+            case 1:     // full screen
+                if (status == 0 || status > 63) {
+                    NSString *str = [NSString stringWithFormat:@"%@\n%@\n%@", 
+                                              get_person([dict objectForKey:@"WHO"]),
+                                              get_localized_submit(submit_time, sameday),
+                                        get_localized_deliver(deliver_time, sameday)];
+
+                    CGRect r = [UIScreen mainScreen].bounds;
+                    SBSMSClass0Alert *alert = [[objc_getClass("SBSMSClass0Alert") alloc] initWithString:str];
+                    //SBUSSDAlertDisplay *display = [alert display];
+                    [alert activate];
+
+                    // the alert dis
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10LL * 1000 * 1000* 1000),
+                            dispatch_get_current_queue(), ^{ [alert deactivate]; [alert release]; });
+
+                    playVibeAndSound();
+                }
+                break;
+            case 2:     // notification center
                 showBulletin(
                         get_person([dict objectForKey:@"WHO"]),
                         get_localized_submit(submit_time, sameday),
                         get_localized_deliver(deliver_time, sameday),
                         @"com.apple.MobileSMS");
                 break;
-            case 1: 
+            case 3:     // simple alert 
                 if (status == 0 || status > 63) {
                     UIAlertViewController *y =[[UIAlertViewController alloc] init];
 	                UIAlertView *x = [[UIAlertView alloc] 
@@ -217,7 +243,10 @@ static CFDataRef handle_report (
 					cancelButtonTitle:nil
 					otherButtonTitles:@"OK", nil];
                     [x show];
+                    playVibeAndSound();
                 }
+                break;
+            case 4:     // inserted in conversation
                 break;
             }
         }
@@ -228,6 +257,23 @@ static CFDataRef handle_report (
                 update_sms_for_delivery(who, ref, status, s_date, NULL );
 
             switch (deliveryAlertMethod) {
+            case 0:     // no alert
+                playVibeAndSound();
+                break;
+            case 1:     // full screen
+                if (status == 0 || status > 63) {
+                    NSString *str = [NSString stringWithFormat:@"%@\n%@\n%@", 
+                                              get_person([dict objectForKey:@"WHO"]),
+                                              get_localized_submit(submit_time, NO),
+                                              get_localized_status(status)];
+
+                    SBSMSClass0Alert *alert = [[objc_getClass("SBSMSClass0Alert") alloc] initWithString:str];
+                    [alert activate];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 60LL * 1000 * 1000* 1000),
+                            dispatch_get_current_queue(), ^{ [alert deactivate]; [alert release]; });
+                    playVibeAndSound();
+                }
+                break;
             case 2:
                 showBulletin(
                     get_person([dict objectForKey:@"WHO"]),
@@ -235,20 +281,24 @@ static CFDataRef handle_report (
                     get_localized_status(status),
                     @"com.guilleme.deliveryreports");
                 break;
-            case 1: 
+            case 3: 
                 if (status == 0 || status > 63) {
                     UIAlertViewController *y =[[UIAlertViewController alloc] init];
 	                UIAlertView *x = [[UIAlertView alloc] 
                         initWithTitle:get_person([dict objectForKey:@"WHO"])
-						      message: get_localized_submit(submit_time, NO)
+						      message: [NSString stringWithFormat:@"%@\n%@", 
+                                       get_localized_submit(submit_time, NO),
+                                       get_localized_status(status)]
 						     delegate:y
 					cancelButtonTitle:nil
 					otherButtonTitles:@"", nil];
                     [x show];
+                    playVibeAndSound();
                 }
                 break;
+            case 4:
+                break;
             }
-
         }
         refreshMobileSMS(dict);
 
@@ -304,6 +354,9 @@ static void register_port_handler(CFStringRef str, CFMessagePortCallBack cb)  {
     CFRelease(port);
 }
 
+extern "C" void initObjCLog();
+extern "C" void instrumentObjcMessageSends(BOOL); 
+
 %hook SpringBoard
 
 -(void) applicationDidFinishLaunching:(id)appl {
@@ -317,6 +370,8 @@ static void register_port_handler(CFStringRef str, CFMessagePortCallBack cb)  {
     register_port_handler(CFSTR("id.enabled"), handle_enabled);
 
     readDefaults();
+    initObjCLog();
+    instrumentObjcMessageSends(YES); // Enable logging
 
     [[NSNotificationCenter defaultCenter] 
             addObserverForName:@"com.guilleme.refresh"
