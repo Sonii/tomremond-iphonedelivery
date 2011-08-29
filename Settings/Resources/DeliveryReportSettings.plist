@@ -49,6 +49,7 @@
 				<string>Silent</string>
 				<string>Full screen</string>
 				<string>Notification center</string>
+				<string>Simple alert</string>
 				<string>In conversation</string>
 			</array>
 			<key>validValues</key>
@@ -57,9 +58,8 @@
 				<integer>1</integer>
 				<integer>2</integer>
 				<integer>3</integer>
+				<integer>4</integer>
 			</array>
-			<key>PostNotification</key>
-			<string>com.guilleme.refresh</string>
 		</dict>
 
 		<dict>
@@ -73,8 +73,6 @@
 			<string>dr-vibrate</string>
 			<key>label</key>
 			<string>Vibrate</string>
-			<key>PostNotification</key>
-			<string>com.guilleme.refresh</string>
 		</dict>
 		
 		<dict>
@@ -92,8 +90,6 @@
 			<string>TexttonePane</string>
 			<key>label</key>
 			<string>Sound</string>
-			<key>PostNotification</key>
-			<string>com.guilleme.refresh</string>
 		</dict>
 		<dict>
 			<key>cell</key>
