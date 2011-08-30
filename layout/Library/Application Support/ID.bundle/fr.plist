@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>DATE</key>
-	<string>le %DATE% </string>
+	<string>le %DATE%</string>
 	<key>DELIVERED</key>
 	<string>délivré %DATESPEC% %TIMESPEC%</string>
 	<key>STATUS</key>
@@ -19,8 +19,8 @@
 	<key>TITLE</key>
 	<string>➜ %SURNAME% %NAME%</string>
 	<key>TODAY</key>
-	<string>aujourd'hui </string>
+	<string>aujourd'hui</string>
 	<key>YESTERDAY</key>
-	<string>hier </string>
+	<string>hier</string>
 </dict>
 </plist>
