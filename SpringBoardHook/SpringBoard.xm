@@ -370,8 +370,6 @@ extern "C" void instrumentObjcMessageSends(BOOL);
     register_port_handler(CFSTR("id.enabled"), handle_enabled);
 
     readDefaults();
-    initObjCLog();
-    instrumentObjcMessageSends(YES); // Enable logging
 
     [[NSNotificationCenter defaultCenter] 
             addObserverForName:@"com.guilleme.refresh"
