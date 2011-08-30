@@ -6,12 +6,6 @@
 	<array>
 		<dict>
 			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>label</key>
-			<string>Settings</string>
-		</dict>
-		<dict>
-			<key>cell</key>
 			<string>PSSwitchCell</string>
 			<key>default</key>
 			<true/>
@@ -21,8 +15,6 @@
 			<string>dr-enabled</string>
 			<key>label</key>
 			<string>Enabled</string>
-			<key>PostNotification</key>
-			<string>com.guilleme.refresh</string>
 		</dict>
 
 		<dict>
@@ -50,7 +42,6 @@
 				<string>Full screen</string>
 				<string>Notification center</string>
 				<string>Simple alert</string>
-				<string>In conversation</string>
 			</array>
 			<key>validValues</key>
 			<array>
@@ -58,7 +49,6 @@
 				<integer>1</integer>
 				<integer>2</integer>
 				<integer>3</integer>
-				<integer>4</integer>
 			</array>
 		</dict>
 
