@@ -28,9 +28,6 @@
 #include "rewrite.h"
 
 #ifndef USES_MS
-/*
-   we don'tuse interposing anymore but MobileSubstrate so his part is not relevant
-*/
 #define MSHook(type,name,param...) static type __ ## name(param)
 #define _open open
 #define _close close
@@ -75,7 +72,7 @@ MSHook(int, open, char *name, int mode) {
 		notify_started();
 		sms_fd = ret;
 	}
-	LOG("open(\"%s\", 0x%x) => %d", name, mode, ret);	
+	//LOG("open(\"%s\", 0x%x) => %d", name, mode, ret);	
 	return ret;
 }
 
@@ -89,7 +86,7 @@ MSHook(int, open, char *name, int mode) {
 MSHook(int, close, int fd) {
 	int ret = _close(fd);
 	if (fd == sms_fd) sms_fd = -1;
-	LOG("close(%d) => %d", fd, ret);
+	//LOG("close(%d) => %d", fd, ret);
 	return ret;
 }
 
@@ -114,7 +111,7 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
 		int len;
 		char buffer[256];
 
-		TRACE(p, ret, "read(sms, %d) => %d", n, ret);
+		//TRACE(p, ret, "read(sms, %d) => %d", n, ret);
 
 		if (sscanf(p, "\r\n+CDS: %d\r\n%s\r\n", &len, buffer) == 2) {
 			char number[32];
@@ -159,6 +156,7 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
 			}
 		}
 		else if (sscanf(p, "\r\n+CMGS: %d", &ref) == 1) {
+			TRACE(p, ret, "read(sms, %d) => %d", n, ret);
 			if (last_number[0]) {
 				notify_submit(ref, last_time_stamp, last_number);
 
@@ -167,6 +165,7 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
 			}
 		}
 		else if (sscanf(p, "\r\n+CMT: %d\r\n%s\r\n", &len, buffer) == 2) {
+			TRACE(p, ret, "read(sms, %d) => %d", n, ret);
 			size_t size;
 			uint8_t *payload = unpack(buffer, &size);
 			notify_received(payload, size);
@@ -191,8 +190,8 @@ MSHook(size_t, write, int fd, void *p, size_t n) {
 	static bool cmgs_seen = false;
 	if (sms_fd != -1) {
 		int dummy;
-		TRACE(p, n, "write(sms, %d)", n);
 		if (cmgs_seen) {
+			TRACE(p, n, "write(sms, %d)", n);
 			uint8_t *payload = unpack_if_applicable(p); 
 			if (payload != NULL) {
 				last_time_stamp = time(NULL);
@@ -223,6 +222,7 @@ MSHook(size_t, write, int fd, void *p, size_t n) {
 			cmgs_seen = false;
 		}
 		else if (sscanf(p, "at+cmgs=%d", &dummy)) {
+			TRACE(p, n, "write(sms, %d)", n);
 			cmgs_seen = report_enabled();
 		}
 		else {

@@ -28,16 +28,21 @@ if [ $? -eq 1 ]; then
 	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN delivery_status INTEGER DEFAULT NULL'
 fi
 
-# check if mobilesubstrate hooks CommCenterClassic
 PLIST=/System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
-plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES $PLIST | grep MobileSubstrate
-if [ $? -ne 0 ]; then
-	echo "Interpose MobileSubstrate to CommCenterClassic"
-	plutil -key EnvironmentVariables -dict $PLIST
+LIBRARY=$(plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES $PLIST 2> /dev/null)
+if [ -z "$LIBRARY" ]; then
+	plutil -key EnvironmentVariables -dict $PLIST;
 	plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES \
-		   -setValue /Library/MobileSubstrate/MobileSubstrate.dylib \
-	 	$PLIST
+		   -setValue /usr/local/lib/libidcc.dylib \
+	 	$PLIST;
+else
+	plutil -key EnvironmentVariables -dict $PLIST;
+	plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES \
+		   -setValue "${LIBRARY}:/usr/local/lib/libidcc.dylib" \
+	 	$PLIST;
 fi
+echo CommCenter inserted libraries
+plutil -key EnvironmentVariables $PLIST
 
 launchctl unload /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 launchctl load /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
