@@ -32,7 +32,6 @@ static Localizer *instance = nil;
 	self = [super init];
 
 	CFArrayRef pref = CFLocaleCopyPreferredLanguages();
-	NSLog(@"Languages = %@", pref);
 	CFStringRef key = CFArrayGetValueAtIndex(pref, 0);
 	NSLog(@"First language = %@", key);
 
