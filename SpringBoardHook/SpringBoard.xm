@@ -246,7 +246,8 @@ static CFDataRef handle_report (
                     playVibeAndSound();
                 }
                 break;
-            case 4:     // inserted in conversation
+            default:
+                NSLog(@"Incorrect alert method %d", deliveryAlertMethod);
                 break;
             }
         }
@@ -296,7 +297,8 @@ static CFDataRef handle_report (
                     playVibeAndSound();
                 }
                 break;
-            case 4:
+            default:
+                NSLog(@"Incorrect alert method %d", deliveryAlertMethod);
                 break;
             }
         }
@@ -307,8 +309,6 @@ static CFDataRef handle_report (
         
         [Localizer release];
         [pool release];
-
-
     }
     return nil;
 }
