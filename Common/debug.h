@@ -16,7 +16,9 @@
 */
 #ifndef DEBUG_H_INCLUDED
 #define DEBUG_H_INCLUDED
-#ifdef DEBUG
+#if defined(DEBUG) || defined(YESDEBUG)
+#undef DEBUG
+#define DEBUG
 #include <stdio.h>
 #include <stdarg.h>
 void TRACE(const char *p, size_t n, const char *label, ...);

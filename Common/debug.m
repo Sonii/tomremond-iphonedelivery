@@ -14,7 +14,6 @@
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#ifdef DEBUG
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdarg.h>
@@ -22,6 +21,7 @@
 #import <Foundation/Foundation.h>
 #include "debug.h"
 
+#ifdef DEBUG
 void DUMP(const uint8_t *p, size_t n, const char *label, ...) {
     va_list va;
     va_start(va, label);
