@@ -134,12 +134,10 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
 			// rewrite the report int a nice looking message
 			size_t new_size = 0;
 			int offset;
-			NSString *message;
-			uint8_t *new_payload = rewrite_cts(payload, size, &new_size, &offset, &message, false);
+			uint8_t *new_payload = rewrite_cts(payload, size, &new_size, &offset);
 			free(payload);
 
-			notify_report(ref, when_sent, when_delivered, number, status, message, payload, size);
-			[message release];
+			notify_report(ref, when_sent, when_delivered, number, status, payload, size);
 			
 			if (new_payload != NULL) {
 				char *serialized_payload = pack(new_payload, new_size);

@@ -17,7 +17,7 @@
 #ifndef NOTIFY_INCLUDED
 #define NOTIFY_INCLUDED
 void notify_submit(int ref, time_t when, const char *who);
-void notify_report(int ref, time_t sent, time_t delivered, const char *who, uint8_t status, NSString *message, uint8_t *p, size_t size);
+void notify_report(int ref, time_t sent, time_t delivered, const char *who, uint8_t status, uint8_t *p, size_t size);
 bool notify_received(uint8_t *p, size_t size);
 void notify_started();
 bool report_enabled();

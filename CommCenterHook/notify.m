@@ -81,22 +81,16 @@ void notify_submit(int ref, time_t when, const char *who) {
 	[pool release];
 }
 
-void notify_report(int ref, time_t when_sent, time_t when_delivered, const char *who, uint8_t status, 
-		NSString *message, uint8_t *payload, size_t size) { 
+void notify_report(int ref, time_t when_sent, time_t when_delivered, const char *who, uint8_t status, uint8_t *payload, size_t size) { 
 	char tmp1[32];
 	char tmp2[32];
-	static int last_ref = -1;
 
-	if (ref== last_ref) return;	// reject duplicates
-
-	last_ref = ref;
 	strftime(tmp1, sizeof(tmp1), "%D %T", localtime(&when_sent));
 	strftime(tmp2, sizeof(tmp2), "%D %T", localtime(&when_delivered));
 	LOG("Report from %s sent at %s delivered at %s ref = %d status %d", who, tmp1, tmp2, ref, status);
 
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 		NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
-			message, @"MESSAGE",
 			[NSString stringWithUTF8String:who], @"WHO",
 			[NSNumber numberWithInt:when_sent], @"WHENSENT",
 			[NSNumber numberWithInt:when_delivered], @"WHENDELIVERED",

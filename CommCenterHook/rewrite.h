@@ -16,6 +16,6 @@
 */
 #ifndef REWRITE_H_INCLUDED
 #define REWRITE_H_INCLUDED
-uint8_t *rewrite_cts(uint8_t *payload, size_t n, size_t *pn, int *offset, NSString **message, bool visible) ;
+uint8_t *rewrite_cts(uint8_t *payload, size_t n, size_t *pn, int *offset);
 #endif
 // vim: set ts=4 expandtab
