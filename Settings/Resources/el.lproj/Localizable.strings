@@ -8,18 +8,14 @@
 	<string>Ενεργοποίηση</string>
 	<key>Full screen</key>
 	<string>Ειδοποίηση και τσεκάρισμα</string>
-	<key>In conversation</key>
-	<string>Εισαγωγή στην συζήτηση</string>
 	<key>Mark</key>
 	<string>τσεκάρισμα</string>
 	<key>Notification center</key>
 	<string>Στο Κέντρο γνωστοποιήσεων</string>
-	<key>Settings</key>
-	<string>Ρυθμίσεις</string>
 	<key>Silent</key>
 	<string>Διακριτική</string>
 	<key>Simleys</key>
-	<string>Smileys</string>
+	<string>😄  😊  😉</string>
 	<key>Sound</key>
 	<string>Ήχοι</string>
 	<key>Style</key>

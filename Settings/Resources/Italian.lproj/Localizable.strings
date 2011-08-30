@@ -8,18 +8,14 @@
 	<string>Abilita</string>
 	<key>Full screen</key>
 	<string>Notifica full screen</string>
-	<key>In conversation</key>
-	<string>Riporta nella conversazione</string>
 	<key>Mark</key>
-	<string>Tick</string>
+	<string>Marca</string>
 	<key>Notification center</key>
 	<string>In Centro notifiche</string>
-	<key>Settings</key>
-	<string>Impostazioni</string>
 	<key>Silent</key>
 	<string>Discreta</string>
 	<key>Simleys</key>
-	<string>Smileys</string>
+	<string>😄  😊  😉</string>
 	<key>Sound</key>
 	<string>Suoni</string>
 	<key>Style</key>

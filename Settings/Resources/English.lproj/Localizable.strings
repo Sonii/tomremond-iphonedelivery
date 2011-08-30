@@ -8,22 +8,18 @@
 	<string>Enabled</string>
 	<key>Full screen</key>
 	<string>Full screen</string>
-	<key>In conversation</key>
-	<string>In the conversation</string>
 	<key>Mark</key>
 	<string>Mark</string>
 	<key>Notification center</key>
-	<string>Notification center</string>
-	<key>Settings</key>
-	<string>Settings</string>
+	<string>In notification center</string>
 	<key>Silent</key>
 	<string>Discreet</string>
 	<key>Simleys</key>
-	<string>Smileys</string>
+	<string>😄  😊  😉</string>
 	<key>Sound</key>
-	<string>Son</string>
+	<string>Sound</string>
 	<key>Style</key>
-	<string>Notification</string>
+	<string>Notification style</string>
 	<key>Vibrate</key>
 	<string>Vibrate</string>
 </dict>

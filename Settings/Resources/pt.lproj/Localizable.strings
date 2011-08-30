@@ -3,28 +3,24 @@
 <plist version="1.0">
 <dict>
 	<key>Delivery reports</key>
-	<string>Accusé de réception</string>
+	<string>Relatório de Entrega</string>
 	<key>Enabled</key>
-	<string>Activé</string>
+	<string>Ativar</string>
 	<key>Full screen</key>
-	<string>Plein écran</string>
-	<key>In conversation</key>
-	<string>Dans la conversation</string>
+	<string>Alerta de ecrã completo</string>
 	<key>Mark</key>
-	<string>Tick</string>
+	<string>Marca</string>
 	<key>Notification center</key>
-	<string>Notification center</string>
-	<key>Settings</key>
-	<string>Réglages</string>
+	<string>Dentro da Central de Notificações</string>
 	<key>Silent</key>
-	<string>Discret</string>
+	<string>Discreto</string>
 	<key>Simleys</key>
-	<string>Emoticones</string>
+	<string>😄  😊  😉</string>
 	<key>Sound</key>
-	<string>Son</string>
+	<string>Sons</string>
 	<key>Style</key>
-	<string>Notification</string>
+	<string>Notificações</string>
 	<key>Vibrate</key>
-	<string>Vibreur</string>
+	<string>Vibrar</string>
 </dict>
 </plist>

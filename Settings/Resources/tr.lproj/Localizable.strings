@@ -5,26 +5,22 @@
 	<key>Delivery reports</key>
 	<string>İletim raporu</string>
 	<key>Enabled</key>
-	<string>Activé</string>
+	<string>Etkinleştir</string>
 	<key>Full screen</key>
 	<string>Tam ekran rapor</string>
-	<key>In conversation</key>
-	<string>Raporu karşılıklı konuşmaya ekle</string>
 	<key>Mark</key>
 	<string>İşaret</string>
 	<key>Notification center</key>
-	<string>Notification center</string>
-	<key>Settings</key>
-	<string>Réglages</string>
+	<string>Bildirim Merkezi’nde</string>
 	<key>Silent</key>
 	<string>Gizli</string>
 	<key>Simleys</key>
-	<string>Emoticones</string>
+	<string>😄  😊  😉</string>
 	<key>Sound</key>
-	<string>Son</string>
+	<string>Sesler</string>
 	<key>Style</key>
-	<string>Notification</string>
+	<string>Bildirimler</string>
 	<key>Vibrate</key>
-	<string>Vibreur</string>
+	<string>Titreşim</string>
 </dict>
 </plist>

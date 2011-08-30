@@ -5,7 +5,7 @@
 	<key>Delivery reports</key>
 	<string>Отчет о доставке</string>
 	<key>Enabled</key>
-	<string>Activé</string>
+	<string>Включить</string>
 	<key>Full screen</key>
 	<string>Полноэкранное уведомление</string>
 	<key>In conversation</key>
@@ -13,18 +13,16 @@
 	<key>Mark</key>
 	<string>отметки</string>
 	<key>Notification center</key>
-	<string>Notification center</string>
-	<key>Settings</key>
-	<string>Réglages</string>
+	<string>В Центре уведомлений</string>
 	<key>Silent</key>
 	<string>Скромный</string>
 	<key>Simleys</key>
-	<string>smileys</string>
+	<string>😄  😊  😉</string>
 	<key>Sound</key>
-	<string>Son</string>
+	<string>Звуки</string>
 	<key>Style</key>
-	<string>Notification</string>
+	<string>Уведомления</string>
 	<key>Vibrate</key>
-	<string>Vibreur</string>
+	<string>Вибрация</string>
 </dict>
 </plist>

@@ -5,13 +5,11 @@
 	<key>Delivery reports</key>
 	<string>Ontvangst Bericht</string>
 	<key>Enabled</key>
-	<string>Enabled</string>
+	<string>Schakel</string>
 	<key>Full screen</key>
-	<string>Full screen</string>
-	<key>In conversation</key>
-	<string>Inserted in the conversation</string>
+	<string>Het volledige scherm</string>
 	<key>Mark</key>
-	<string>Tick</string>
+	<string>Mark</string>
 	<key>Notification center</key>
 	<string>In berichtencentrum</string>
 	<key>Settings</key>
@@ -19,6 +17,7 @@
 	<key>Silent</key>
 	<string>Discreet</string>
 	<key>Simleys</key>
+	<string>😄  😊  😉</string>
 	<string>Smileys</string>
 	<key>Sound</key>
 	<string>Geluiden</string>

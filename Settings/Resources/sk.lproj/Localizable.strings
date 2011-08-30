@@ -3,28 +3,24 @@
 <plist version="1.0">
 <dict>
 	<key>Delivery reports</key>
-	<string>Accusé de réception</string>
+	<string>Potvrdenie o doručení</string>
 	<key>Enabled</key>
-	<string>Activé</string>
+	<string>Povoliť</string>
 	<key>Full screen</key>
-	<string>Plein écran</string>
-	<key>In conversation</key>
-	<string>Dans la conversation</string>
+	<string>Na celú obrazovku</string>
 	<key>Mark</key>
-	<string>Tick</string>
+	<string>Značka</string>
 	<key>Notification center</key>
-	<string>Notification center</string>
-	<key>Settings</key>
-	<string>Réglages</string>
+	<string>V centre hlásení</string>
 	<key>Silent</key>
-	<string>Discret</string>
+	<string>Diskrétne</string>
 	<key>Simleys</key>
-	<string>Emoticones</string>
+	<string>😄  😊  😉</string>
 	<key>Sound</key>
-	<string>Son</string>
+	<string>Zvuky</string>
 	<key>Style</key>
-	<string>Notification</string>
+	<string>Hlásenia</string>
 	<key>Vibrate</key>
-	<string>Vibreur</string>
+	<string>Vibrovať</string>
 </dict>
 </plist>

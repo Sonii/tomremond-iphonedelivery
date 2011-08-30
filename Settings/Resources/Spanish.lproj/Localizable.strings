@@ -8,18 +8,14 @@
 	<string>Activar</string>
 	<key>Full screen</key>
 	<string>Alerta en toda la pantalla</string>
-	<key>In conversation</key>
-	<string>Insertado en la conversacion</string>
 	<key>Mark</key>
 	<string>Marca</string>
 	<key>Notification center</key>
 	<string>En el centro de notificaciones</string>
-	<key>Settings</key>
-	<string>Ajustes</string>
 	<key>Silent</key>
 	<string>Discreto</string>
 	<key>Simleys</key>
-	<string>Emoticones</string>
+	<string>😄  😊  😉</string>
 	<key>Sound</key>
 	<string>Sonidos</string>
 	<key>Style</key>

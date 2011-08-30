@@ -5,26 +5,22 @@
 	<key>Delivery reports</key>
 	<string>短信回执</string>
 	<key>Enabled</key>
-	<string>Activé</string>
+	<string>启用</string>
 	<key>Full screen</key>
 	<string>閃訊模式</string>
-	<key>In conversation</key>
-	<string>訊息模式</string>
 	<key>Mark</key>
 	<string>符號</string>
 	<key>Notification center</key>
-	<string>Notification center</string>
-	<key>Settings</key>
-	<string>Réglages</string>
+	<string>在通知中心</string>
 	<key>Silent</key>
 	<string>僅提示</string>
 	<key>Simleys</key>
-	<string>Emoticones</string>
+	<string>😄  😊  😉</string>
 	<key>Sound</key>
 	<string>Son</string>
 	<key>Style</key>
-	<string>Notification</string>
+	<string>通知</string>
 	<key>Vibrate</key>
-	<string>Vibreur</string>
+	<string>振动</string>
 </dict>
 </plist>

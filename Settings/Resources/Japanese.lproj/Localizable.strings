@@ -3,28 +3,25 @@
 <plist version="1.0">
 <dict>
 	<key>Delivery reports</key>
-	<string>Accusé de réception</string>
+	<string>配信レポート</string>
 	<key>Enabled</key>
-	<string>Activé</string>
+	<string>の使用</string>
 	<key>Full screen</key>
-	<string>Plein écran</string>
-	<key>In conversation</key>
-	<string>Dans la conversation</string>
+	<string>フルスクリーン</string>
 	<key>Mark</key>
-	<string>Tick</string>
+	<string>マーク</string>
 	<key>Notification center</key>
-	<string>Notification center</string>
-	<key>Settings</key>
-	<string>Réglages</string>
+	<string>通知センターで表示する</string>
 	<key>Silent</key>
-	<string>Discret</string>
+	<string>サイレント</string>
 	<key>Simleys</key>
+	<string>😄  😊  😉</string>
 	<string>Emoticones</string>
 	<key>Sound</key>
-	<string>Son</string>
+	<string>サウンド</string>
 	<key>Style</key>
 	<string>Notification</string>
 	<key>Vibrate</key>
-	<string>Vibreur</string>
+	<string>バイブレーション</string>
 </dict>
 </plist>
