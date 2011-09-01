@@ -18,7 +18,7 @@ extern "C" {
 
 @interface CKTranscriptController 
 -(id)bubbleData;
--(void)updateTranscript;
+-(void)_reloadTranscriptLayer;
 -(UITableViewCell *)tableView:(id)tv cellForRowAtIndexPath:(NSIndexPath *)path;
 @end
 
@@ -49,7 +49,7 @@ static void launch_cb (
    const void *object,
    CFDictionaryRef userInfo
 ) {
-    [currentTranscript updateTranscript];
+    [currentTranscript _reloadTranscriptLayer];
 }
 
 static void readDefaults() {
@@ -65,7 +65,6 @@ static void readDefaults() {
     showMark = CFPreferencesGetAppBooleanValue(CFSTR("dr-tick"), app, &exists);
     if (!exists) showMark = true;
 }
-
 %hook SMSApplication
 -(void)applicationDidBecomeActive:(id) appl {
     CFNotificationCenterRef nc = CFNotificationCenterGetDarwinNotifyCenter();
@@ -76,14 +75,6 @@ static void readDefaults() {
 
     // get some defaults
     readDefaults();
-
-#if 0
-    [[NSNotificationCenter defaultCenter] 
-            addObserverForName:@"com.guilleme.refresh"
-            object:nil 
-            queue:nil
-            usingBlock:^(NSNotification *){ readDefaults(); }];
-#endif
 
     %orig;
 }
@@ -110,7 +101,7 @@ static void readDefaults() {
     [inspectedPath release];
     inspectedPath = [path retain];
 
-    [currentTranscript updateTranscript];
+    CFNotificationCenterPostNotification (CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("iphonedelivery.refresh"), NULL, NULL, YES);
 }
 
 -(UITableViewCell *)tableView:(id)tv cellForRowAtIndexPath:(NSIndexPath *)path {
@@ -172,7 +163,10 @@ static void readDefaults() {
 
 		            mcell.clipsToBounds = NO;
                     [bv addSubview:iv];
-                    [UIView animateWithDuration:0.2 animations:^{ iv.alpha = 1.0; }];
+                    if (status == 0 && delay == -1 && ref == 0) 
+                        bv.hidden = YES;    // during send....
+                    else
+                        [UIView animateWithDuration:0.2 animations:^{ iv.alpha = 1.0; }];
                     [iv release];
                 }
             }
