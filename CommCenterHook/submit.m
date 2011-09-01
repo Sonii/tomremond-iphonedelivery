@@ -118,7 +118,7 @@ static int16_t get_first_char(uint8_t *payload, uint8_t **coding, uint8_t *plen)
 	default: payload+=7; break;	// 7 bytes period
 	}
 
-	payload++;	// skip the message length
+	*plen = *payload++;	// skip the message length
 
 	// payload data
 	if (has_ud) payload += payload[0];
@@ -136,10 +136,56 @@ static int16_t get_first_char(uint8_t *payload, uint8_t **coding, uint8_t *plen)
 	return 0;
 }
 
+static void set_first_char(uint8_t *payload, char c) {
+	bool has_ud = payload[1] & (1 << 6); 
+	uint8_t tp_vpf = (payload[1] & 0x18) >> 3;
+	uint8_t *coding;
+
+	payload++;		// SMSC length. must be zero
+	payload++;		// command		
+	payload++;		// ref
+	payload += (1 + 1 + payload[0]/2);		// number
+
+	payload++;	// FIXME
+	coding = payload;
+
+	payload += 2;
+	
+	// Validity period duration
+	switch (tp_vpf) {
+	case 0: break;				// no period means default
+	case 2: payload+=1; break;	// 1 byte period
+	default: payload+=7; break;	// 7 bytes period
+	}
+
+	payload++;	// skip the message length
+
+	// payload data
+	if (has_ud) payload += payload[0];
+
+	switch (((coding)[1] & 0x0C) >> 2) {
+	case 0:
+		payload[0] = (c & 0x7f) | (payload[0] & 0x80);
+		break;
+	case 1:
+		payload[0] = c;
+		break;
+	case 2:
+		payload[0] = 0; payload[1] = c;
+		break;
+	case 3:
+		payload[0] = c;		// I don't think this case occurs
+		break;
+	}
+}
+
 void set_class0(uint8_t *payload) {
 	uint8_t *coding = NULL;
 	uint8_t len = 0;
-	if (get_first_char(payload, &coding, &len) == '!' && coding != NULL) coding[1] |= 0x10;
+	if (get_first_char(payload, &coding, &len) == '!' && coding != NULL) {
+		coding[1] |= 0x10;
+		set_first_char(payload, ' ');
+	}
 }
 
 void set_invisible(uint8_t *payload) {
