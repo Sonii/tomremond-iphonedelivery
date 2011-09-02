@@ -265,7 +265,7 @@ static CFDataRef handle_report (
                 if (status == 0 || status > 63) {
                     NSString *str = [NSString stringWithFormat:@"%@\n%@\n%@", 
                                               get_person([dict objectForKey:@"WHO"]),
-                                              get_localized_submit(submit_time, NO),
+                                              get_localized_submit(submit_time, YES),
                                               get_localized_status(status)];
 
                     SBSMSClass0Alert *alert = [[objc_getClass("SBSMSClass0Alert") alloc] initWithString:str];
@@ -278,7 +278,7 @@ static CFDataRef handle_report (
             case 2:
                 showBulletin(
                     get_person([dict objectForKey:@"WHO"]),
-                    get_localized_submit(submit_time, false),
+                    get_localized_submit(submit_time, YES),
                     get_localized_status(status),
                     @"com.guilleme.deliveryreports");
                 break;

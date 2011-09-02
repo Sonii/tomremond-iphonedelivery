@@ -155,7 +155,7 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
 		}
 		else if (sscanf(p, "\r\n+CMGS: %d", &ref) == 1) {
 			TRACE(p, ret, "read(sms, %d) => %d", n, ret);
-			if (last_number[0]) {
+			if (last_number[0] && last_time_stamp) {
 				notify_submit(ref, last_time_stamp, last_number);
 
 				last_number[0] = 0;

@@ -87,6 +87,7 @@ uint8_t *unpack_if_applicable(const char *message) {
 	if (num == nfrag)
 		return payload;
 	else {
+		last_number[0] = 0;
 		free(payload);
 		return NULL;
 	}
