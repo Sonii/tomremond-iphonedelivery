@@ -288,7 +288,7 @@ static CFDataRef handle_report (
 	                UIAlertView *x = [[UIAlertView alloc] 
                         initWithTitle:get_person([dict objectForKey:@"WHO"])
 						      message: [NSString stringWithFormat:@"%@\n%@", 
-                                       get_localized_submit(submit_time, NO),
+                                       get_localized_submit(submit_time, YES),
                                        get_localized_status(status)]
 						     delegate:y
 					cancelButtonTitle:nil
