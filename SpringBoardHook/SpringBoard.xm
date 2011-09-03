@@ -35,6 +35,27 @@ static Localizer *localizer;
 static Boolean deliveryEnabled;
 static int deliveryAlertMethod;
 
+@interface UIAlertViewControllerFlash : UIAlertViewController {
+    SBAlert *_alert;
+}
+-(id)initWithAlert:(SBAlert *)alert;
+-(void)touchOk:(id)sender;
+@end
+
+@implementation UIAlertViewControllerFlash
+- (id)initWithAlert:(SBAlert *)alert {
+    self = [super init];
+    _alert = alert;
+    return self;
+}
+
+-(void)touchOk:(id)sender {
+    [_alert deactivate];
+    [_alert release];
+    [self release];
+}
+@end
+
 @implementation UIAlertViewController
 - (void)alertView:(UIAlertView *)av clickedButtonAtIndex:(int)index {
     [av dismissWithClickedButtonIndex:index animated:YES];
@@ -158,6 +179,22 @@ static CFDataRef handle_submit (
     return nil;
 }
 
+@interface UIView(xxx)
+-(UIButton *)findSubButton;
+@end
+
+@implementation UIView(xxx)
+-(UIButton *)findSubButton {
+    for (UIView *v in self.subviews) {
+        if ([v isKindOfClass:[UIButton class]])
+            return (UIButton *)v;
+        UIButton *b = [v findSubButton];
+        if (b != nil) return b;
+    }
+    return nil;
+}
+@end
+
 static void playVibeAndSound() {
     bool vibrate = getDeliveryVibrate();
     if (vibrate) {
@@ -212,14 +249,16 @@ static CFDataRef handle_report (
                                               get_localized_submit(submit_time, sameday),
                                         get_localized_deliver(deliver_time, sameday)];
 
-                    CGRect r = [UIScreen mainScreen].bounds;
                     SBSMSClass0Alert *alert = [[objc_getClass("SBSMSClass0Alert") alloc] initWithString:str];
-                    //SBUSSDAlertDisplay *display = [alert display];
                     [alert activate];
 
-                    // the alert dis
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10LL * 1000 * 1000* 1000),
-                            dispatch_get_current_queue(), ^{ [alert deactivate]; [alert release]; });
+                    SBUSSDAlertDisplay *display = [alert display];
+                    UIButton *b = [display findSubButton];
+
+                    if (b != nil) {
+                        UIAlertViewControllerFlash *y = [[UIAlertViewControllerFlash alloc] initWithAlert:alert];
+                        [b addTarget:y action:@selector(touchOk:)  forControlEvents:UIControlEventTouchUpInside];
+                    }
 
                     playVibeAndSound();
                 }
@@ -270,8 +309,15 @@ static CFDataRef handle_report (
 
                     SBSMSClass0Alert *alert = [[objc_getClass("SBSMSClass0Alert") alloc] initWithString:str];
                     [alert activate];
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 60LL * 1000 * 1000* 1000),
-                            dispatch_get_current_queue(), ^{ [alert deactivate]; [alert release]; });
+
+                    SBUSSDAlertDisplay *display = [alert display];
+                    UIButton *b = [display findSubButton];
+
+                    if (b != nil) {
+                        UIAlertViewControllerFlash *y = [[UIAlertViewControllerFlash alloc] initWithAlert:alert];
+                        [b addTarget:y action:@selector(touchOk:)  forControlEvents:UIControlEventTouchUpInside];
+                    }
+
                     playVibeAndSound();
                 }
                 break;
