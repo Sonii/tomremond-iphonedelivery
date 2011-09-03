@@ -114,6 +114,11 @@ static void readDefaults() {
         UIView *bv = [mcell balloonView];
         CGRect balloon_frame = bv.frame;
 
+	    // remove any present stamp
+#define TAG 5329
+        UIView *vv = [bv viewWithTag:TAG];
+        if (vv != nil) [vv removeFromSuperview];
+
         CKTranscriptBubbleData *data = [self bubbleData];
         int rowid = [[data messageAtIndex:path.row] rowID];
         if (rowid > 0) {
@@ -134,12 +139,6 @@ static void readDefaults() {
                 else if (status == 70)
                 code = 2;
 
-#define TAG 5329
-
-	            // remove any present stamp
-                UIView *vv = [bv viewWithTag:TAG];
-                if (vv != nil) [vv removeFromSuperview];
-
                 if (inspectedPath.row == path.row && date != 0 && delay != -1 && status == 0) {
                     NSDate *d1 = [NSDate dateWithTimeIntervalSince1970:date];
                     NSDate *d2 = [NSDate dateWithTimeIntervalSince1970:date + delay];
@@ -152,6 +151,9 @@ static void readDefaults() {
 		            mcell.clipsToBounds = NO;
                     [bv addSubview:iv];
                     [UIView animateWithDuration:0.2 animations:^{ iv.alpha = 1.0; }];
+
+                    // TODO hide the dateview after some time (15 sec?)
+
                     [lastDateView removeFromSuperview];
                     [lastDateView release];
                     lastDateView = iv;
@@ -162,11 +164,11 @@ static void readDefaults() {
                     iv.tag = TAG;
 
 		            mcell.clipsToBounds = NO;
-                    [bv addSubview:iv];
                     if (status == 0 && delay == -1 && ref == 0) 
                         bv.hidden = YES;    // during send....
                     else
                         [UIView animateWithDuration:0.2 animations:^{ iv.alpha = 1.0; }];
+                    [bv addSubview:iv];
                     [iv release];
                 }
             }
