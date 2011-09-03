@@ -52,16 +52,12 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 
     text1 =  [dateFormatter stringFromDate:d1];
 
-    NSLog(@"text1 = %@", text1);
-
     [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
     [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
 
     text2 =  [dateFormatter stringFromDate:d2];
 
 	[dateFormatter release];
-
-    NSLog(@"text2 = %@", text2);
 
     font = [UIFont systemFontOfSize:10.0];
     CGSize sz1, sz2;

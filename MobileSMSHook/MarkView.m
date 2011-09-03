@@ -63,11 +63,13 @@ static UIImage *get_image_for_status(int status) {
     frame.size.width = im.size.width;
     frame.size.height = im.size.height;
 
+#if 0
     NSLog(@"Ballon frame = <%d,%d,%d,%d>", (int)balloon_frame.origin.x, (int)balloon_frame.origin.y, 
             (int)balloon_frame.size.width, (int)balloon_frame.size.height);
     NSLog(@"Mark frame = <%d,%d,%d,%d>", (int)frame.origin.x, (int)frame.origin.y, 
             (int)frame.size.width, (int)frame.size.height);
 
+#endif
 	self = [super initWithFrame:frame];
 	if (status != 1002 && status != 1004)
     	self.image = im;
@@ -75,7 +77,6 @@ static UIImage *get_image_for_status(int status) {
     [self sizeToFit];
 
 	if (state == 3 && status != 0 && status != 1002 && status != 1004) {
-		NSLog(@"add a display of status %d", status);
 
 		// if it is an error display the code next to the mark
 		NSString *str = [NSString stringWithFormat:@"%d", status];
@@ -94,7 +95,6 @@ static UIImage *get_image_for_status(int status) {
 	else if (showMark == NO)
 		self.hidden = YES;
 
-    NSLog(@"contentView = %@", cell);
 	return self;
 }
 @end

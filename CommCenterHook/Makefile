@@ -1,6 +1,5 @@
 include theos/makefiles/common.mk
 
-DEBUG=YES
 USES_MS=NO
 VPATH = ../Common
 

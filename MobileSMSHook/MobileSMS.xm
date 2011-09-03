@@ -8,6 +8,10 @@ extern "C" {
 #import "DeliveryDateView.h"
 #import <dispatch/dispatch.h>
 
+#if !defined(DEBUG) && !defined(YESDEBUG)
+#define NSLog(...) 
+#endif
+
 @interface CKSMSMessage
 -(int)rowID;
 @end

@@ -27,8 +27,8 @@ extern "C"{
 #import "Bulletin.h"
 }
 
-#ifndef DEBUG
-#define NSLog(arg...)
+#if !defined(DEBUG) && !defined(YESDEBUG)
+#define NSLog(...) 
 #endif
 
 static Localizer *localizer;
