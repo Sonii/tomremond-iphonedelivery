@@ -32,6 +32,10 @@
 #define AB_DB "/private/var/mobile/Library/AddressBook/AddressBook.sqlitedb"
 #define MAX_STR_SIZE 128
 
+#if !defined(DEBUG) && !defined(YESDEBUG)
+#define NSLog(...) 
+#endif
+
 enum {
     PARAM_INT,
     PARAM_STR
