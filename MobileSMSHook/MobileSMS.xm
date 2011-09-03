@@ -27,8 +27,9 @@ static bool showSmileys = YES;
 
 bool showMark = YES;
 
-static NSIndexPath *inspectedPath = nil;
-static UIView *lastDateView = nil;
+static int tapped_rowid = -1;
+static NSDate *inpectionTime = nil;             // date when last tapped to see the date
+static UIView *lastDateView = nil;              // displayed date view
 
 ;
 /** 
@@ -98,8 +99,11 @@ static void readDefaults() {
 -(void)tableView:(UITableView *)tv willSelectRowAtIndexPath:(NSIndexPath*)path {
     %log;
     %orig;
-    [inspectedPath release];
-    inspectedPath = [path retain];
+    CKTranscriptBubbleData *data = [self bubbleData];
+    tapped_rowid = [[data messageAtIndex:path.row] rowID];
+
+    [inpectionTime release];
+    inpectionTime = [[NSDate dateWithTimeIntervalSinceNow:15.0] retain];
 
     CFNotificationCenterPostNotification (CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("iphonedelivery.refresh"), NULL, NULL, YES);
 }
@@ -139,7 +143,7 @@ static void readDefaults() {
                 else if (status == 70)
                 code = 2;
 
-                if (inspectedPath.row == path.row && date != 0 && delay != -1 && status == 0) {
+                if (tapped_rowid == rowid && date != 0 && delay != -1 && status == 0) {
                     NSDate *d1 = [NSDate dateWithTimeIntervalSince1970:date];
                     NSDate *d2 = [NSDate dateWithTimeIntervalSince1970:date + delay];
 
@@ -153,6 +157,16 @@ static void readDefaults() {
                     [UIView animateWithDuration:0.2 animations:^{ iv.alpha = 1.0; }];
 
                     // TODO hide the dateview after some time (15 sec?)
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1000000000LL * 15),
+                                   dispatch_get_current_queue(), ^{
+                            if (tapped_rowid != -1 && inpectionTime != nil &&
+                                [inpectionTime timeIntervalSinceNow] < 0) {
+                                [inpectionTime release];
+                                inpectionTime = nil;
+                                tapped_rowid = -1;
+                                CFNotificationCenterPostNotification (CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("iphonedelivery.refresh"), NULL, NULL, YES);
+                            }
+                        });
 
                     [lastDateView removeFromSuperview];
                     [lastDateView release];
