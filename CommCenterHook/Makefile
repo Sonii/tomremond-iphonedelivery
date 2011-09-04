@@ -8,7 +8,7 @@ libidcc_FILES = CommCenterHook.m debug.m utils.c notify.m submit.m unpack.c rewr
 libidcc_FRAMEWORKS = CoreFoundation Foundation
 libidcc_INSTALL_PATH = /usr/local/lib
 
-libidcc_CFLAGS = -std=gnu99 -D${DEBUG}DEBUG -I../Common
+libidcc_CFLAGS = -std=gnu99 -I../Common
 libidcc_LDFLAGS = -lsubstrate
 
 ifeq ("${USES_MS}","YES")

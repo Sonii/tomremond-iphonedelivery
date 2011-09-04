@@ -63,13 +63,13 @@ static UIImage *get_image_for_status(int status) {
     frame.size.width = im.size.width;
     frame.size.height = im.size.height;
 
-#if 0
+#ifdef DEBUG
     NSLog(@"Ballon frame = <%d,%d,%d,%d>", (int)balloon_frame.origin.x, (int)balloon_frame.origin.y, 
             (int)balloon_frame.size.width, (int)balloon_frame.size.height);
     NSLog(@"Mark frame = <%d,%d,%d,%d>", (int)frame.origin.x, (int)frame.origin.y, 
             (int)frame.size.width, (int)frame.size.height);
-
 #endif
+
 	self = [super initWithFrame:frame];
 	if (status != 1002 && status != 1004)
     	self.image = im;

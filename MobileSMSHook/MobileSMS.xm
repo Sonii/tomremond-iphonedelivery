@@ -8,7 +8,7 @@ extern "C" {
 #import "DeliveryDateView.h"
 #import <dispatch/dispatch.h>
 
-#if !defined(DEBUG) && !defined(YESDEBUG)
+#if !defined(DEBUG)
 #define NSLog(...) 
 #endif
 
@@ -113,6 +113,7 @@ static void readDefaults() {
 }
 
 -(UITableViewCell *)tableView:(id)tv cellForRowAtIndexPath:(NSIndexPath *)path {
+    %log;
     UITableViewCell *cell = %orig;
 
     currentTranscript = self;
@@ -135,8 +136,7 @@ static void readDefaults() {
             time_t date = 0;
             int rc = get_delivery_info_for_rowid(rowid, &ref, &date, &delay, &status);
 
-//            NSLog(@"rc=%d ref=%d status = %d date = %d delay = %d", rc, ref, status, date, delay);
-
+            NSLog(@"rc=%d ref=%d status = %d date = %d delay = %d", rc, ref, status, date, delay);
 
             if (rc == 0) {
                 int code = 3;
@@ -186,6 +186,7 @@ static void readDefaults() {
                         bv.hidden = YES;    // during send....
                     else
                         [UIView animateWithDuration:0.2 animations:^{ iv.alpha = 1.0; }];
+                    NSLog(@"mark view = %@", iv);
                     [bv addSubview:iv];
                     [iv release];
                 }

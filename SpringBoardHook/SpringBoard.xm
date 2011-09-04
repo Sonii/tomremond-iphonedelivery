@@ -27,7 +27,7 @@ extern "C"{
 #import "Bulletin.h"
 }
 
-#if !defined(DEBUG) && !defined(YESDEBUG)
+#if !defined(DEBUG) 
 #define NSLog(...) 
 #endif
 
