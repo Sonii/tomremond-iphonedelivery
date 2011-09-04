@@ -20,7 +20,7 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
         _specifiers = [[self loadSpecifiersFromPlistName:@"DeliveryReportSettings" target:self] retain];
         _specifiers = [self localizedSpecifiersForSpecifiers:_specifiers];
 
-        // In order to disable item if they need to when opeing the page
+        // In order to disable item if they need to when opening the settings page
         [self setDeliveryEnabled:[self isDeliveryEnabled:nil] specifier:nil];
     }
     return _specifiers;
@@ -68,6 +68,7 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
     CFPreferencesSynchronize(app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
 
 #if 0
+    // gray the settings insyead of hiding them
     [[self specifierForID:@"DELIVERY_NOTIFICATION_STYLE"] setProperty:value forKey:@"enabled"];
     [[self specifierForID:@"DELIVERY_VIBRATE"] setProperty:value forKey:@"enabled"];
     [[self specifierForID:@"DELIVERY_SOUND"] setProperty:value forKey:@"enabled"];
@@ -96,10 +97,12 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
     return (NSNumber *)CFPreferencesCopyAppValue(CFSTR("dr-enabled"), app);
 }
 
+/*
+ - definitely not the right way to do sound localization but it works and I don't want to spend
+   more time to dig in Prefences framework
+   */
 -(id)tableView:(id)view cellForRowAtIndexPath:(id)indexPath {
-    NSLog(@"%s", __FUNCTION__);
     UITableViewCell *cell = [super tableView:view cellForRowAtIndexPath:indexPath];
-    NSLog(@"%@ %@", indexPath, cell);
 
     if ([cell class] == [PSTableCell class]) {
        PSTableCell *tc = (PSTableCell *)cell;
@@ -109,6 +112,10 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
        }
     }
     return cell;
+}
+-(void)viewWillAppear:(BOOL)f {
+    [self reload];
+    [super viewWillAppear:f];
 }
 @end
 
