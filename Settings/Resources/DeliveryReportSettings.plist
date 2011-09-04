@@ -42,7 +42,7 @@
 				<string>Silent</string>
 				<string>Full screen</string>
 				<string>Notification center</string>
-				<string>Simple alert</string>
+				<string>Simple Alert</string>
 			</array>
 			<key>validValues</key>
 			<array>

@@ -12,6 +12,8 @@
 	<string>Tick</string>
 	<key>Notification center</key>
 	<string>Centre de notification</string>
+	<key>Simple Alert</key>
+	<string>Alerte standard</string>
 	<key>Silent</key>
 	<string>Discret</string>
 	<key>Smileys</key>
