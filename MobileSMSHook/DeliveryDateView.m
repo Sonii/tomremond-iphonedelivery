@@ -18,6 +18,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "DeliveryDateView.h"
+#import "Date+extra.h"
 
 #define max(a,b) ((a) < (b) ? (b) : (a))
 
@@ -44,16 +45,17 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 
 -(id)initWithDate:(NSDate *)d1  date:(NSDate *)d2 view:(UIView *)v {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	bool sameday = [d1 isSameDayAs:d2];
 
     [dateFormatter setLocale:[NSLocale currentLocale]];
 
     [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
-    [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+    [dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
 
     text1 =  [dateFormatter stringFromDate:d1];
 
-    [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
-    [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+    [dateFormatter setDateStyle:sameday ? NSDateFormatterNoStyle : NSDateFormatterMediumStyle];
+    [dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
 
     text2 =  [dateFormatter stringFromDate:d2];
 
@@ -67,6 +69,9 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 
     rect1 = CGRectMake(3, 2, sz1.width + 8, sz1.height);
     rect2 = CGRectMake(3, 1 + sz1.height, sz2.width + 8 , sz2.height);
+
+	// align the second rect on the right
+	rect2.origin.x += (rect1.size.width - rect2.size.width);
 
     CGRect r = CGRectUnion(rect1, rect2);
 	r.size.width += 6;
