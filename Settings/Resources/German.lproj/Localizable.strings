@@ -8,17 +8,13 @@
 	<string>Deaktiviert</string>
 	<key>Full screen</key>
 	<string>Fullscreen-Bericht</string>
-	<key>In conversation</key>
-	<string>Textmeldung als Sendebericht</string>
 	<key>Mark</key>
 	<string>Mark</string>
 	<key>Notification center</key>
 	<string>In der Zentrale</string>
-	<key>Settings</key>
-	<string>Einstellungen</string>
 	<key>Silent</key>
 	<string>Dezent</string>
-	<key>Simleys</key>
+	<key>Smileys</key>
 	<string>😄  😊  😉</string>
 	<key>Sound</key>
 	<string>Töne</string>

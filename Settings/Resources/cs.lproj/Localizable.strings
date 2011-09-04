@@ -8,19 +8,14 @@
 	<string>Zapnout</string>
 	<key>Full screen</key>
 	<string>Upozornění na celou obrazovku</string>
-	<key>In conversation</key>
-	<string>Vložit do konverzace</string>
 	<key>Mark</key>
 	<string>Značka</string>
 	<key>Notification center</key>
 	<string>Oznamovací centrum</string>
-	<key>Settings</key>
-	<string>Obnova</string>
 	<key>Silent</key>
 	<string>Diskrétní</string>
-	<key>Simleys</key>
+	<key>Smileys</key>
 	<string>😄  😊  😉</string>
-	<string>smileys</string>
 	<key>Sound</key>
 	<string>Zvuk</string>
 	<key>Style</key>

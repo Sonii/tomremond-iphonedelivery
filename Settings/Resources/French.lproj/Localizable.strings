@@ -8,17 +8,13 @@
 	<string>Activé</string>
 	<key>Full screen</key>
 	<string>Plein écran</string>
-	<key>In conversation</key>
-	<string>Dans la conversation</string>
 	<key>Mark</key>
 	<string>Tick</string>
 	<key>Notification center</key>
-	<string>Notification center</string>
-	<key>Settings</key>
-	<string>Réglages</string>
+	<string>Centre de notification</string>
 	<key>Silent</key>
 	<string>Discret</string>
-	<key>Simleys</key>
+	<key>Smileys</key>
 	<string>😄  😊  😉</string>
 	<key>Sound</key>
 	<string>Son</string>

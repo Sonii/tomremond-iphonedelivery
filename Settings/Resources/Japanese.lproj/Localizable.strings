@@ -14,9 +14,8 @@
 	<string>通知センターで表示する</string>
 	<key>Silent</key>
 	<string>サイレント</string>
-	<key>Simleys</key>
+	<key>Smileys</key>
 	<string>😄  😊  😉</string>
-	<string>Emoticones</string>
 	<key>Sound</key>
 	<string>サウンド</string>
 	<key>Style</key>

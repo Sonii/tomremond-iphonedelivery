@@ -8,15 +8,13 @@
 	<string>Включить</string>
 	<key>Full screen</key>
 	<string>Полноэкранное уведомление</string>
-	<key>In conversation</key>
-	<string>Вставлен в переписку</string>
 	<key>Mark</key>
 	<string>отметки</string>
 	<key>Notification center</key>
 	<string>В Центре уведомлений</string>
 	<key>Silent</key>
 	<string>Скромный</string>
-	<key>Simleys</key>
+	<key>Smileys</key>
 	<string>😄  😊  😉</string>
 	<key>Sound</key>
 	<string>Звуки</string>
