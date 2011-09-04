@@ -1,26 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>Delivery reports</key>
-	<string>Sendebericht</string>
-	<key>Enabled</key>
-	<string>Deaktiviert</string>
-	<key>Full screen</key>
-	<string>Fullscreen-Bericht</string>
-	<key>Mark</key>
-	<string>Mark</string>
-	<key>Notification center</key>
-	<string>In der Zentrale</string>
-	<key>Silent</key>
-	<string>Dezent</string>
-	<key>Smileys</key>
-	<string>😄  😊  😉</string>
-	<key>Sound</key>
-	<string>Töne</string>
-	<key>Style</key>
-	<string>Mitteilungen</string>
-	<key>Vibrate</key>
-	<string>Vibrieren</string>
-</dict>
-</plist>
+"Delivery reports" = "Sendebericht";
+"Enabled" = "Aktiviert";
+"Full screen" = "Vollbild";
+"In conversation" = "In der Konversation";
+"Mark" = "Haken";
+"Notification center" = "In der Zentrale";
+"Settings" = "Einstellungen";
+"Silent" = "dezent";
+"Simleys" = "😄  😊  😉";
+"Simple Alert" = "Fenster";
+"Sound" = "Töne";
+"Style" = "Benachrichtigung";
+"Vibrate" = "Vibrieren";
+"Simple Alert" = "kleines Fenster";
+
