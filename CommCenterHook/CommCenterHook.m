@@ -125,7 +125,7 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
 
 			int index = 1 + payload[0];
 			xtract_phone_number(&payload[index+ 3], payload[index + 2], number);
-			index += (2 + payload[index + 2] / 2 + 3);
+			index += ((payload[index + 2] + 1) / 2 + 1 + 2 + 1);
 
 			when_sent = xtract_time(&payload[index]);
 			when_delivered = xtract_time(&payload[index + 7]);
