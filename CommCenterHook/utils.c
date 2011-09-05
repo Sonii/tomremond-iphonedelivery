@@ -39,8 +39,8 @@ void xtract_phone_number(const uint8_t *p, int n, char *s) {
 		*s++ = '+';
 	}
 
-	n /= 2;
-	for (int i = 0; i <= n; i++) {
+	n = ( n + 1) / 2;
+	for (int i = 0; i < n; i++) {
 		uint8_t c = *p++;
 		*s++ = '0' + (c & 15);
 		if (c < 0x99) *s++ = '0' + ((c >> 4) & 15);
