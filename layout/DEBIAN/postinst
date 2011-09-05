@@ -19,7 +19,7 @@ sqlite3 $SMS_DATABASE '.schema message' | grep -q s_date
 if [ $? -eq 1 ]; then
 	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN s_date INTEGER DEFAULT NULL'
 fi
-sqlite3 $SMS_DATABASE '.schema message' | grep -q r_date
+sqlite3 $SMS_DATABASE '.schema message' | grep -v dr_date | grep -q r_date
 if [ $? -eq 1 ]; then
 	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN r_date INTEGER DEFAULT NULL'
 fi
