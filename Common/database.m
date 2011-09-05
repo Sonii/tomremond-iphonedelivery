@@ -358,7 +358,7 @@ int get_status_for_rowid(uint8_t rowid) {
 	return rc;
 }
 
-int get_delivery_info_for_rowid(uint8_t rowid, int *pref, time_t *pdate, int *pdelay, int *pstatus) {
+int get_delivery_info_for_rowid(uint32_t rowid, int *pref, time_t *pdate, int *pdelay, int *pstatus) {
 	char *p = NULL;
 	int rc = 0;
 	int status = 0, ref = 0;

@@ -54,7 +54,7 @@ bool convert_num_to_name(const char *num, char *name, char *surname);
 
 int get_status_for_rowid(uint8_t rowid);
 
-int get_delivery_info_for_rowid(uint8_t rowid, int *pref, time_t *pdate, int *pdelay, int *pstatus);
+int get_delivery_info_for_rowid(uint32_t rowid, int *pref, time_t *pdate, int *pdelay, int *pstatus);
 
 #endif
 // vim: set ts=4 expandtab
