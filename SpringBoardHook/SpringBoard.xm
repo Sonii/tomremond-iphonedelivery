@@ -136,6 +136,7 @@ static NSString *get_localized_submit(NSDate *d, bool sameday) {
                                 style:NSDateFormatterMediumStyle]];
     s = [s stringByReplacingOccurrencesOfString:@"%TIMESPEC%" withString:[localizer formatTime:d
                                 style:sameday?NSDateFormatterMediumStyle:NSDateFormatterNoStyle]];
+    NSLog(@"%s %@ %@", __FUNCTION__, d, s); 
     return s;
 }
 
@@ -146,6 +147,7 @@ static NSString *get_localized_deliver(NSDate *d, bool sameday) {
                                 style:sameday?NSDateFormatterNoStyle:NSDateFormatterMediumStyle]];
     s = [s stringByReplacingOccurrencesOfString:@"%TIMESPEC%" withString:[localizer formatTime:d
                                 style:sameday?NSDateFormatterMediumStyle:NSDateFormatterNoStyle]];
+    NSLog(@"%s %@ %@", __FUNCTION__, d, s); 
     return s;
 }
 
@@ -365,7 +367,7 @@ static CFDataRef handle_start (
    CFDataRef data,
    void *info
 ) {
-    showBulletin( @"iPhoneDelivery", nil,  @"Started...", nil);
+    showBulletin( @"iPhoneDelivery", @"",  @"Started...", nil);
     return nil;
 }
 
