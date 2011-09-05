@@ -16,18 +16,18 @@
 */
 #ifndef DEBUG_H_INCLUDED
 #define DEBUG_H_INCLUDED
-#if defined(DEBUG) || defined(YESDEBUG)
+#if defined(DEBUG) 
 #undef DEBUG
 #define DEBUG
 #include <stdio.h>
 #include <stdarg.h>
 void TRACE(const char *p, size_t n, const char *label, ...);
 void DUMP(const uint8_t *p, size_t n, const char *label, ...);
-#define LOG(str...) do { fprintf(stderr, str); fprintf(stderr, "\n"); } while(0)
+#define LOG(...) do { fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); } while(0)
 #else
-#define TRACE(str...) do { } while (0)
-#define DUMP(str...) do { } while (0)
-#define LOG(str...) do { } while (0)
+#define TRACE(...) do { } while (0)
+#define DUMP(...) do { } while (0)
+#define LOG(...) do { } while (0)
 #endif
 #endif
 
