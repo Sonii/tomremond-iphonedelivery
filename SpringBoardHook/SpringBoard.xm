@@ -122,7 +122,7 @@ static void readDefaults() {
 static NSString *get_person(NSString *number) {
     char name[256], surname[256];
 
-    if (convert_num_to_name([number UTF8String], name, surname) && name[0] && surname[0]) {
+    if (convert_num_to_name([number UTF8String], name, surname) && (name[0] || surname[0])) {
         return [localizer getTitle:[NSString stringWithUTF8String:name]
                            surname:[NSString stringWithUTF8String:surname]];
     }
