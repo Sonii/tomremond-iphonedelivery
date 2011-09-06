@@ -364,36 +364,57 @@ int get_delivery_info_for_rowid(uint32_t rowid, int *pref, time_t *pdate, int *p
 	int status = 0, ref = 0;
 	time_t date, s_date, r_date;
 
+	time_t dr_date;
+
 	*pstatus = 1003;
     asprintf(&p, 
-            "select smsc_ref, delivery_status, date, s_date, r_date from message "
-			"where ROWID=%d and flags != 0 and flags != 2 and flags < 32",
+            "select smsc_ref, delivery_status, date, s_date, r_date, dr_date from message "
+			"where ROWID=%d and ((flags != 0 and flags != 2 and flags < 32) or dr_date is not null)",
             rowid);
 	if (p != NULL) {
 		rc = run_sql(SMS_DB, true, p, &ref, PARAM_INT, &status, PARAM_INT, &date, PARAM_INT, &s_date, PARAM_INT,
-				&r_date, PARAM_INT, NULL);
+				&r_date, PARAM_INT, &dr_date, PARAM_INT, NULL);
 		if (rc == SQLITE_OK) {
 
 			// this is a huge mess...
-			*pref = ref == 0 ? -1 : ref;
-			*pdate = date;
-			if (s_date == 0 || r_date == 0) {
-				if (status < 0) *pstatus = 1000;
-				*pdelay = -1;
+			if (dr_date != 0) {
+				// it is a report from old version. Try to extract what we can
+				if (dr_date < 0) {
+					// it is an error
+					*pstatus = 192;
+					*pdate = date;
+					*pdelay = -1;
+					rc = 0;
+				}
+				else {
+					// it is a valid report
+					*pstatus = 0;
+					*pdate = date;
+					*pdelay = dr_date - date;
+					rc = 0;
+				}
 			}
 			else {
-				*pdelay = (r_date - s_date);
+				*pref = ref == 0 ? -1 : ref;
+				*pdate = date;
+				if (s_date == 0 || r_date == 0) {
+					if (status < 0) *pstatus = 1000;
+					*pdelay = -1;
+				}
+				else {
+					*pdelay = (r_date - s_date);
+				}
+				if (status != 0 || (ref == 0 && s_date != 0 && r_date != 0))
+					*pstatus = status;
+				else if (status == 0)
+					*pstatus = 1001;
+				if (ref == 0 && s_date == 0 && r_date == 0) {
+					if (*pstatus >= 1000) *pstatus = 1002;
+					rc = -1;
+				}
+				else
+					rc = 0;
 			}
-			if (status != 0 || (ref == 0 && s_date != 0 && r_date != 0))
-				*pstatus = status;
-			else if (status == 0)
-				*pstatus = 1001;
-			if (ref == 0 && s_date == 0 && r_date == 0) {
-				if (*pstatus >= 1000) *pstatus = 1002;
-				rc = -1;
-			}
-			else
-				rc = 0;
 		}
 		else
 			*pstatus = 1004;
