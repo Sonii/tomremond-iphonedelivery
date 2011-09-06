@@ -28,6 +28,8 @@ extern "C" {
 
 static id currentTranscript = nil;
 static bool showSmileys = YES;
+static bool showPictures = NO;
+static float smallFontSize = NO;
 
 bool showMark = YES;
 
@@ -68,6 +70,13 @@ static void readDefaults() {
     
     showMark = CFPreferencesGetAppBooleanValue(CFSTR("dr-tick"), app, &exists);
     if (!exists) showMark = true;
+
+    showPictures = CFPreferencesGetAppBooleanValue(CFSTR("dr-pictures"), app, &exists);
+    if (!exists) showPictures = false;
+
+    smallFontSize = CFPreferencesGetAppBooleanValue(CFSTR("dr-small"), app, &exists);
+    if (!exists) smallFontSize = false;
+
 }
 
 %hook SMSApplication
@@ -207,5 +216,60 @@ static void readDefaults() {
     }
     return cell;
 }
+%end
+
+%hook CKUIBehavior
+-(BOOL)shouldShowContactPhotos {
+    if (showPictures)
+        return YES;
+    else
+        return %orig;
+}
+
+-(float)contactPhotoSize {
+    if (showPictures)
+        return 48.0;
+    else
+        return %orig;
+}
+
+-(float) contactPhotoBorderThickness {
+    if (showPictures)
+        return 4.0; 
+    else
+        return %orig;
+}
+
+-(float) contactPhotoOutsideMargin { 
+    if (showPictures)
+        return 4.0; 
+    else
+        return %orig;
+}
+
+-(float) contactPhotoInsideMargin { 
+    if (showPictures)
+        return 6.0; 
+    else
+        return %orig;
+}
+
+- (id)balloonTextFont { 
+    return %orig;
+}
+
+- (float)balloonTextFontSize {
+    if (smallFontSize)
+        return 11.0;
+    else
+        return %orig;
+}
+- (float)timestampTextSize {
+    if (smallFontSize)
+        return 10.0;
+    else
+        return %orig;
+}
+
 %end
 // vim: ft=objc ts=4 expandtab

@@ -116,6 +116,34 @@
 			<key>label</key>
 			<string>Smileys</string>
 		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>id</key>
+			<string>DELIVERY_PICTURES</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.guilleme.deliveryreports</string>
+			<key>key</key>
+			<string>dr-pictures</string>
+			<key>label</key>
+			<string>Contact picture</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>id</key>
+			<string>DELIVERY_FONTSIZE</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.guilleme.deliveryreports</string>
+			<key>key</key>
+			<string>dr-small</string>
+			<key>label</key>
+			<string>Small font size</string>
+		</dict>
 	</array>
 	<key>title</key>
 	<string>Delivery reports</string>
