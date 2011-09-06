@@ -18,12 +18,12 @@ extern "C" {
 
 @interface CKBubbleData
 -(id)messageAtIndex:(int)index;
+- (id)textAtIndex:(int)arg1;
 @end
 
 @interface CKTranscriptController 
 -(id)bubbleData;
 -(void)_reloadTranscriptLayer;
--(UITableViewCell *)tableView:(id)tv cellForRowAtIndexPath:(NSIndexPath *)path;
 @end
 
 static id currentTranscript = nil;
@@ -35,7 +35,6 @@ static int tapped_rowid = -1;
 static NSDate *inpectionTime = nil;             // date when last tapped to see the date
 static UIView *lastDateView = nil;              // displayed date view
 
-;
 /** 
  * @brief called when the MobileSMS app needs to refresh the bubble
  * 
@@ -70,6 +69,7 @@ static void readDefaults() {
     showMark = CFPreferencesGetAppBooleanValue(CFSTR("dr-tick"), app, &exists);
     if (!exists) showMark = true;
 }
+
 %hook SMSApplication
 -(void)applicationDidBecomeActive:(id) appl {
     CFNotificationCenterRef nc = CFNotificationCenterGetDarwinNotifyCenter();
@@ -102,17 +102,22 @@ static void readDefaults() {
 %hook CKTranscriptController
 -(void)tableView:(UITableView *)tv willSelectRowAtIndexPath:(NSIndexPath*)path {
     %log;
-    %orig;
-    CKTranscriptBubbleData *data = [self bubbleData];
-    tapped_rowid = [[data messageAtIndex:path.row] rowID];
 
     [inpectionTime release];
-    inpectionTime = [[NSDate dateWithTimeIntervalSinceNow:15.0] retain];
+    inpectionTime = nil;
 
-    CFNotificationCenterPostNotification (CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("iphonedelivery.refresh"), NULL, NULL, YES);
+    if (!tv.editing) {
+        CKTranscriptBubbleData *data = [self bubbleData];
+        tapped_rowid = [[data messageAtIndex:path.row] rowID];
+
+        inpectionTime = [[NSDate dateWithTimeIntervalSinceNow:15.0] retain];
+
+        CFNotificationCenterPostNotification (CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("iphonedelivery.refresh"), NULL, NULL, YES);
+    }
+    %orig;
 }
 
--(UITableViewCell *)tableView:(id)tv cellForRowAtIndexPath:(NSIndexPath *)path {
+-(UITableViewCell *)tableView:(UITableView *)tv cellForRowAtIndexPath:(NSIndexPath *)path {
     %log;
     UITableViewCell *cell = %orig;
 
@@ -128,7 +133,11 @@ static void readDefaults() {
         UIView *vv = [bv viewWithTag:TAG];
         if (vv != nil) [vv removeFromSuperview];
 
+        // don't do anything in edit mode
+        if (tv.editing) return cell;
+
         CKTranscriptBubbleData *data = [self bubbleData];
+        
         int rowid = [[data messageAtIndex:path.row] rowID];
         if (rowid > 0) {
             dispatch_async(dispatch_get_current_queue(), ^{
@@ -178,15 +187,17 @@ static void readDefaults() {
                 }
                 else {
                     MarkView *iv = [[MarkView alloc] init:code cell:mcell status:status];
-                    iv.alpha = 0.0;
+                    iv.alpha = 1.0;
                     iv.tag = TAG;
 
 		            mcell.clipsToBounds = NO;
                     if (status == 0 && delay == -1 && ref == 0) 
                         bv.hidden = YES;    // during send....
+#if 0
                     else
                         [UIView animateWithDuration:0.2 animations:^{ iv.alpha = 1.0; }];
-                    NSLog(@"mark view = %@", iv);
+#endif
+                        NSLog(@"mark view = %@", iv);
                     [bv addSubview:iv];
                     [iv release];
                 }
@@ -195,13 +206,6 @@ static void readDefaults() {
         }
     }
     return cell;
-}
-%end
-
-%hook CKTranscriptTableView
--(void)setEditing:(BOOL)editing animated:(BOOL)animated {
-    %log;
-    %orig;
 }
 %end
 // vim: ft=objc ts=4 expandtab
