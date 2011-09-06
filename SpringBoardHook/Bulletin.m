@@ -263,8 +263,8 @@ void setDeliverySound(NSString *s) { [sound release]; sound = [s retain]; }
 NSString *getDeliverySound() { return sound; }
 void setSpringBoard(id o) { springboard = o; }
 
-void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSString *sectionID) {
-    if (vibrate) {
+void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSString *sectionID, bool noisy) {
+    if (noisy && vibrate) {
         AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
     }
 //    NSDictionary *vibe = [NSDictionary  dictionaryWithObjectsAndKeys:[NSNumber numberWithFloat:1.0],
@@ -289,7 +289,7 @@ void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSStri
         [b setSubtitle:message];
         [b setMessage:subtitle];
         [b setSectionID:sectionID];
-        [b setSound:snd];
+        if (noisy) [b setSound:snd];
 
         NSLog(@"%@", b);
 
@@ -303,7 +303,7 @@ void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSStri
         [b setTitle:title];
         [b setMessage:[NSString stringWithFormat:@"%@ %@", subtitle, message]];
         [b setSectionID:sectionID];
-        [b setSound:snd];
+        if (noisy) [b setSound:snd];
 
         // publish it as a banner
         [[objc_getClass("SBBulletinBannerController")  sharedInstance] observer:0 addBulletin:b forFeed:0];

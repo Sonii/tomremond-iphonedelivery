@@ -270,7 +270,7 @@ static CFDataRef handle_report (
                         get_person([dict objectForKey:@"WHO"]),
                         get_localized_submit(submit_time, sameday),
                         get_localized_deliver(deliver_time, sameday),
-                        @"com.apple.MobileSMS");
+                        @"com.apple.MobileSMS", true);
                 break;
             case 3:     // simple alert 
                 if (status == 0 || status > 63) {
@@ -300,7 +300,8 @@ static CFDataRef handle_report (
 
             switch (deliveryAlertMethod) {
             case 0:     // no alert
-                playVibeAndSound();
+                if (status > 63)
+                    playVibeAndSound();
                 break;
             case 1:     // full screen
                 if (status == 0 || status > 63) {
@@ -320,7 +321,8 @@ static CFDataRef handle_report (
                         [b addTarget:y action:@selector(touchOk:)  forControlEvents:UIControlEventTouchUpInside];
                     }
 
-                    playVibeAndSound();
+                    if (status > 63)
+                        playVibeAndSound();
                 }
                 break;
             case 2:
@@ -328,7 +330,7 @@ static CFDataRef handle_report (
                     get_person([dict objectForKey:@"WHO"]),
                     get_localized_submit(submit_time, YES),
                     get_localized_status(status),
-                    @"com.guilleme.deliveryreports");
+                    @"com.guilleme.deliveryreports", status > 63);
                 break;
             case 3: 
                 if (status == 0 || status > 63) {
@@ -342,7 +344,8 @@ static CFDataRef handle_report (
 					cancelButtonTitle:nil
 					otherButtonTitles:@"", nil];
                     [x show];
-                    playVibeAndSound();
+                    if (status > 63)
+                        playVibeAndSound();
                 }
                 break;
             default:
@@ -367,7 +370,7 @@ static CFDataRef handle_start (
    CFDataRef data,
    void *info
 ) {
-    showBulletin( @"iPhoneDelivery", @"",  @"Started...", nil);
+    showBulletin( @"iPhoneDelivery", @"",  @"Started...", nil, false);
     return nil;
 }
 
@@ -401,9 +404,6 @@ static void register_port_handler(CFStringRef str, CFMessagePortCallBack cb)  {
     CFRelease(source);
     CFRelease(port);
 }
-
-extern "C" void initObjCLog();
-extern "C" void instrumentObjcMessageSends(BOOL); 
 
 %hook SpringBoard
 
