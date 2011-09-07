@@ -24,5 +24,9 @@
 	<string>Style de notification</string>
 	<key>Vibrate</key>
 	<string>Vibreur</string>
+	<key>Small font size</key>
+	<string>Petits caractères</string>
+	<key>Contact picture</key>
+	<string>Vignette du contact</string>
 </dict>
 </plist>
