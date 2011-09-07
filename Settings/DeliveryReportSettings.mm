@@ -32,8 +32,6 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
     //NSLog(@"Bundle \npath = %@\nloc = %@\nbundle = %@", [b bundlePath], [b localizations], b);
 
     for(PSSpecifier *specifier in s) {
-        NSLog(@"specifier %@", specifier);
-
         NSString *ss = [specifier name];
 
         if (ss != nil) [specifier setName:[b localizedStringForKey:ss value:ss table:nil]];
@@ -61,8 +59,6 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
 }
 
 -(void)setDeliveryEnabled:(id)value specifier:(id)specifier {
-    NSLog(@"%s %@ %@", __FUNCTION__, value, specifier);
-
     CFStringRef app = CFSTR("com.guilleme.deliveryreports");
     CFPreferencesSetAppValue(CFSTR("dr-enabled"), value, app);
     CFPreferencesSynchronize(app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
@@ -90,7 +86,6 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
 }
 
 -(id)isDeliveryEnabled:(id)specifier {
-    NSLog(@"%s", __FUNCTION__);
     CFPreferencesSynchronize(app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
     return (NSNumber *)CFPreferencesCopyAppValue(CFSTR("dr-enabled"), app);
 }
@@ -107,12 +102,13 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
        NSString *str = [tc value];
        if ( [str hasPrefix:@"texttone"] || 
             [str hasPrefix:@"system"] || 
-            [str hasPrefix:@"<none>"] || 
-
-            // FIXME these don't get translated
-            [str hasPrefix:@"<default>"] ||
-            [str hasPrefix:@"itunes"]) {
+            [str hasPrefix:@"<none>"]) {
             [tc setValue:[[TLToneManager sharedRingtoneManager] localizedNameWithIdentifier:str]];
+       }
+       else if ([str hasPrefix:@"<default>"]) {
+           [tc setValue:[[TLToneManager sharedRingtoneManager] defaultTextToneName]];
+       }
+       else if ([str hasPrefix:@"itunes"]) { 
        }
     }
     return cell;
