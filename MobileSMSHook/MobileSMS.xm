@@ -226,33 +226,33 @@ static void readDefaults() {
         return %orig;
 }
 
--(float)contactPhotoSize {
-    if (showPictures)
-        return 48.0;
-    else
-        return %orig;
-}
-
--(float) contactPhotoBorderThickness {
-    if (showPictures)
-        return 2.0; 
-    else
-        return %orig;
-}
-
--(float) contactPhotoOutsideMargin { 
-    if (showPictures)
-        return 3.0; 
-    else
-        return %orig;
-}
-
--(float) contactPhotoInsideMargin { 
-    if (showPictures)
-        return 0.0; 
-    else
-        return %orig;
-}
+//-(float)contactPhotoSize {
+//    if (showPictures)
+//        return 48.0;
+//    else
+//        return %orig;
+//}
+//
+//-(float) contactPhotoBorderThickness {
+//    if (showPictures)
+//        return 2.0; 
+//    else
+//        return %orig;
+//}
+//
+//-(float) contactPhotoOutsideMargin { 
+//    if (showPictures)
+//        return 3.0; 
+//    else
+//        return %orig;
+//}
+//
+//-(float) contactPhotoInsideMargin { 
+//    if (showPictures)
+//        return 0.0; 
+//    else
+//        return %orig;
+//}
 
 //- (id)balloonTextFont { 
 //    return %orig;
@@ -270,17 +270,6 @@ static void readDefaults() {
         return 12.0;
     else
         return %orig;
-}
-
--(BOOL) usesTexturedTranscriptBackground {
-    // UGLY in orange!!!!
-    return false ? YES : %orig;
-}
-%end
-
-%hook UIColor
-+ (id)texturedTranscriptBackgroundColor {
-    return [UIColor orangeColor];
 }
 %end
 // vim: ft=objc ts=4 expandtab
