@@ -28,6 +28,16 @@ if [ $? -eq 1 ]; then
 	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN delivery_status INTEGER DEFAULT NULL'
 fi
 
+# insert the localized version of Delivey reports in Preferences.app
+cd /System/Library/PreferenceBundles/DeliveryReportSettings.bundle/
+for lang in *.lproj; do
+	STR=$(plutil -key "Delivery reports" $lang/Localizable.strings)
+	if [ -n "$STR" ]; then
+		echo $lang -> $STR
+		plutil -key "Delivery reports" -string "$STR" /var/stash/Applications/Preferences.app/$lang/Settings~iphone.strings
+	fi
+done
+
 PLIST=/System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 LIBRARY=$(plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES $PLIST 2> /dev/null)
 if [ -z "$LIBRARY" ]; then
