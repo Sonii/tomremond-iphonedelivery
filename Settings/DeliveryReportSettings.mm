@@ -84,8 +84,6 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
         [self removeSpecifierID:@"DELIVERY_NOTIFICATION_STYLE"];
         [self removeSpecifierID:@"DELIVERY_VIBRATE"];
         [self removeSpecifierID:@"DELIVERY_SOUND"];
-        [self removeSpecifierID:@"DELIVERY_MARK"];
-        [self removeSpecifierID:@"DELIVERY_SMILEY"];
     }
 #endif
     [self reload];
@@ -107,8 +105,14 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
     if ([cell class] == [PSTableCell class]) {
        PSTableCell *tc = (PSTableCell *)cell;
        NSString *str = [tc value];
-       if ([str hasPrefix:@"texttone"]) {
-            [tc setValue:[[TLToneManager sharedRingtoneManager] localizedRingtoneNameWithIdentifier:str]];
+       if ( [str hasPrefix:@"texttone"] || 
+            [str hasPrefix:@"system"] || 
+            [str hasPrefix:@"<none>"] || 
+
+            // FIXME these don't get translated
+            [str hasPrefix:@"<default>"] ||
+            [str hasPrefix:@"itunes"]) {
+            [tc setValue:[[TLToneManager sharedRingtoneManager] localizedNameWithIdentifier:str]];
        }
     }
     return cell;
