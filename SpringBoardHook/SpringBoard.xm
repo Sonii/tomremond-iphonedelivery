@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2011 - F. Guillemé
+
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation; either version 2
@@ -197,14 +197,37 @@ static CFDataRef handle_submit (
 }
 @end
 
+static bool checkMute() {
+     static BOOL gAudioSessionInited = NO;
+    if (!gAudioSessionInited)
+    {
+        AudioSessionInterruptionListener    inInterruptionListener = NULL;
+        OSStatus    error;
+        if ((error = AudioSessionInitialize (NULL, NULL, inInterruptionListener, NULL))) {
+        }
+        else
+        {
+            gAudioSessionInited = YES;
+        }
+    }
+    
+    SInt32  ambient = kAudioSessionCategory_AmbientSound;
+    if (AudioSessionSetProperty (kAudioSessionProperty_AudioCategory, sizeof (ambient), &ambient)) {
+        return YES;
+    }
+    return NO;
+}
+
 static void playVibeAndSound() {
     bool vibrate = getDeliveryVibrate();
     if (vibrate) {
         AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
     }
-    NSString *s = getDeliverySound();
-    if (s != nil) {
-        AudioServicesPlaySystemSound([[TLToneManager sharedRingtoneManager] soundIDForToneIdentifier:s]);
+    if (checkMute() == NO) {
+        NSString *s = getDeliverySound();
+        if (s != nil) {
+            AudioServicesPlaySystemSound([[TLToneManager sharedRingtoneManager] soundIDForToneIdentifier:s]);
+        }
     }
 }
 
@@ -240,9 +263,9 @@ static CFDataRef handle_report (
 
             update_sms_for_delivery(who, ref, status, s_date, d_date );
 
+            playVibeAndSound();
             switch (deliveryAlertMethod) {
             case 0:     // no alert
-                playVibeAndSound();
                 break;
             case 1:     // full screen
                 if (status == 0 || status > 63) {
@@ -261,8 +284,6 @@ static CFDataRef handle_report (
                         UIAlertViewControllerFlash *y = [[UIAlertViewControllerFlash alloc] initWithAlert:alert];
                         [b addTarget:y action:@selector(touchOk:)  forControlEvents:UIControlEventTouchUpInside];
                     }
-
-                    playVibeAndSound();
                 }
                 break;
             case 2:     // notification center
@@ -270,7 +291,7 @@ static CFDataRef handle_report (
                         get_person([dict objectForKey:@"WHO"]),
                         get_localized_submit(submit_time, sameday),
                         get_localized_deliver(deliver_time, sameday),
-                        @"com.apple.MobileSMS", true);
+                        @"com.apple.MobileSMS");
                 break;
             case 3:     // simple alert 
                 if (status == 0 || status > 63) {
@@ -284,7 +305,6 @@ static CFDataRef handle_report (
 					cancelButtonTitle:nil
 					otherButtonTitles:@"OK", nil];
                     [x show];
-                    playVibeAndSound();
                 }
                 break;
             default:
@@ -295,13 +315,13 @@ static CFDataRef handle_report (
         else {
             NSDate *submit_time = [NSDate dateWithTimeIntervalSince1970:sent_date];
             // update the database if it is a permanent error
-            if (status > 63)
+            if (status > 63) {
                 update_sms_for_delivery(who, ref, status, s_date, NULL );
+                playVibeAndSound();
+            }
 
             switch (deliveryAlertMethod) {
             case 0:     // no alert
-                if (status > 63)
-                    playVibeAndSound();
                 break;
             case 1:     // full screen
                 if (status == 0 || status > 63) {
@@ -320,9 +340,6 @@ static CFDataRef handle_report (
                         UIAlertViewControllerFlash *y = [[UIAlertViewControllerFlash alloc] initWithAlert:alert];
                         [b addTarget:y action:@selector(touchOk:)  forControlEvents:UIControlEventTouchUpInside];
                     }
-
-                    if (status > 63)
-                        playVibeAndSound();
                 }
                 break;
             case 2:
@@ -330,7 +347,7 @@ static CFDataRef handle_report (
                     get_person([dict objectForKey:@"WHO"]),
                     get_localized_submit(submit_time, YES),
                     get_localized_status(status),
-                    @"com.guilleme.deliveryreports", status > 63);
+                    @"com.guilleme.deliveryreports");
                 break;
             case 3: 
                 if (status == 0 || status > 63) {
@@ -344,8 +361,6 @@ static CFDataRef handle_report (
 					cancelButtonTitle:nil
 					otherButtonTitles:@"", nil];
                     [x show];
-                    if (status > 63)
-                        playVibeAndSound();
                 }
                 break;
             default:
@@ -370,7 +385,7 @@ static CFDataRef handle_start (
    CFDataRef data,
    void *info
 ) {
-    showBulletin( @"iPhoneDelivery", @"",  @"Started...", nil, false);
+    showBulletin( @"iPhoneDelivery", @"",  @"Started...", nil);
     return nil;
 }
 
