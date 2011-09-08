@@ -2,7 +2,7 @@ export THEOS_DEVICE_IP=192.168.17.144
 export TARGET_CC=$(SDKBINPATH)/gcc
 export TARGET_LD=$(SDKBINPATH)/gcc
 export DEBUG=0
-VERSION=0.5beta5
+VERSION=0.5beta6
 REPO_URL=iphonedelivery@iphonedelivery.advinux.com
 REPO=ios5beta
 
@@ -24,4 +24,5 @@ publish: package
 	ssh $(REPO_URL) mkdir -p www/$(REPO)/
 	scp Packages.bz2 $(REPO_URL):www/$(REPO)/
 	scp com.guilleme.iphonedelivery_$(shell cat .theos/Packages/com.guilleme.iphonedelivery-$(VERSION))_iphoneos-arm.deb $(REPO_URL):www/$(REPO)/
+
 
