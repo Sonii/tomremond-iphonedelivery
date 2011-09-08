@@ -2,6 +2,10 @@
 declare -a cydia
 cydia=($CYDIA)
 
+for lang in /var/stash/Applications/Preferences.app/*.lproj; do
+   plutil -key "Delivery reports" -remove $lang/Settings~iphone.strings  > /dev/null
+done
+
 plutil -key EnvironmentVariables -remove /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 
 launchctl unload /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist

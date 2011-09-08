@@ -20,7 +20,7 @@ if [ $? -eq 1 ]; then
 	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN s_date INTEGER DEFAULT NULL'
 fi
 sqlite3 $SMS_DATABASE '.schema message' | grep -v dr_date | grep -q r_date
-if [ $? -eq 1 ]; then
+if [ 1 ]; then
 	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN r_date INTEGER DEFAULT NULL'
 fi
 sqlite3 $SMS_DATABASE '.schema message' | grep -q delivery_status
@@ -33,8 +33,8 @@ cd /System/Library/PreferenceBundles/DeliveryReportSettings.bundle/
 for lang in *.lproj; do
 	STR=$(plutil -key "Delivery reports" $lang/Localizable.strings)
 	if [ -n "$STR" ]; then
-		echo $lang -> $STR
-		plutil -key "Delivery reports" -string "$STR" /var/stash/Applications/Preferences.app/$lang/Settings~iphone.strings
+		echo "$STR"  1>&2
+		plutil -key "Delivery reports" -string "$STR" /var/stash/Applications/Preferences.app/$lang/Settings~iphone.strings > /dev/null
 	fi
 done
 
@@ -52,13 +52,17 @@ else
 	 	$PLIST;
 fi
 echo CommCenter inserted libraries
-plutil -key EnvironmentVariables $PLIST
+plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES $PLIST
 
 launchctl unload /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 launchctl load /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 
 mv /var/stash/Applications/Preferences.app/{,ID2}Settings.plist
 mv /var/stash/Applications/Preferences.app/{ID,}Settings.plist
+
+if [ -e /var/mobile/Library/Preferences/com.guilleme.deliveryreports.plist ]; then
+  mv _com.guilleme.deliveryreports.plist com.guilleme.deliveryreports.plist
+fi
 
 if [[ ${CYDIA+@} ]]; then
 eval "echo 'finish:restart' >& ${cydia[0]}"
