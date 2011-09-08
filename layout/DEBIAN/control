@@ -8,4 +8,4 @@ Author: F. Guillemé
 Section: System
 Tag: role::hacker
 Pre-Depends: firmware (>= 5.0)
-Depends: mobilesubstrate , coreutils, sqlite3
+Depends: mobilesubstrate , coreutils, sqlite3, com.ericasadun.utilities
