@@ -245,12 +245,12 @@ static void readDefaults() {
         return %orig;
 }
 
-//-(float)contactPhotoSize {
-//    if (showPictures)
-//        return 48.0;
-//    else
-//        return %orig;
-//}
+-(float)contactPhotoSize {
+    if (!smallFontSize && showPictures)
+        return 48.0;
+    else
+        return %orig;
+}
 //
 //-(float) contactPhotoBorderThickness {
 //    if (showPictures)
@@ -279,16 +279,17 @@ static void readDefaults() {
 
 - (float)balloonTextFontSize {
     if (smallFontSize)
-        return 11.0;
+        return 13.0;
     else
         return %orig;
 }
 
 - (float)balloonTextLineHeight {
     if (smallFontSize)
-        return 12.0;
+        return 13.0;
     else
         return %orig;
 }
 %end
+
 // vim: ft=objc ts=4 expandtab
