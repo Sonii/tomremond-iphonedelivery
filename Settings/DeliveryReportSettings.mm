@@ -87,7 +87,8 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
 
 -(id)isDeliveryEnabled:(id)specifier {
     CFPreferencesSynchronize(app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
-    return (NSNumber *)CFPreferencesCopyAppValue(CFSTR("dr-enabled"), app);
+    NSNumber *val = (NSNumber *)CFPreferencesCopyAppValue(CFSTR("dr-enabled"), app);
+    return val == nil ? [NSNumber numberWithBool:YES] : val;
 }
 
 /*
