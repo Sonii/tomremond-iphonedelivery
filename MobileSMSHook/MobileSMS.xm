@@ -129,7 +129,7 @@ static void readDefaults() {
 
 %hook CKTranscriptController
 -(void)tableView:(UITableView *)tv willSelectRowAtIndexPath:(NSIndexPath*)path {
-    %log;
+    //%log;
 
     [inpectionTime release];
     inpectionTime = nil;
@@ -146,7 +146,7 @@ static void readDefaults() {
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tv cellForRowAtIndexPath:(NSIndexPath *)path {
-    %log;
+    //%log;
     UITableViewCell *cell = %orig;
 
     currentTranscript = self;
