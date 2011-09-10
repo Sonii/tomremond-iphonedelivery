@@ -34,7 +34,7 @@ for lang in *.lproj; do
 	STR=$(plutil -key "Delivery reports" $lang/Localizable.strings)
 	if [ -n "$STR" ]; then
 		echo "$STR"  1>&2
-		plutil -key "Delivery reports" -string "$STR" /var/stash/Applications/Preferences.app/$lang/Settings~iphone.strings > /dev/null
+		plutil -key "Delivery reports" -string "$STR" /Applications/Preferences.app/$lang/Settings~iphone.strings > /dev/null
 	fi
 done
 
@@ -57,8 +57,8 @@ plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES $PLIST
 launchctl unload /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 launchctl load /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 
-mv /var/stash/Applications/Preferences.app/{,ID2}Settings.plist
-mv /var/stash/Applications/Preferences.app/{ID,}Settings.plist
+mv /Applications/Preferences.app/{,ID2}Settings.plist
+mv /Applications/Preferences.app/{ID,}Settings.plist
 
 if [ -e /var/mobile/Library/Preferences/com.guilleme.deliveryreports.plist ]; then
   mv _com.guilleme.deliveryreports.plist com.guilleme.deliveryreports.plist
