@@ -37,8 +37,10 @@
 #endif
 
 enum {
+	PARAM_END,
     PARAM_INT,
-    PARAM_STR
+    PARAM_STR,
+	PARAM_LOOP,
 }; 
 
 /** 
@@ -151,12 +153,12 @@ static int run_sql(const char *db, bool ro, const char *sql, ...) {
     const char *dummy;
     sqlite3 *h;
     sqlite3_stmt *stmt = NULL;
-    int rc;
-    void *addr;
-    const char *str;
+    int rc = -1;
+
+	va_list looper = NULL;
+	int loop_length;
 
     va_start(va, sql);
-    addr = va_arg(va, void *);
 
     rc = sqlite3_open_v2(db, &h, ro ? SQLITE_OPEN_READONLY : SQLITE_OPEN_READWRITE, NULL);
     if (rc != SQLITE_OK)  goto fail;
@@ -171,51 +173,86 @@ static int run_sql(const char *db, bool ro, const char *sql, ...) {
     rc = sqlite3_prepare(h, sql, -1, &stmt,  &dummy);
     if (rc != SQLITE_OK)  goto fail;
 
+	int nrow = 0;
+    int type = va_arg(va, int);
+	if (type == PARAM_LOOP) {
+		loop_length = va_arg(va, int);
+		nrow = 0;
+		looper = va;
+		type = va_arg(va, int);
+	}
     for (bool done = false; done == false; ) {
+retry:
         rc = sqlite3_step(stmt);
+
+		if (type == PARAM_END) {
+			if (looper == NULL) {
+				NSLog(@"no more storage exit the loop" );
+				rc = nrow;
+				break;
+			}
+			
+			if (nrow >= loop_length) {
+				NSLog(@"All items in loop were retrieved");
+				rc = nrow;
+				break;
+			}
+			va = looper;		// rewind
+		}
+
         switch (rc) {
         case SQLITE_BUSY:
         case SQLITE_ERROR:
         case SQLITE_MISUSE:
-            NSLog(@"%s\n", sqlite3_errmsg(h));
         default:
+            NSLog(@"%s\n", sqlite3_errmsg(h));
             rc = -1;
             done = true;
             break;
 
         case SQLITE_ROW:
-            if (addr == NULL) {
-                NSLog(@"%s SQLITE_ROW but no more storage argument\n", __FUNCTION__); 
-            }
-            for (int column = 0; addr != NULL; column++) {
-                int type = va_arg(va, int);
+			nrow++;
+            for (int column = 0; ; column++) {
                 switch (type) {
-                    case PARAM_INT:
-                        *(int *)(addr) = sqlite3_column_int(stmt, column);
-                        NSLog(@"COL %d => %d\n", column, *(int *)(addr));
-                        break;
-                    case PARAM_STR:
+				case PARAM_END:
+					// the list of receiver is incomplete recover as we can
+					goto retry;
+
+                case PARAM_INT: 
+					do {
+						int *addr = va_arg(va, int *);
+						
+						if (looper != NULL) addr += (nrow - 1);
+                        *addr = sqlite3_column_int(stmt, column);
+                        NSLog(@"COL %d => %d\n", column, *addr);
+                    } while(0);
+					break;
+
+                case PARAM_STR:
+					do {
+						const char *str;
+						char **addr = va_arg(va, char **);
+
+						if (looper != NULL) addr += (nrow - 1);
                         str = (const char *)sqlite3_column_text(stmt, column);
-                        NSLog(@"COL %d => \"%s\"\n", column, (str != NULL ? str : NULL));
                         if (str != NULL)
-                            strncpy((char*)addr, str, MAX_STR_SIZE);
+							*addr = strdup(str);
                         else
-                            *(char *)addr = 0;
-                        break;
-                    default:
-                        NSLog(@"%s: unknown %d\n", __FUNCTION__, type);
-                        addr = NULL;
-                        break;
-                }
-                if (addr != NULL) addr = va_arg(va, void *);
+                            *addr = NULL;
+                        NSLog(@"COL %d => \"%s\"\n", column, *addr);
+					} while (0);
+                    break;
+
+                default:
+                    NSLog(@"%s: unknown data type %d\n", __FUNCTION__, type);
+                    break;
+				}
+        		type = va_arg(va, int);
             }
             break;
         case SQLITE_DONE:
-			rc = 0;
-            if (addr != NULL) {
-                NSLog(@"%s: SQLITE_DONE storage no result\n", __FUNCTION__);
-				rc = -1;
-			}
+            NSLog(@"%s: SQLITE_DONE storage no more result\n", __FUNCTION__);
+			rc = nrow;
             done = true;
             break;
         }
@@ -231,7 +268,7 @@ fail:
 }
 
 /** 
- * @brief execute a sql command that mody the db as an update
+ * @brief execute a sql command that modifies the db as an update
  * 
  * @param query 
  * @param ... 
@@ -240,11 +277,15 @@ fail:
  */
 int exec_sql(const char *query, ...) {
     va_list va;
-    int res; 
-    char tmp[512];
+    int res = -1; 
+    char *p = NULL;
+
     va_start(va, query);
-    vsnprintf(tmp, sizeof(tmp), query, va);
-    res = run_sql(SMS_DB, false, tmp, /* no return value */ NULL);
+    vasprintf(&p, query, va);
+	if (p != NULL) {
+    	res = run_sql(SMS_DB, false, p, PARAM_END);
+		free(p);
+	}
     va_end(va);
     return res;
 }
@@ -273,16 +314,16 @@ int set_ref_for_last_sent_sms(const char *num, uint8_t ref) {
                   build_phone_number_pattern(num),  (int)(now - delay));
 
 	if (p != NULL) {
-		int rowid = 0, rowid1 = 0;
+		int rowid[2];
 		int rc;
 
 		// the idea is to get the first SMS sent to a destination recently that has no smsc_ref
-		rc = run_sql(SMS_DB, true, p, &rowid, PARAM_INT, &rowid1, PARAM_INT, NULL);
-		if (rowid == 0) NSLog(@"no sent SMS found for %s", num);
-		if (rowid1 != 0) NSLog(@"several SMS sent to %s in 120 sec still waiting for a status. Choose the first", num);
+		rc = run_sql(SMS_DB, true, p, PARAM_LOOP, 2, PARAM_INT, &rowid, PARAM_END);
+		if (rc < 1) NSLog(@"no sent SMS found for %s", num);
+		else if (rc > 1) NSLog(@"several SMS sent to %s in 120 sec still waiting for a status. Choose the first", num);
 		free(p);
 
-		return rowid != 0 ? exec_sql("update message set smsc_ref=%d where ROWID = %d ", ref, rowid) : -1;
+		return rowid[0] != 0 ? exec_sql("update message set smsc_ref=%d where ROWID = %d ", ref, rowid[0]) : -1;
 	}
 	return -1;
 }
@@ -306,7 +347,7 @@ int get_sent_time_for_sms(const char *num, uint8_t ref) {
             build_phone_number_pattern(num),  ref);
 	if (p != NULL) {
 		n = -1;
-		rc = run_sql(SMS_DB, true, p, &n, PARAM_INT, NULL);
+		rc = run_sql(SMS_DB, true, p, PARAM_INT, &n, PARAM_END);
 		free(p);
 	}
 	return n;
@@ -338,19 +379,16 @@ int update_sms_for_delivery(const char *num, uint8_t ref, uint8_t status, time_t
 int get_status_for_rowid(uint8_t rowid) {
 	char *p = NULL;
 	int rc = 0;
-	int status = 0, ref = 0;
+	int status = 0;
 
     asprintf(&p, 
-            "select delivery_status, smsc_ref from message"  
+            "select delivery_status from message"  
 			"where ROWID=%d and (delivery_status is not null or smsc_ref is not null",
             rowid);
 	if (p != NULL) {
-		rc = run_sql(SMS_DB, true, p, &status, PARAM_INT, &ref, PARAM_INT, NULL);
-		if (rc == SQLITE_OK) {
-			if (ref != 0)
-				rc = -2;
-			else
-				rc = status;
+		rc = run_sql(SMS_DB, true, p, PARAM_INT, &status, PARAM_END);
+		if (rc == 1) {
+			rc = status;
 		}
 		else rc = -1;
 		free(p);
@@ -360,10 +398,9 @@ int get_status_for_rowid(uint8_t rowid) {
 
 int get_delivery_info_for_rowid(uint32_t rowid, int *pref, time_t *pdate, int *pdelay, int *pstatus) {
 	char *p = NULL;
-	int rc = 0;
+	int rc = -1;
 	int status = 0, ref = 0;
 	time_t date, s_date, r_date;
-
 	time_t dr_date;
 
 	*pstatus = 1003;
@@ -372,11 +409,18 @@ int get_delivery_info_for_rowid(uint32_t rowid, int *pref, time_t *pdate, int *p
 			"where ROWID=%d and ((flags != 0 and flags != 2 and flags < 32) or dr_date is not null)",
             rowid);
 	if (p != NULL) {
-		rc = run_sql(SMS_DB, true, p, &ref, PARAM_INT, &status, PARAM_INT, &date, PARAM_INT, &s_date, PARAM_INT,
-				&r_date, PARAM_INT, &dr_date, PARAM_INT, NULL);
-		if (rc == SQLITE_OK) {
+		rc = run_sql(SMS_DB, true, p, 
+				PARAM_INT, &ref, 
+				PARAM_INT, &status, 
+				PARAM_INT, &date, 
+				PARAM_INT, &s_date, 
+				PARAM_INT, &r_date, 
+				PARAM_INT, &dr_date, 
+				PARAM_END);
+		if (rc == 1) {			// one row was returned
 
 			// this is a huge mess...
+
 			if (dr_date != 0) {
 				// it is a report from old version. Try to extract what we can
 				if (dr_date < 0) {
@@ -418,6 +462,8 @@ int get_delivery_info_for_rowid(uint32_t rowid, int *pref, time_t *pdate, int *p
 		}
 		else
 			*pstatus = 1004;
+
+		free(p);
 	}
 	return rc;
 }
@@ -431,15 +477,50 @@ int get_delivery_info_for_rowid(uint32_t rowid, int *pref, time_t *pdate, int *p
  * invocaion
  */
 bool convert_num_to_name(const char *num, char *name, char *surname) {
-	char tmp[256];
-
-    snprintf(tmp, sizeof(tmp), "select First,Last from ABPerson,ABMultiValue "
-                               "where ROWID=record_id and property=3 and value like '%s'",
+	char *s1 = NULL, *s2 = NULL;
+	char *p = NULL;
+	bool rc = false;
+	
+	asprintf(&p, "select First,Last from ABPerson,ABMultiValue "
+                 "where ROWID=record_id and property=3 and value like '%s'",
             build_phone_number_pattern(num));
     
     name[0] = surname[0] = 0;
 
-    return run_sql(AB_DB, true, tmp, surname, PARAM_STR, name, PARAM_STR, NULL) == 0;
+    if (p != NULL) {
+		if (1 == run_sql(AB_DB, true, p, PARAM_STR, &s1, PARAM_STR, &s2, PARAM_END)) {
+			if (s1 != NULL) {
+				strcpy(name, s1);
+				free(s1);
+			}
+			if (s2 != NULL) {
+				strcpy(surname, s2);
+				free(s2);
+			}
+		}
+		free(p);
+		rc = true;
+	}
+	return rc;
 }
 
+int get_list_of_rowids(int max, uint32_t *buffer) {
+	const char *sql = "select ROWID from Message order by date " 
+			          "where (flags != 0 and flags !=2)";
+
+	return run_sql(SMS_DB, true, sql, PARAM_LOOP, max, PARAM_INT, buffer, PARAM_END);
+}
+
+NSString *get_address_for_rowid(int rowid) {
+	char *str;
+	char *p;
+
+	asprintf(&str, " select address from Message where ROWID=%d", rowid);
+	if (str == NULL) return nil;
+
+	if (1 == run_sql(SMS_DB, true, str, PARAM_STR, &p, PARAM_END)) {
+		return [NSString stringWithUTF8String:p];
+	}
+	return nil;
+}
 // vim: set ts=4 expandtab

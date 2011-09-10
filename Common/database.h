@@ -56,5 +56,8 @@ int get_status_for_rowid(uint8_t rowid);
 
 int get_delivery_info_for_rowid(uint32_t rowid, int *pref, time_t *pdate, int *pdelay, int *pstatus);
 
+int get_list_of_rowids(int max, uint32_t *buffer);
+
+NSString *get_address_for_rowid(int rowid) ;
 #endif
 // vim: set ts=4 expandtab
