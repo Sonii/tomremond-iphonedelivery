@@ -2,7 +2,7 @@ export THEOS_DEVICE_IP=192.168.17.144
 export TARGET_CC=$(SDKBINPATH)/gcc
 export TARGET_LD=$(SDKBINPATH)/gcc
 export DEBUG=0
-VERSION=0.5beta6
+VERSION=0.5beta7
 REPO_URL=iphonedelivery@iphonedelivery.advinux.com
 REPO=ios5beta
 
@@ -10,7 +10,7 @@ export TARGET_CXX=$(SDKBINPATH)/g++
 SDKVERSION = 5.0
 include theos/makefiles/common.mk
 
-SUBPROJECTS= CommCenterHook SpringBoardHook MobileSMSHook Settings
+SUBPROJECTS= CommCenterHook SpringBoardHook MobileSMSHook Settings WeeBrowseID
 
 include $(THEOS_MAKE_PATH)/aggregate.mk
 
@@ -25,4 +25,6 @@ publish: package
 	scp Packages.bz2 $(REPO_URL):www/$(REPO)/
 	scp com.guilleme.iphonedelivery_$(shell cat .theos/Packages/com.guilleme.iphonedelivery-$(VERSION))_iphoneos-arm.deb $(REPO_URL):www/$(REPO)/
 
-
+after-stage::
+	@mv  _/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeBrowseID.dylib \
+		_/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeBrowseID

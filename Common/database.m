@@ -155,8 +155,8 @@ static int run_sql(const char *db, bool ro, const char *sql, ...) {
     sqlite3_stmt *stmt = NULL;
     int rc = -1;
 
-	va_list looper = NULL;
-	int loop_length;
+	va_list loop_start = NULL;
+	int loop_count;
 
     va_start(va, sql);
 
@@ -176,9 +176,9 @@ static int run_sql(const char *db, bool ro, const char *sql, ...) {
 	int nrow = 0;
     int type = va_arg(va, int);
 	if (type == PARAM_LOOP) {
-		loop_length = va_arg(va, int);
+		loop_count = va_arg(va, int);
 		nrow = 0;
-		looper = va;
+		loop_start = va;
 		type = va_arg(va, int);
 	}
     for (bool done = false; done == false; ) {
@@ -186,18 +186,19 @@ retry:
         rc = sqlite3_step(stmt);
 
 		if (type == PARAM_END) {
-			if (looper == NULL) {
+			if (loop_start == NULL) {
 				NSLog(@"no more storage exit the loop" );
 				rc = nrow;
 				break;
 			}
 			
-			if (nrow >= loop_length) {
+			if (nrow >= loop_count) {
 				NSLog(@"All items in loop were retrieved");
 				rc = nrow;
 				break;
 			}
-			va = looper;		// rewind
+			va = loop_start;		// rewind
+			type = va_arg(va, int);
 		}
 
         switch (rc) {
@@ -212,7 +213,7 @@ retry:
 
         case SQLITE_ROW:
 			nrow++;
-            for (int column = 0; ; column++) {
+            for (int column = 0; /* break when it finds a PARAM_eND */; column++) {
                 switch (type) {
 				case PARAM_END:
 					// the list of receiver is incomplete recover as we can
@@ -222,7 +223,7 @@ retry:
 					do {
 						int *addr = va_arg(va, int *);
 						
-						if (looper != NULL) addr += (nrow - 1);
+						if (loop_start != NULL) addr += (nrow - 1);
                         *addr = sqlite3_column_int(stmt, column);
                         NSLog(@"COL %d => %d\n", column, *addr);
                     } while(0);
@@ -233,7 +234,7 @@ retry:
 						const char *str;
 						char **addr = va_arg(va, char **);
 
-						if (looper != NULL) addr += (nrow - 1);
+						if (loop_start != NULL) addr += (nrow - 1);
                         str = (const char *)sqlite3_column_text(stmt, column);
                         if (str != NULL)
 							*addr = strdup(str);
@@ -264,6 +265,8 @@ ok:
     return rc;
 fail:
     NSLog(@"SQL Error %s\n", sqlite3_errmsg(h));
+
+	if (rc > 0) rc = -1;
 	goto ok;
 }
 
@@ -273,7 +276,7 @@ fail:
  * @param query 
  * @param ... 
  * 
- * @return the result of the SQl execution
+
  */
 int exec_sql(const char *query, ...) {
     va_list va;
@@ -481,20 +484,22 @@ bool convert_num_to_name(const char *num, char *name, char *surname) {
 	char *p = NULL;
 	bool rc = false;
 	
+    name[0] = surname[0] = 0;
+
+	if (num[0] == 0) return false;
+
 	asprintf(&p, "select First,Last from ABPerson,ABMultiValue "
                  "where ROWID=record_id and property=3 and value like '%s'",
             build_phone_number_pattern(num));
     
-    name[0] = surname[0] = 0;
-
     if (p != NULL) {
 		if (1 == run_sql(AB_DB, true, p, PARAM_STR, &s1, PARAM_STR, &s2, PARAM_END)) {
 			if (s1 != NULL) {
-				strcpy(name, s1);
+				strcpy(surname, s1);
 				free(s1);
 			}
 			if (s2 != NULL) {
-				strcpy(surname, s2);
+				strcpy(name, s2);
 				free(s2);
 			}
 		}
@@ -505,8 +510,8 @@ bool convert_num_to_name(const char *num, char *name, char *surname) {
 }
 
 int get_list_of_rowids(int max, uint32_t *buffer) {
-	const char *sql = "select ROWID from Message order by date " 
-			          "where (flags != 0 and flags !=2)";
+	const char *sql = "select ROWID from Message " 
+			          "where (flags < 128 and flags != 0 and flags !=2 and address is not null) order by date desc";
 
 	return run_sql(SMS_DB, true, sql, PARAM_LOOP, max, PARAM_INT, buffer, PARAM_END);
 }
@@ -519,7 +524,7 @@ NSString *get_address_for_rowid(int rowid) {
 	if (str == NULL) return nil;
 
 	if (1 == run_sql(SMS_DB, true, str, PARAM_STR, &p, PARAM_END)) {
-		return [NSString stringWithUTF8String:p];
+		return p != NULL ? [NSString stringWithUTF8String:p] : @"";
 	}
 	return nil;
 }

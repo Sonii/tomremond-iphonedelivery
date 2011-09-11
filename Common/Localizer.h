@@ -18,7 +18,7 @@
 	NSDictionary *dict;
 }
 
-+(Localizer *)currentInstance;
++(Localizer *)sharedInstance;
 -(id)init;
 -(void)dealloc;
 -(NSString *)getString:(NSString *)key;

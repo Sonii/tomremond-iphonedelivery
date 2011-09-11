@@ -18,11 +18,15 @@
 #import "Localizer.h"
 #import "Date+extra.h"
 
+#ifndef DEBUG
+#define NSLog(...)
+#endif
+
 static Localizer *instance = nil;
 
 @implementation Localizer
 
-+(Localizer *)currentInstance {
++(Localizer *)sharedInstance {
 	if (instance == nil)
 		instance = [[Localizer alloc] init];
 	return instance;
@@ -55,7 +59,9 @@ static Localizer *instance = nil;
 }
 
 -(NSString *)getString:(NSString *)key {
-	return [dict objectForKey:key];
+	NSString *str = [dict objectForKey:key];
+	NSLog(@" %@ => %@", key, str);
+	return str;
 }
 
 -(NSString *)getTitle:(NSString *)name surname:(NSString*)surname { 
@@ -77,12 +83,13 @@ static Localizer *instance = nil;
 	}
 	else if ([date isYesterdayOf:now]) {
 		s = [self getString:@"YESTERDAY"];
-		if (s != nil) return nil;
+		if (s != nil) return @"";
 	}
 
 	NSString *sd = [date descriptionOfDateWithLocale:loc style:style];
 	s = [self getString:@"DATE"];
 	if (s != nil) return [s stringByReplacingOccurrencesOfString:@"%DATE%" withString:sd];
+	if (s == nil) s = @"";
 	return sd;
 }
 
