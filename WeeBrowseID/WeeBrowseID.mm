@@ -56,6 +56,22 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 @end
 
 @implementation WeeBrowseIDController
+-(void)viewWillAppear {
+	NSLog(@"%s", __FUNCTION__);
+	numberOfReports = get_list_of_rowids(kMaxVisibleReports, reportsIndex);
+	[self loadVisibleReports];
+	[scrollView setContentSize:CGSizeMake(numberOfReports * kReportWidth, [scrollView bounds].size.height)];
+	scrollView.contentOffset = CGPointMake(0.0, 0.0);
+
+}
+- (void)viewDidDisappear {
+	NSLog(@"%s", __FUNCTION__);
+	for (UIView *v in scrollView.subviews)  {
+		[v removeFromSuperview];
+	}
+	numberOfReports = 0;
+}
+
 - (void)layoutScrollImages {
 	WeeBrowseIDView *view = nil;
 	NSArray *subviews = [scrollView subviews];
@@ -99,19 +115,12 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 
 		scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 316, kReportHeight)];
 
-			// load the ROWIDs of the 100 last reports
-		numberOfReports = get_list_of_rowids(kMaxVisibleReports, reportsIndex);
-
-		[self loadVisibleReports];
-
 		scrollView.scrollEnabled = YES;
 		scrollView.pagingEnabled = NO;
 		[scrollView setCanCancelContentTouches:NO];
 		scrollView.showsHorizontalScrollIndicator = NO;
 		scrollView.opaque = NO;
 		scrollView.delegate = self;
-
-		[scrollView setContentSize:CGSizeMake(numberOfReports * kReportWidth, [scrollView bounds].size.height)];
 
 		scrollView.userInteractionEnabled = YES;
 		_view.userInteractionEnabled = YES;
