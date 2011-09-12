@@ -111,6 +111,8 @@ static const char *trim_international_prefix(const char *num) {
                 break;
         }
     }
+	else if (num[0] == '0')
+		num++;		// skip leading 0 if it is a local number
     return num;
 }
 
