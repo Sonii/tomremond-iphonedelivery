@@ -81,8 +81,6 @@ static void readDefaults() {
     Boolean exists;
     CFStringRef app = CFSTR("com.guilleme.deliveryreports");
 
-    NSLog(@"%s", __FUNCTION__);
-
     CFPreferencesSynchronize(app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
     showSmileys = CFPreferencesGetAppBooleanValue(CFSTR("dr-smileys"), app, &exists);
     if (!exists) showSmileys = true;
@@ -113,11 +111,13 @@ static void readDefaults() {
 }
 %end
 
+#if 0
 %hook CKSMSService
 -(NSString *)displayName {
     return @"iPhoneDelivery";
 }
 %end
+#endif
 
 %hook CKTranscriptBubbleData
 -(NSString *)textAtIndex:(NSInteger)index {
@@ -156,82 +156,92 @@ static void readDefaults() {
         UIView *bv = [mcell balloonView];
         CGRect balloon_frame = bv.frame;
 
-	    // remove any present stamp
 #define TAG 5329
-        UIView *vv = [bv viewWithTag:TAG];
-        if (vv != nil) [vv removeFromSuperview];
 
         // don't do anything in edit mode
-        if (tv.editing) return cell;
+        if (!tv.editing) {
 
-        CKTranscriptBubbleData *data = [self bubbleData];
-        
-        int rowid = [[data messageAtIndex:path.row] rowID];
-        if (rowid > 0) {
-            dispatch_async(dispatch_get_current_queue(), ^{
-            int ref = 0, status = 0, delay = 0;
-            time_t date = 0;
-            int rc = get_delivery_info_for_rowid(rowid, &ref, &date, &delay, &status);
+            CKTranscriptBubbleData *data = [self bubbleData];
 
-            NSLog(@"rc=%d ref=%d status = %d date = %d delay = %d", rc, ref, status, date, delay);
+            int rowid = [[data messageAtIndex:path.row] rowID];
+            if (rowid > 0) {
+                dispatch_async(dispatch_get_current_queue(), ^{
+                        UIView *vv = [bv viewWithTag:TAG];
+                        int ref = 0, status = 0, delay = 0;
+                        time_t date = 0;
+                        int rc = get_delivery_info_for_rowid(rowid, &ref, &date, &delay, &status);
 
-            if (rc == 0) {
-                int code = 3;
-                if (date != 0 && delay >= 0 && status == 0)
-                code = 1;
-                else if (date != 0 && ref >= 0)
-                code = 0;
-                else if (status == 70)
-                code = 2;
+                        NSLog(@"rc=%d ref=%d status = %d date = %d delay = %d", rc, ref, status, date, delay);
 
-                if (tapped_rowid == rowid && date != 0 && delay != -1 && status == 0) {
-                    NSDate *d1 = [NSDate dateWithTimeIntervalSince1970:date];
-                    NSDate *d2 = [NSDate dateWithTimeIntervalSince1970:date + delay];
+                        if (rc == 0) {
+                            int code = 3;
 
-                    DeliveryDateView *iv = [[DeliveryDateView alloc] initWithDate:d1 date:d2 view:bv];
-                    iv.alpha = 0.0;
-                    iv.tag = TAG;
+                            if (date != 0 && delay >= 0 && status == 0)
+                                code = 1;
+                            else if (date != 0 && ref >= 0)
+                                code = 0;
+                            else if (status == 70)
+                                code = 2;
 
-                    NSLog(@"date view = %@", iv);
-		            mcell.clipsToBounds = NO;
-                    [bv addSubview:iv];
-                    [UIView animateWithDuration:0.2 animations:^{ iv.alpha = 1.0; }];
+                            if (tapped_rowid == rowid && date != 0 && delay != -1 && status == 0) {
+                                NSDate *d1 = [NSDate dateWithTimeIntervalSince1970:date];
+                                NSDate *d2 = [NSDate dateWithTimeIntervalSince1970:date + delay];
 
-                    // TODO hide the dateview after some time (15 sec?)
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1000000000LL * 15),
-                                   dispatch_get_current_queue(), ^{
-                            if (tapped_rowid != -1 && inpectionTime != nil &&
-                                [inpectionTime timeIntervalSinceNow] < 0) {
-                                [inpectionTime release];
-                                inpectionTime = nil;
-                                tapped_rowid = -1;
-                                CFNotificationCenterPostNotification (CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("iphonedelivery.refresh"), NULL, NULL, YES);
+                                DeliveryDateView *iv = [[DeliveryDateView alloc] initWithDate:d1 date:d2 view:bv];
+                                iv.alpha = 0.0;
+                                iv.tag = TAG;
+
+                                NSLog(@"date view = %@", iv);
+		                        mcell.clipsToBounds = NO;
+                                [bv addSubview:iv];
+                                [UIView animateWithDuration:0.2 animations:^{ iv.alpha = 1.0; }];
+
+                                // TODO hide the dateview after some time (15 sec?)
+                                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1000000000LL * 15),
+                                        dispatch_get_current_queue(), ^{
+                                            if (tapped_rowid != -1 && inpectionTime != nil &&
+                                                [inpectionTime timeIntervalSinceNow] < 0) {
+
+                                            [inpectionTime release];
+                                            inpectionTime = nil;
+                                            tapped_rowid = -1;
+                                            CFNotificationCenterPostNotification (CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("iphonedelivery.refresh"), NULL, NULL, YES);
+                                        }
+                                });
+
+                                [lastDateView removeFromSuperview];
+                                [lastDateView release];
+                                lastDateView = iv;
                             }
-                        });
+                            else {
+                                MarkView *iv = [[MarkView alloc] init:code cell:mcell status:status];
+                                iv.alpha = 1.0;
+                                iv.tag = TAG;
 
-                    [lastDateView removeFromSuperview];
-                    [lastDateView release];
-                    lastDateView = iv;
-                }
-                else {
-                    MarkView *iv = [[MarkView alloc] init:code cell:mcell status:status];
-                    iv.alpha = 1.0;
-                    iv.tag = TAG;
-
-		            mcell.clipsToBounds = NO;
-                    if (status == 0 && delay == -1 && ref == 0) 
-                        bv.hidden = YES;    // during send....
-#if 0
-                    else
-                        [UIView animateWithDuration:0.2 animations:^{ iv.alpha = 1.0; }];
+		                        mcell.clipsToBounds = NO;
+                                if (status == 0 && delay == -1 && ref == 0) 
+                                    bv.hidden = YES;    // during send....
+#if 1
+                                else
+                                    [UIView animateWithDuration:0.2 animations:^{ iv.alpha = 1.0; }];
 #endif
-                        NSLog(@"mark view = %@", iv);
-                    [bv addSubview:iv];
-                    [iv release];
-                }
+                                NSLog(@"mark view = %@", iv);
+                                [bv addSubview:iv];
+                                [iv release];
+                            }
+                            [vv removeFromSuperview];
+                        }
+                        else {
+	                        // remove any present stamp
+                            UIView *vv = [bv viewWithTag:TAG];
+                            if (vv != nil) [vv removeFromSuperview];
+                        }
+                });
             }
-            });
         }
+	    // remove any present stamp
+        UIView *vv = [bv viewWithTag:TAG];
+        if (vv != nil) [vv removeFromSuperview];
     }
     return cell;
 }
