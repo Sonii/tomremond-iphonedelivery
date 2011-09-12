@@ -82,8 +82,8 @@ static Localizer *instance = nil;
 		return s == nil ? @"" : s;
 	}
 	else if ([date isYesterdayOf:now]) {
-		s = [self getString:@"YESTERDAY"];
-		if (s != nil) return @"";
+		if (style != NSDateFormatterNoStyle) s = [self getString:@"YESTERDAY"];
+		return s == nil ? @"" : s;
 	}
 
 	NSString *sd = [date descriptionOfDateWithLocale:loc style:style];
