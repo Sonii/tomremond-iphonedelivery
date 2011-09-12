@@ -6,6 +6,5 @@ Description: Delivery report for iOS5
 Maintainer: F. Guillemé
 Author: F. Guillemé
 Section: System
-Tag: role::hacker
 Pre-Depends: firmware (>= 5.0)
 Depends: mobilesubstrate , coreutils, sqlite3, com.ericasadun.utilities
