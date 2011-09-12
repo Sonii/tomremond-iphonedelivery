@@ -411,7 +411,7 @@ int get_delivery_info_for_rowid(uint32_t rowid, int *pref, time_t *pdate, int *p
 	*pstatus = 1003;
     asprintf(&p, 
             "select smsc_ref, delivery_status, date, s_date, r_date, dr_date from message "
-			"where ROWID=%d and ((flags != 0 and flags != 2 and flags < 32) or dr_date is not null)",
+			"where ROWID=%d and ((flags != 0 and flags != 2 and flags < 32))",
             rowid);
 	if (p != NULL) {
 		rc = run_sql(SMS_DB, true, p, 
@@ -433,6 +433,7 @@ int get_delivery_info_for_rowid(uint32_t rowid, int *pref, time_t *pdate, int *p
 					*pstatus = 192;
 					*pdate = date;
 					*pdelay = -1;
+					*pref = -1;
 					rc = 0;
 				}
 				else {
@@ -441,6 +442,7 @@ int get_delivery_info_for_rowid(uint32_t rowid, int *pref, time_t *pdate, int *p
 					*pdate = date;
 					*pdelay = dr_date - date;
 					rc = 0;
+					*pref = -1;
 				}
 			}
 			else {
@@ -459,7 +461,7 @@ int get_delivery_info_for_rowid(uint32_t rowid, int *pref, time_t *pdate, int *p
 					*pstatus = 1001;
 				if (ref == 0 && s_date == 0 && r_date == 0) {
 					if (*pstatus >= 1000) *pstatus = 1002;
-					rc = -1;
+					rc = 0;
 				}
 				else
 					rc = 0;
@@ -513,7 +515,7 @@ bool convert_num_to_name(const char *num, char *name, char *surname) {
 
 int get_list_of_rowids(int max, uint32_t *buffer) {
 	const char *sql = "select ROWID from Message " 
-			          "where (flags < 128 and flags != 0 and flags !=2 and address is not null) order by date desc";
+			          "where (flags < 128 and flags != 0 and flags != 2 and address is not null) order by date desc";
 
 	return run_sql(SMS_DB, true, sql, PARAM_LOOP, max, PARAM_INT, buffer, PARAM_END);
 }
