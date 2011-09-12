@@ -21,6 +21,7 @@ if [ $? -eq 1 ]; then
 fi
 sqlite3 $SMS_DATABASE '.schema message' | grep -v dr_date | grep -q r_date
 if [ 1 ]; then
+	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN dr_date INTEGER DEFAULT NULL'
 	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN r_date INTEGER DEFAULT NULL'
 fi
 sqlite3 $SMS_DATABASE '.schema message' | grep -q delivery_status
