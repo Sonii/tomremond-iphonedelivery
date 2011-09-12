@@ -347,7 +347,7 @@ static CFDataRef handle_report (
                     get_person([dict objectForKey:@"WHO"]),
                     get_localized_submit(submit_time, YES),
                     get_localized_status(status),
-                    @"com.guilleme.deliveryreports");
+                    @"com.apple.MobileSMS");
                 break;
             case 3: 
                 if (status == 0 || status > 63) {
