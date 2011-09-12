@@ -27,21 +27,31 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
         -M_PI / 2, M_PI, 1);
 }
 
+@protocol WeeReportError
+-(void)invalidReport:(uint32_t)rowid;
+@end
+
 @interface WeeBrowseIDView : UIView {
+	int status;
 	NSString *title;
 	NSString *text1;
 	NSString *text2;
 	UIFont *titleFont, *labelFont;
 	UIColor *titleColor, *labelColor, *borderColor;
+	NSObject<WeeReportError> *delegate;
 }
 -(id)initWithROWID:(int)rowid;
-@end;
+-(void)setDelegate:(id)o;
+-(void)loadReport;
+@end
 
 #define kReportWidth 200.0f
-#define kReportHeight 71.0f
-#define kMaxVisibleReports 100
+#define kReportHeight 56.0f
+#define kMaxVisibleReports 200
 
-@interface WeeBrowseIDController : NSObject <BBWeeAppController, UIScrollViewDelegate> {
+static id sharedInstance;
+
+@interface WeeBrowseIDController : NSObject <BBWeeAppController, UIScrollViewDelegate, WeeReportError> {
 	UIScrollView *scrollView;
     UIView *_view;
 	uint32_t reportsIndex[kMaxVisibleReports];
@@ -52,12 +62,11 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 - (UIView *)view;
 -(void) loadVisibleReports;
 -(void)loadReport:(int)n;
-
+-(void)reload;
 @end
 
 @implementation WeeBrowseIDController
 -(void)viewWillAppear {
-	NSLog(@"%s", __FUNCTION__);
 	numberOfReports = get_list_of_rowids(kMaxVisibleReports, reportsIndex);
 	[self loadVisibleReports];
 	[scrollView setContentSize:CGSizeMake(numberOfReports * kReportWidth, [scrollView bounds].size.height)];
@@ -65,51 +74,38 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 
 }
 - (void)viewDidDisappear {
-	NSLog(@"%s", __FUNCTION__);
 	for (UIView *v in scrollView.subviews)  {
 		[v removeFromSuperview];
 	}
 	numberOfReports = 0;
 }
 
-- (void)layoutScrollImages {
-	WeeBrowseIDView *view = nil;
-	NSArray *subviews = [scrollView subviews];
-	CGFloat totalWidth = 0.0;
-
-	// reposition all image subviews in a horizontal serial fashion
-	CGFloat curXLoc = 0;
-	for (view in subviews) {
-		if ([view isKindOfClass:[WeeBrowseIDView class]]) {
-			CGRect frame = view.frame;
-			frame.origin = CGPointMake(curXLoc, 0);
-			view.frame = frame;
-			
-			curXLoc += frame.size.width;
-			totalWidth += frame.size.width;
-		}
-	}
-	
-	// set the content size so it can be scrollable
-	[scrollView setContentSize:CGSizeMake(totalWidth, [scrollView bounds].size.height)];
-}
-
 + (void)initialize {
+    [[NSNotificationCenter defaultCenter] 
+            addObserverForName:@"iphonedelivery.refresh"
+            object:nil 
+            queue:nil
+            usingBlock:^(NSNotification *n){ 
+				NSLog(@"Wee received a notification %@", [n userInfo]); 
+				if (sharedInstance != nil) [sharedInstance reload];
+			}];
 }
 
 - (void)dealloc {
     [_view release];
-    [super dealloc];
+	sharedInstance = nil;
+	[super dealloc];
 }
 
 - (UIView *)view {
+  	sharedInstance = self;
     if (_view == nil)
     {
         _view = [[UIView alloc] initWithFrame:CGRectMake(2, 0, 316, kReportHeight)];
         
         UIImage *bg = [[UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeAppBackground.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:71];
         UIImageView *bgView = [[UIImageView alloc] initWithImage:bg];
-        bgView.frame = CGRectMake(0, 0, 316, 71);
+        bgView.frame = CGRectMake(0, 0, 316, kReportHeight);
         [_view addSubview:bgView];
         [bgView release];
 
@@ -135,6 +131,13 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
     return kReportHeight;
 }
 
+-(void)reload {
+	for (UIView *v in scrollView.subviews)  {
+		[(WeeBrowseIDView *)v loadReport];
+		[v setNeedsDisplay];
+	}
+}
+
 -(void)loadReport:(int)n {
 	if (n < 0 || n >= numberOfReports) return;
 
@@ -143,6 +146,8 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 
 	if (v == nil) {
 		v = [[WeeBrowseIDView alloc] initWithROWID:rowid];
+		[v setDelegate:self];
+
 		[scrollView addSubview:v];
 
 		CGRect frame = v.frame;
@@ -165,6 +170,23 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 - (void)scrollViewDidScroll:(UIScrollView *)sv {
 	[self loadVisibleReports];
 }
+
+-(void)invalidReport:(uint32_t)rowid {
+	int i;
+	for (i = 0; i < numberOfReports; i++)
+		if (reportsIndex[i] == rowid) break;
+
+	if (i < numberOfReports) {
+		while (i < numberOfReports - 1) reportsIndex[i] = reportsIndex[i+1];
+		numberOfReports--;
+
+		for (UIView *v in scrollView.subviews)  {
+			[v removeFromSuperview];
+		}
+		[self loadVisibleReports];
+		[scrollView setContentSize:CGSizeMake(numberOfReports * kReportWidth, [scrollView bounds].size.height)];
+	}
+}
 @end
 
 @implementation WeeBrowseIDView
@@ -174,13 +196,23 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 	char name[64], surname[64];
     Localizer *localizer = [Localizer sharedInstance];
 
+	[title release]; title = nil;
+	[text1 release]; text1 = nil;
+	[text2 release]; text2 = nil;
+
 	NSString *number = get_address_for_rowid(rowid);
+
+	if (number == nil) {
+		[delegate invalidReport:rowid];
+		self.hidden = YES;
+		return;
+	}
     if (convert_num_to_name([number UTF8String], name, surname) && (name[0] || surname[0])) {
         title = [[localizer getTitle:[NSString stringWithUTF8String:name]
                            surname:[NSString stringWithUTF8String:surname]] retain];
     }
 
-	int ref, delay, status;
+	int ref, delay;
 	time_t date;
 	if (0 == get_delivery_info_for_rowid(rowid, &ref, &date, &delay, &status)) {
 		NSDate *sdate = [NSDate dateWithTimeIntervalSince1970:date];
@@ -191,6 +223,9 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
     	s = [s stringByReplacingOccurrencesOfString:@"%TIMESPEC%" 
 								withString:[localizer formatTime:sdate style:NSDateFormatterMediumStyle]];
 		text1 = [s retain];
+
+		// we don' t store temporary statuse so we assume a non-zero smsc_ref is pending...
+		if (ref != -1) status = 48;
 
 		if (status == 0) {
 			NSDate *rdate = [NSDate dateWithTimeIntervalSince1970:date+delay];
@@ -218,8 +253,8 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 			}
 			
 			text2 = [s retain];
-			if (status < 64)
-				borderColor = [[UIColor redColor] retain];
+			if (status > 63)
+				borderColor = [[UIColor orangeColor] retain];
 			else
 				borderColor = [[UIColor grayColor] retain];
 		}
@@ -299,10 +334,18 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 	    lineBreakMode:UILineBreakModeWordWrap 
 		    alignment:UITextAlignmentLeft];
 
+	// if it's pending or an error set the label in color
+	if (status >= 32)
+		[borderColor set];
+
 	CGSize label2Size = [text2 sizeWithFont:labelFont];
     [text2 drawInRect:CGRectMake(margin*2, self.bounds.size.height - margin - label1Size.height, width, label2Size.height)  
 		     withFont:labelFont 
 	    lineBreakMode:UILineBreakModeWordWrap 
 		    alignment:UITextAlignmentLeft];
+}
+
+-(void)setDelegate:(id)o {
+	delegate = o;
 }
 @end
