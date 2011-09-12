@@ -1,6 +1,6 @@
 Package: com.guilleme.iphonedelivery
 Name: iPhoneDelivery
-Version: 0.5beta7
+Version: 0.5beta9
 Architecture: iphoneos-arm
 Description: Delivery report for iOS5
 Maintainer: F. Guillemé
