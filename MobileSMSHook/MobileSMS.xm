@@ -145,6 +145,7 @@ static void readDefaults() {
     %orig;
 }
 
+#define TAG 5329
 -(UITableViewCell *)tableView:(UITableView *)tv cellForRowAtIndexPath:(NSIndexPath *)path {
     //%log;
     UITableViewCell *cell = %orig;
@@ -155,18 +156,15 @@ static void readDefaults() {
         CKMessageCell *mcell = (CKMessageCell *)cell;
         UIView *bv = [mcell balloonView];
         CGRect balloon_frame = bv.frame;
-
-#define TAG 5329
+        UIView *vv = [bv viewWithTag:TAG];
 
         // don't do anything in edit mode
         if (!tv.editing) {
-
             CKTranscriptBubbleData *data = [self bubbleData];
 
             int rowid = [[data messageAtIndex:path.row] rowID];
             if (rowid > 0) {
                 dispatch_async(dispatch_get_current_queue(), ^{
-                        UIView *vv = [bv viewWithTag:TAG];
                         int ref = 0, status = 0, delay = 0;
                         time_t date = 0;
                         int rc = get_delivery_info_for_rowid(rowid, &ref, &date, &delay, &status);
@@ -194,8 +192,10 @@ static void readDefaults() {
                                 NSLog(@"date view = %@", iv);
 		                        mcell.clipsToBounds = NO;
                                 [bv addSubview:iv];
-                                [UIView animateWithDuration:0.2 animations:^{ iv.alpha = 1.0; }];
-
+                                [UIView animateWithDuration:0.2 delay:0.0 options:0
+                                    animations:^{ iv.alpha = 1.0; vv.alpha = 0.0; }
+                                    completion:^(BOOL){ [vv removeFromSuperview]; }
+                                ];
                                 // TODO hide the dateview after some time (15 sec?)
                                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1000000000LL * 15),
                                         dispatch_get_current_queue(), ^{
@@ -221,9 +221,12 @@ static void readDefaults() {
 		                        mcell.clipsToBounds = NO;
                                 if (status == 0 && delay == -1 && ref == 0) 
                                     bv.hidden = YES;    // during send....
-#if 1
+#if 0
                                 else
-                                    [UIView animateWithDuration:0.2 animations:^{ iv.alpha = 1.0; }];
+                                    [UIView animateWithDuration:0.2 delay:0.0 options:0
+                                        animations:^{ v.alpha = 1.0; vv.alpha = 0.0; }
+                                        completion:^(BOOL){ [vv removeFromSuperview]; }
+                                    ];
 #endif
                                 NSLog(@"mark view = %@", iv);
                                 [bv addSubview:iv];
@@ -237,11 +240,11 @@ static void readDefaults() {
                             if (vv != nil) [vv removeFromSuperview];
                         }
                 });
+                vv = nil;
             }
         }
 	    // remove any present stamp
-        UIView *vv = [bv viewWithTag:TAG];
-        if (vv != nil) [vv removeFromSuperview];
+        [vv removeFromSuperview];
     }
     return cell;
 }
