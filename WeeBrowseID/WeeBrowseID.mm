@@ -254,7 +254,7 @@ static id sharedInstance;
 			
 			text2 = [s retain];
 			if (status > 63)
-				borderColor = [[UIColor orangeColor] retain];
+				borderColor = [[UIColor redColor] retain];
 			else
 				borderColor = [[UIColor grayColor] retain];
 		}
@@ -332,7 +332,7 @@ static id sharedInstance;
     [text1 drawInRect:CGRectMake(margin*2, self.bounds.size.height - margin - label1Size.height * 2, width, label1Size.height)  
 		     withFont:labelFont 
 	    lineBreakMode:UILineBreakModeWordWrap 
-		    alignment:UITextAlignmentLeft];
+		    alignment:UITextAlignmentCenter];
 
 	// if it's pending or an error set the label in color
 	if (status >= 32)
@@ -342,7 +342,7 @@ static id sharedInstance;
     [text2 drawInRect:CGRectMake(margin*2, self.bounds.size.height - margin - label1Size.height, width, label2Size.height)  
 		     withFont:labelFont 
 	    lineBreakMode:UILineBreakModeWordWrap 
-		    alignment:UITextAlignmentLeft];
+		    alignment:UITextAlignmentCenter];
 }
 
 -(void)setDelegate:(id)o {
