@@ -248,6 +248,8 @@ static CFDataRef handle_report (
         int status = [[dict objectForKey:@"STATUS"] intValue];
         int ref = [[dict objectForKey:@"REF"] intValue];
         int sent_date = get_sent_time_for_sms(who, ref);
+        int group_id = get_groupid_for_smsc_ref(ref);
+
         localizer = [[Localizer alloc] init];
 
         if (status == 0) {
@@ -291,7 +293,7 @@ static CFDataRef handle_report (
                         get_person([dict objectForKey:@"WHO"]),
                         get_localized_submit(submit_time, sameday),
                         get_localized_deliver(deliver_time, sameday),
-                        @"com.apple.MobileSMS");
+                        @"com.apple.MobileSMS", group_id, deliver_time);
                 break;
             case 3:     // simple alert 
                 if (status == 0 || status > 63) {
@@ -347,7 +349,7 @@ static CFDataRef handle_report (
                     get_person([dict objectForKey:@"WHO"]),
                     get_localized_submit(submit_time, YES),
                     get_localized_status(status),
-                    @"com.apple.MobileSMS");
+                    @"com.apple.MobileSMS", group_id, nil);
                 break;
             case 3: 
                 if (status == 0 || status > 63) {
@@ -385,7 +387,7 @@ static CFDataRef handle_start (
    CFDataRef data,
    void *info
 ) {
-    showBulletin( @"iPhoneDelivery", @"",  @"Started...", nil);
+    showBulletin( @"iPhoneDelivery", @"",  @"Started...", nil, 0, nil);
     return nil;
 }
 
@@ -421,7 +423,6 @@ static void register_port_handler(CFStringRef str, CFMessagePortCallBack cb)  {
 }
 
 %hook SpringBoard
-
 -(void) applicationDidFinishLaunching:(id)appl {
     %orig;
     setSpringBoard(appl);

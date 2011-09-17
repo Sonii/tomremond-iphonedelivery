@@ -26,6 +26,14 @@
 -(BOOL)isLocked;
 @end
 
+@interface SBBulletinListController  {
+}
++(id)sharedInstance;
+-(void)observer:(id)observer addBulletin:(id)bulletin forFeed:(unsigned)feed;
+-(void)observer:(id)observer modifyBulletin:(id)bulletin;
+-(void)observer:(id)observer removeBulletin:(id)bulletin;
+@end
+
 // Global
 static SpringBoard *springboard;
 static bool vibrate;
@@ -37,6 +45,38 @@ void setDeliverySound(NSString *s) { [sound release]; sound = [s retain]; }
 NSString *getDeliverySound() { return sound; }
 void setSpringBoard(id o) { springboard = o; }
 
+@interface NSString(xxx)
+-(BOOL)hasTelephonyScheme;
+-(BOOL)isAssistantTelephonyURL;
+-(BOOL)isValidFaceTimeURL;
+-(BOOL)isWebcalURL;
+-(BOOL)isStoreServicesURL;
+
+-(void)doesNotRecognizeSelector:(SEL)sel;
+@end
+
+@implementation NSString(xxx)
+-(BOOL)hasTelephonyScheme {
+    return NO;
+}
+-(BOOL)isAssistantTelephonyURL {
+    return NO;
+}
+-(BOOL)isValidFaceTimeURL {
+    return NO;
+}
+-(BOOL)isWebcalURL {
+    return NO;
+}
+-(BOOL)isStoreServicesURL {
+    return NO;
+}
+
+-(void)doesNotRecognizeSelector:(SEL)sel {
+    NSLog(@"%s %s", __FUNCTION__, sel);
+}
+@end;
+
 /** 
  * @brief display an alert through the notification center. If the screen is locked it accumulates
  *        otherwise it is display as a banner that appears a couple of seconds
@@ -46,31 +86,47 @@ void setSpringBoard(id o) { springboard = o; }
  * @param message 
  * @param sectionID 
  */
-void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSString *sectionID) {
+void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSString *sectionID, int group_id, NSDate *date) {
+    SBBulletinListController *blc = [objc_getClass("SBBulletinListController") sharedInstance];
+    static id observer = nil;
+    
+    // build a bulletin
+    id controller = nil;
+    BBBulletin *b = [[objc_getClass("BBBulletin") alloc] init];
+    [b setTitle:title];
+    [b setSectionID:sectionID];
+
+    // probably not relevant.... Actually it seems to have no impact whatsoever
+    b.clearable = YES;
+    b.date = date;
+    b.expirationDate = [NSDate dateWithTimeIntervalSinceNow:60]; // FIXME change to 3600?
+    b.endDate = [NSDate dateWithTimeIntervalSinceNow:60]; // FIXME change to 3600?
+    b.bulletinID = [NSString stringWithFormat:@"DeliveryReport_%f", [[NSDate date] timeIntervalSince1970]];
+
+    if (group_id > 0)
+        b.defaultAction = [objc_getClass("BBAction") 
+#if 0
+            actionWithLaunchURL:[NSString stringWithFormat:@"sms:/open?groupid=%d", group_id] 
+#else
+            actionWithLaunchBundleID:@"com.apple.MobileSMS"
+#endif
+            callblock:nil];
+
     if ([springboard isLocked]) {
-        // build a bulletin
-        BBBulletin *b = [[objc_getClass("BBBulletin") alloc] init];
-        [b setTitle:title];
         [b setSubtitle:message];
         [b setMessage:subtitle];
-        [b setSectionID:sectionID];
-
-        NSLog(@"%@", b);
 
         // and as a popup on the away screen
-        [[[[objc_getClass("SBAwayController") sharedAwayController] awayView] bulletinController] observer:0 addBulletin:b forFeed:0];
-        [b release];
+        controller = [[[objc_getClass("SBAwayController") sharedAwayController] awayView] bulletinController];
     }
     else {
-        // build a bulletin
-        BBBulletin *b = [[objc_getClass("BBBulletin") alloc] init];
-        [b setTitle:title];
         [b setMessage:[NSString stringWithFormat:@"%@ %@", subtitle, message]];
-        [b setSectionID:sectionID];
 
         // publish it as a banner
-        [[objc_getClass("SBBulletinBannerController")  sharedInstance] observer:0 addBulletin:b forFeed:0];
-        [b release];
+        controller = [objc_getClass("SBBulletinBannerController") sharedInstance] ;
     }
+    [controller observer:observer addBulletin:b forFeed:0];
+    [blc observer:observer addBulletin:b forFeed:0];
+    [b release];
 }
 // vim: ft=objc ts=4 expandtab

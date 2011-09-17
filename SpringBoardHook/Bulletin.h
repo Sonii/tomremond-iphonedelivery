@@ -1,5 +1,5 @@
 
-void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSString *sectionID);
+void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSString *sectionID, int group_id, NSDate *date);
 void setDeliveryVibrate(bool v);
 bool getDeliveryVibrate();
 void setDeliverySound(NSString *s);
