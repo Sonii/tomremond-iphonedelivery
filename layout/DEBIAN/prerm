@@ -8,11 +8,19 @@ done
 
 plutil -key EnvironmentVariables -remove /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 
+cd /Applications/Preferences.app/
+MESSAGES_PLIST=/System/Library/PrivateFrameworks/Conference.framework/Messages.plist
+ENTRY=16
+
+plutil -key items -key $ENTRY -key cell -remove $MESSAGES_PLIST > /dev/null
+plutil -key items -key $((ENTRY+1)) -key bundle -remove $MESSAGES_PLIST > /dev/null
+plutil -key items -key $((ENTRY+1)) -key cell -remove $MESSAGES_PLIST > /dev/null
+#plutil -key items -key $((ENTRY+1)) -key hasIcon -remove $MESSAGES_PLIST > /dev/null
+plutil -key items -key $((ENTRY+1)) -key isController -remove $MESSAGES_PLIST > /dev/null
+plutil -key items -key $((ENTRY+1)) -key label -remove $MESSAGES_PLIST > /dev/null
+
 launchctl unload /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 launchctl load /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
-
-mv /Applications/Preferences.app/{,ID}Settings.plist
-mv /Applications/Preferences.app/{ID2,}Settings.plist
 
 if [[ ${CYDIA+@} ]]; then
 eval "echo 'finish:restart' >& ${cydia[0]}"

@@ -29,15 +29,29 @@ if [ $? -eq 1 ]; then
 	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN delivery_status INTEGER DEFAULT NULL'
 fi
 
-# insert the localized version of Delivey reports in Preferences.app
-cd /System/Library/PreferenceBundles/DeliveryReportSettings.bundle/
-for lang in *.lproj; do
-	STR=$(plutil -key "Delivery reports" $lang/Localizable.strings)
-	if [ -n "$STR" ]; then
-		echo "$STR"  1>&2
-		plutil -key "Delivery reports" -string "$STR" /Applications/Preferences.app/$lang/Settings~iphone.strings > /dev/null
-	fi
-done
+# insert the localized version of Delivey reports in the Message entry  of PreferencesPreferences.app
+# MESSAGES_FRAMEWORK=/System/Library/PrivateFrameworks/Conference.framework/
+# cd /System/Library/PreferenceBundles/DeliveryReportSettings.bundle/
+# for lang in *.lproj; do
+# 	STR=$(plutil -key "Delivery reports" $lang/Localizable.strings)
+# 	if [ -n "$STR" ]; then
+# 		echo "$STR"  
+# 		plutil -key "Delivery reports" -string "$STR" $MESSAGES_FRAMEWORK/$lang/Messages.strings > /dev/null
+# 	fi
+# done
+
+MESSAGES_PLIST=/System/Library/PrivateFrameworks/Conference.framework/Messages.plist
+ENTRY=16
+
+plutil -key items -key $ENTRY -dict $MESSAGES_PLIST > /dev/null
+plutil -key items -key $ENTRY -key cell -string PSGroupCell $MESSAGES_PLIST > /dev/null
+
+plutil -key items -key $((ENTRY+1)) -dict $MESSAGES_PLIST > /dev/null
+plutil -key items -key $((ENTRY+1)) -key bundle -string DeliveryReportSettings $MESSAGES_PLIST > /dev/null
+plutil -key items -key $((ENTRY+1)) -key cell -string PSLinkCell $MESSAGES_PLIST > /dev/null
+#plutil -key items -key $((ENTRY+1)) -key hasIcon -yes $MESSAGES_PLIST 2> /dev/null
+plutil -key items -key $((ENTRY+1)) -key isController -yes $MESSAGES_PLIST > /dev/null
+plutil -key items -key $((ENTRY+1)) -key label -string DELIVERY_RECEIPTS $MESSAGES_PLIST > /dev/null
 
 PLIST=/System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 LIBRARY=$(plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES $PLIST 2> /dev/null)
@@ -58,11 +72,8 @@ plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES $PLIST
 launchctl unload /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 launchctl load /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 
-mv /Applications/Preferences.app/{,ID2}Settings.plist
-mv /Applications/Preferences.app/{ID,}Settings.plist
-
 if [ -e /var/mobile/Library/Preferences/com.guilleme.deliveryreports.plist ]; then
-  mv _com.guilleme.deliveryreports.plist com.guilleme.deliveryreports.plist
+   mv _com.guilleme.deliveryreports.plist com.guilleme.deliveryreports.plist
 fi
 
 if [[ ${CYDIA+@} ]]; then
