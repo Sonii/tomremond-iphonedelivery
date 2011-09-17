@@ -59,5 +59,7 @@ int get_delivery_info_for_rowid(uint32_t rowid, int *pref, time_t *pdate, int *p
 int get_list_of_rowids(int max, uint32_t *buffer);
 
 NSString *get_address_for_rowid(int rowid) ;
+
+int get_groupid_for_smsc_ref(int ref);
 #endif
 // vim: set ts=4 expandtab

@@ -532,4 +532,17 @@ NSString *get_address_for_rowid(int rowid) {
 	}
 	return nil;
 }
+int get_groupid_for_smsc_ref(int ref) {
+	int group_id;
+	char *str;
+
+	asprintf(&str, "select group_id from Message where smsc_ref=%d", ref);
+	if (str == NULL) return 0;
+
+	if (1 == run_sql(SMS_DB, true, str, PARAM_INT, &group_id, PARAM_END)) {
+		return group_id;
+	}
+	return 0;
+
+}
 // vim: set ts=4 expandtab
