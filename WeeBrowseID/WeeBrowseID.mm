@@ -50,6 +50,7 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 #define kMaxVisibleReports 200
 
 static id sharedInstance;
+static BOOL visible = NO;
 
 @interface WeeBrowseIDController : NSObject <BBWeeAppController, UIScrollViewDelegate, WeeReportError> {
 	UIScrollView *scrollView;
@@ -67,9 +68,21 @@ static id sharedInstance;
 
 @implementation WeeBrowseIDController
 -(void)viewWillAppear {
-	numberOfReports = get_list_of_rowids(kMaxVisibleReports, reportsIndex);
-	[self loadVisibleReports];
-	[scrollView setContentSize:CGSizeMake(numberOfReports * kReportWidth, [scrollView bounds].size.height)];
+	visible = YES;
+	dispatch_async(
+#if 1
+			dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+#else
+			dispatch_get_main_queue(),
+#endif
+		^{
+		numberOfReports = get_list_of_rowids(kMaxVisibleReports, reportsIndex);
+		dispatch_async( dispatch_get_main_queue(), ^{
+			[scrollView setContentSize:CGSizeMake(numberOfReports * kReportWidth, [scrollView bounds].size.height)];
+			[self loadVisibleReports];
+		});
+	});
+
 	scrollView.contentOffset = CGPointMake(0.0, 0.0);
 
 }
@@ -78,6 +91,7 @@ static id sharedInstance;
 		[v removeFromSuperview];
 	}
 	numberOfReports = 0;
+	visible = NO;
 }
 
 + (void)initialize {
@@ -87,8 +101,8 @@ static id sharedInstance;
             queue:nil
             usingBlock:^(NSNotification *n){ 
 				NSLog(@"Wee received a notification %@", [n userInfo]); 
-				if (sharedInstance != nil) [sharedInstance reload];
-			}];
+				if (sharedInstance != nil && visible) [sharedInstance reload];
+	}];
 }
 
 - (void)dealloc {
@@ -142,17 +156,22 @@ static id sharedInstance;
 	if (n < 0 || n >= numberOfReports) return;
 
 	uint32_t rowid = reportsIndex[n];
+
 	WeeBrowseIDView *v = (WeeBrowseIDView *)[scrollView viewWithTag:rowid];
 
 	if (v == nil) {
 		v = [[WeeBrowseIDView alloc] initWithROWID:rowid];
 		[v setDelegate:self];
 
-		[scrollView addSubview:v];
-
 		CGRect frame = v.frame;
 		frame.origin = CGPointMake(kReportWidth * n, 0);
 		v.frame = frame;
+
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[scrollView addSubview:v];
+			[scrollView setNeedsDisplay];
+		});
+
 		[v release];
 	}
 }
@@ -171,6 +190,7 @@ static id sharedInstance;
 	[self loadVisibleReports];
 }
 
+// quiter useless as we reload when the view get visible
 -(void)invalidReport:(uint32_t)rowid {
 	int i;
 	for (i = 0; i < numberOfReports; i++)
@@ -261,8 +281,10 @@ static id sharedInstance;
 	}
 }
 
+#define ONE_SEC (1 * 1000LL * 1000LL * 1000LL)
+
 -(void)scheduleUnload {
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5000000000LL), dispatch_get_main_queue(), ^{
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5*ONE_SEC), dispatch_get_main_queue(), ^{
 			// check if view is visible
 			CGRect r1 = self.frame;
 			CGRect r2 = self.superview.bounds;
@@ -288,6 +310,7 @@ static id sharedInstance;
 	labelColor = [[UIColor yellowColor] retain];
 	
 	self.opaque = NO;
+	self.hidden = NO;
 	[self scheduleUnload];
 	return self;
 }
