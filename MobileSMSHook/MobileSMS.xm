@@ -42,6 +42,17 @@ extern "C" {
 -(void)_reloadTranscriptLayer;
 @end
 
+@interface CKUIBehavior
++ (id)sharedBehaviors;
+-(UIFont *)balloonTextFont;
+- (float)balloonTextFontSize;
+@end
+
+@interface CKSimpleBalloonView
++ (struct CGSize)balloonSizeConstrainedToWidth:(float)arg1 text:(id)arg2 subject:(id)arg3 textBalloonSize:(struct CGSize *)arg4 subjectBalloonSize:(struct CGSize *)arg5;
++ (float)heightForText:(id)arg1 width:(float)arg2 includeBuffers:(BOOL)arg3;
+@end
+
 static id currentTranscript = nil;
 static bool showSmileys = YES;
 static bool showPictures = NO;
@@ -120,20 +131,53 @@ static void readDefaults() {
 #endif
 
 %hook CKTranscriptBubbleData
+
+/*
+   just translate smiley codes to emojis
+*/
 -(NSString *)textAtIndex:(NSInteger)index {
     NSString *s = %orig;
-    if (showSmileys) s = replaceSmileys(s);
+    if (showSmileys) {
+        s = replaceSmileys(s);
+    }
     return s;
+}
+
+/*
+   needed becuse the size with smileys is different than without
+   and we need to get the right size when switching small/normal font
+*/
+- (struct CGSize)sizeAtIndex:(int)index {
+    CGSize size = %orig;
+    NSString *s = [self textAtIndex:index];
+
+    CGFloat width = size.width;
+    NSLog(@"width = %.1f", width);
+
+    if (showSmileys && width < 170)
+        width += 40;
+
+    size = [objc_getClass("CKSimpleBalloonView") balloonSizeConstrainedToWidth:width text:s subject:nil
+        textBalloonSize:nil subjectBalloonSize:nil];
+
+    return size;
 }
 %end
 
+
 %hook CKTranscriptController
+/* 
+  when a balloon is tapped store its rowid and ask for a redisplay
+  it will cause a ball;oon withe sending/delivered date to be displayed
+  also get the time at which the balloon must be hidden if it is still displayed
+*/
 -(void)tableView:(UITableView *)tv willSelectRowAtIndexPath:(NSIndexPath*)path {
     //%log;
 
     [inpectionTime release];
     inpectionTime = nil;
 
+    // only if not editing...
     if (!tv.editing) {
         CKTranscriptBubbleData *data = [self bubbleData];
         tapped_rowid = [[data messageAtIndex:path.row] rowID];
