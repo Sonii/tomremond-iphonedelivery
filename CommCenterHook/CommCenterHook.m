@@ -188,36 +188,39 @@ MSHook(size_t, write, int fd, void *p, size_t n) {
 	static bool cmgs_seen = false;
 	if (sms_fd != -1) {
 		int dummy;
-		if (cmgs_seen) {
-			TRACE(p, n, "write(sms, %d)", n);
-			uint8_t *payload = unpack_if_applicable(p); 
-			if (payload != NULL) {
-				last_time_stamp = time(NULL);
+		if (cmgs_seen) {		
+			// in some case an "at" command comes out. so we can safely ignore it
+			if (memcmp(p, "at+", 3) != 0) {
+				TRACE(p, n, "write(sms, %d)", n);
+				uint8_t *payload = unpack_if_applicable(p); 
+				if (payload != NULL) {
+					last_time_stamp = time(NULL);
 
-				LOG("PATCH SUBMIT");
-				set_delivery_report(payload);
-				set_class0(payload);
-				set_invisible(payload);
+					LOG("PATCH SUBMIT");
+					set_delivery_report(payload);
+					set_class0(payload);
+					set_invisible(payload);
 
-				DUMP(payload, n / 2, "New payload");
+					DUMP(payload, n / 2, "New payload");
 
-				char *new_str = pack(payload, n / 2);
+					char *new_str = pack(payload, n / 2);
 
-				if (new_str == NULL) 
-					LOG("Failed to patch....(allocation error)");
-				else  {
-					// replace by the new payload
-					// the string length must have not changed
-					if (strlen(new_str) != n - 1) 
-						LOG("Error new playload has not the correct length %lu => %lu", n - 1, strlen(new_str));
-					else
-						memcpy(p, new_str, n - 1);
-					free(new_str);
+					if (new_str == NULL) 
+						LOG("Failed to patch....(allocation error)");
+					else  {
+						// replace by the new payload
+						// the string length must have not changed
+						if (strlen(new_str) != n - 1) 
+							LOG("Error new playload has not the correct length %lu => %lu", n - 1, strlen(new_str));
+						else
+							memcpy(p, new_str, n - 1);
+						free(new_str);
+					}
+					free(payload);
+					TRACE(p, n, "new payload");
 				}
-				free(payload);
-				TRACE(p, n, "new payload");
+				cmgs_seen = false;
 			}
-			cmgs_seen = false;
 		}
 		else if (sscanf(p, "at+cmgs=%d", &dummy)) {
 			TRACE(p, n, "write(sms, %d)", n);
