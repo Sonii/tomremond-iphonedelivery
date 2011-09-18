@@ -11,6 +11,7 @@ SMS_DATABASE="/var/mobile/Library/SMS/sms.db"
 # s_date: the SMSC date the sms was submited
 # r_date: the SMSC date the sms was delivered
 # delivery_status : the status code found in the report
+echo "Modify database structure"
 sqlite3 $SMS_DATABASE '.schema message' | grep -q smsc_ref
 if [ $? -eq 1 ]; then
 	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN smsc_ref INTEGER DEFAULT NULL'
@@ -19,9 +20,13 @@ sqlite3 $SMS_DATABASE '.schema message' | grep -q s_date
 if [ $? -eq 1 ]; then
 	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN s_date INTEGER DEFAULT NULL'
 fi
-sqlite3 $SMS_DATABASE '.schema message' | grep -v dr_date | grep -q r_date
-if [ 1 ]; then
+# although dr_date is from previous version we still need it as queries refer to it
+sqlite3 $SMS_DATABASE '.schema message' | grep -q dr_date
+if [ $? -eq 1 ]; then
 	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN dr_date INTEGER DEFAULT NULL'
+fi
+sqlite3 $SMS_DATABASE '.schema message' | grep -w -q r_date
+if [ $? -eq 1 ]; then
 	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN r_date INTEGER DEFAULT NULL'
 fi
 sqlite3 $SMS_DATABASE '.schema message' | grep -q delivery_status
@@ -29,17 +34,7 @@ if [ $? -eq 1 ]; then
 	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN delivery_status INTEGER DEFAULT NULL'
 fi
 
-# insert the localized version of Delivey reports in the Message entry  of PreferencesPreferences.app
-# MESSAGES_FRAMEWORK=/System/Library/PrivateFrameworks/Conference.framework/
-# cd /System/Library/PreferenceBundles/DeliveryReportSettings.bundle/
-# for lang in *.lproj; do
-# 	STR=$(plutil -key "Delivery reports" $lang/Localizable.strings)
-# 	if [ -n "$STR" ]; then
-# 		echo "$STR"  
-# 		plutil -key "Delivery reports" -string "$STR" $MESSAGES_FRAMEWORK/$lang/Messages.strings > /dev/null
-# 	fi
-# done
-
+echo "Modify Settings's Message pane to add our settings"
 MESSAGES_PLIST=/System/Library/PrivateFrameworks/Conference.framework/Messages.plist
 ENTRY=16
 
@@ -53,25 +48,26 @@ plutil -key items -key $((ENTRY+1)) -key cell -string PSLinkCell $MESSAGES_PLIST
 plutil -key items -key $((ENTRY+1)) -key isController -yes $MESSAGES_PLIST > /dev/null
 plutil -key items -key $((ENTRY+1)) -key label -string DELIVERY_RECEIPTS $MESSAGES_PLIST > /dev/null
 
+echo "inject our magic potion into CommCenter"
 PLIST=/System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 LIBRARY=$(plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES $PLIST 2> /dev/null)
 if [ -z "$LIBRARY" ]; then
-	plutil -key EnvironmentVariables -dict $PLIST;
+	plutil -key EnvironmentVariables -dict $PLIST > /dev/null
 	plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES \
 		   -setValue /usr/local/lib/libidcc.dylib \
-	 	$PLIST;
+	 	$PLIST > /dev/null
 else
-	plutil -key EnvironmentVariables -dict $PLIST;
+	plutil -key EnvironmentVariables -dict $PLIST > /dev/null
 	plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES \
 		   -setValue "${LIBRARY}:/usr/local/lib/libidcc.dylib" \
-	 	$PLIST;
+	 	$PLIST > /dev/null
 fi
-echo CommCenter inserted libraries
-plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES $PLIST
 
+echo "Restart CommCenter"
 launchctl unload /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 launchctl load /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 
+echo "set a default configuration if there is none"
 if [ -e /var/mobile/Library/Preferences/com.guilleme.deliveryreports.plist ]; then
    mv _com.guilleme.deliveryreports.plist com.guilleme.deliveryreports.plist
 fi
