@@ -190,6 +190,10 @@ static void readDefaults() {
 }
 
 #define TAG 5329
+/*
+   Draw the mark/date view
+   Basically we check the database for thhe message and add an according view
+*/
 -(UITableViewCell *)tableView:(UITableView *)tv cellForRowAtIndexPath:(NSIndexPath *)path {
     //%log;
     UITableViewCell *cell = %orig;
@@ -265,10 +269,10 @@ static void readDefaults() {
 		                        mcell.clipsToBounds = NO;
                                 if (status == 0 && delay == -1 && ref == 0) 
                                     bv.hidden = YES;    // during send....
-#if 0
+#if 1
                                 else
                                     [UIView animateWithDuration:0.2 delay:0.0 options:0
-                                        animations:^{ v.alpha = 1.0; vv.alpha = 0.0; }
+                                        animations:^{ vv.alpha = 1.0; vv.alpha = 0.0; }
                                         completion:^(BOOL){ [vv removeFromSuperview]; }
                                     ];
 #endif
