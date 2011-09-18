@@ -67,30 +67,39 @@ static BOOL visible = NO;
 @end
 
 @implementation WeeBrowseIDController
+/*
+  Reload the index on a separate que and redisplay the scroll view on the main queue
+  cond is used in case we just want to redisplay
+   */
+-(void)reloadIndex:(BOOL)cond {
+	// load the index
+	dispatch_async(
+		dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+		^{
+			if (cond) 
+				numberOfReports = get_list_of_rowids(kMaxVisibleReports, reportsIndex);
+			
+			dispatch_async( dispatch_get_main_queue(), ^{
+					if (cond) 
+						for (UIView *v in scrollView.subviews)  
+							[v removeFromSuperview];
+
+					[scrollView setContentSize:CGSizeMake(numberOfReports * kReportWidth, [scrollView bounds].size.height)];
+					[self loadVisibleReports];
+				}
+			);
+		}
+	);
+}
+
 -(void)viewWillAppear {
 	visible = YES;
-	dispatch_async(
-#if 1
-			dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-#else
-			dispatch_get_main_queue(),
-#endif
-		^{
-		numberOfReports = get_list_of_rowids(kMaxVisibleReports, reportsIndex);
-		dispatch_async( dispatch_get_main_queue(), ^{
-			[scrollView setContentSize:CGSizeMake(numberOfReports * kReportWidth, [scrollView bounds].size.height)];
-			[self loadVisibleReports];
-		});
-	});
 
+	[self reloadIndex:(numberOfReports == 0 || numberOfReports < kMaxVisibleReports)];
 	scrollView.contentOffset = CGPointMake(0.0, 0.0);
 
 }
 - (void)viewDidDisappear {
-	for (UIView *v in scrollView.subviews)  {
-		[v removeFromSuperview];
-	}
-	numberOfReports = 0;
 	visible = NO;
 }
 
@@ -100,8 +109,17 @@ static BOOL visible = NO;
             object:nil 
             queue:nil
             usingBlock:^(NSNotification *n){ 
-				NSLog(@"Wee received a notification %@", [n userInfo]); 
-				if (sharedInstance != nil && visible) [sharedInstance reload];
+				NSDictionary *ud = (NSDictionary *)[n userInfo];
+				NSNumber *status = [ud objectForKey:@"STATUS"];
+
+				NSLog(@"Wee received a notification %@ status = %@", ud, status);
+
+				if (sharedInstance != nil && visible) {
+					if (status == nil)
+						[sharedInstance reloadIndex:YES];
+					else
+						[sharedInstance reload];
+				}
 	}];
 }
 
@@ -115,6 +133,7 @@ static BOOL visible = NO;
   	sharedInstance = self;
     if (_view == nil)
     {
+		numberOfReports = 0;
         _view = [[UIView alloc] initWithFrame:CGRectMake(2, 0, 316, kReportHeight)];
         
         UIImage *bg = [[UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeAppBackground.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:71];
@@ -192,26 +211,12 @@ static BOOL visible = NO;
 
 // quiter useless as we reload when the view get visible
 -(void)invalidReport:(uint32_t)rowid {
-	int i;
-	for (i = 0; i < numberOfReports; i++)
-		if (reportsIndex[i] == rowid) break;
-
-	if (i < numberOfReports) {
-		while (i < numberOfReports - 1) reportsIndex[i] = reportsIndex[i+1];
-		numberOfReports--;
-
-		for (UIView *v in scrollView.subviews)  {
-			[v removeFromSuperview];
-		}
-		[self loadVisibleReports];
-		[scrollView setContentSize:CGSizeMake(numberOfReports * kReportWidth, [scrollView bounds].size.height)];
-	}
+	[self reloadIndex:YES];
 }
 @end
 
 @implementation WeeBrowseIDView
-
--(void)loadReport {
+-(void)_loadReport {
 	int rowid = self.tag;
 	char name[64], surname[64];
     Localizer *localizer = [Localizer sharedInstance];
@@ -280,6 +285,19 @@ static BOOL visible = NO;
 		}
 	}
 }
+
+-(void)loadReport {
+	// reload the index
+	dispatch_async(
+		dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+		^{
+		[self _loadReport];
+		dispatch_async( dispatch_get_main_queue(), ^{
+			[self setNeedsDisplay];
+		});
+	});
+}
+
 
 #define ONE_SEC (1 * 1000LL * 1000LL * 1000LL)
 
