@@ -68,8 +68,9 @@ launchctl unload /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 launchctl load /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 
 echo "set a default configuration if there is none"
-if [ -e /var/mobile/Library/Preferences/com.guilleme.deliveryreports.plist ]; then
-   mv _com.guilleme.deliveryreports.plist com.guilleme.deliveryreports.plist
+if [ ! -e /var/mobile/Library/Preferences/com.guilleme.deliveryreports.plist ]; then
+   mv '/Library/Application Support/ID.bundle/com.guilleme.deliveryreports.plist' \
+		/var/mobile/Library/Preferences/com.guilleme.deliveryreports.plist
 fi
 
 if [[ ${CYDIA+@} ]]; then
