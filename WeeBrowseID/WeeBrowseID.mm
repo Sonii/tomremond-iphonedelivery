@@ -253,7 +253,7 @@ static BOOL visible = NO;
 		text1 = [s retain];
 
 		// we don' t store temporary statuse so we assume a non-zero smsc_ref is pending...
-		if (ref != -1) status = 48;
+		if (ref != -1 || status > 255) status = 48;
 
 		if (status == 0) {
 			NSDate *rdate = [NSDate dateWithTimeIntervalSince1970:date+delay];
