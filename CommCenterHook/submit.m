@@ -104,9 +104,7 @@ static int16_t get_first_char(uint8_t *payload, uint8_t **coding, uint8_t *plen)
 	payload++;		// SMSC length. must be zero
 	payload++;		// command		
 	payload++;		// ref
-	payload += (1 + 1 + payload[0]/2);		// number
-
-	payload++;	// FIXME
+	payload += (1 + 1 + (payload[0] + 1)/2);		// number
 
 	*coding = payload;
 
@@ -145,9 +143,8 @@ static void set_first_char(uint8_t *payload, char c) {
 	payload++;		// SMSC length. must be zero
 	payload++;		// command		
 	payload++;		// ref
-	payload += (1 + 1 + payload[0]/2);		// number
+	payload += (1 + 1 + (payload[0] + 1)/2);		// number
 
-	payload++;	// FIXME
 	coding = payload;
 
 	payload += 2;
