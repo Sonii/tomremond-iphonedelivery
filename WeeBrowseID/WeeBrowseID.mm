@@ -101,6 +101,9 @@ static BOOL visible = NO;
 }
 - (void)viewDidDisappear {
 	visible = NO;
+	numberOfReports = 0;
+	for (UIView *v in scrollView.subviews)  
+		[v removeFromSuperview];
 }
 
 + (void)initialize {
