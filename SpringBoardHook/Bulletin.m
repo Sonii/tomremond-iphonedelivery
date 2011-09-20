@@ -45,38 +45,6 @@ void setDeliverySound(NSString *s) { [sound release]; sound = [s retain]; }
 NSString *getDeliverySound() { return sound; }
 void setSpringBoard(id o) { springboard = o; }
 
-@interface NSString(xxx)
--(BOOL)hasTelephonyScheme;
--(BOOL)isAssistantTelephonyURL;
--(BOOL)isValidFaceTimeURL;
--(BOOL)isWebcalURL;
--(BOOL)isStoreServicesURL;
-
--(void)doesNotRecognizeSelector:(SEL)sel;
-@end
-
-@implementation NSString(xxx)
--(BOOL)hasTelephonyScheme {
-    return NO;
-}
--(BOOL)isAssistantTelephonyURL {
-    return NO;
-}
--(BOOL)isValidFaceTimeURL {
-    return NO;
-}
--(BOOL)isWebcalURL {
-    return NO;
-}
--(BOOL)isStoreServicesURL {
-    return NO;
-}
-
--(void)doesNotRecognizeSelector:(SEL)sel {
-    NSLog(@"%s %s", __FUNCTION__, sel);
-}
-@end;
-
 /** 
  * @brief display an alert through the notification center. If the screen is locked it accumulates
  *        otherwise it is display as a banner that appears a couple of seconds
@@ -96,20 +64,15 @@ void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSStri
     [b setTitle:title];
     [b setSectionID:sectionID];
 
-    // probably not relevant.... Actually it seems to have no impact whatsoever
     b.clearable = YES;
     b.date = date;
-    b.expirationDate = [NSDate dateWithTimeIntervalSinceNow:60]; // FIXME change to 3600?
-    b.endDate = [NSDate dateWithTimeIntervalSinceNow:60]; // FIXME change to 3600?
+    // b.expirationDate = [NSDate dateWithTimeIntervalSinceNow:60]; // FIXME change to 3600?
+    // b.endDate = [NSDate dateWithTimeIntervalSinceNow:60]; // FIXME change to 3600?
     b.bulletinID = [NSString stringWithFormat:@"DeliveryReport_%f", [[NSDate date] timeIntervalSince1970]];
 
     if (group_id > 0)
         b.defaultAction = [objc_getClass("BBAction") 
-#if 0
-            actionWithLaunchURL:[NSString stringWithFormat:@"sms:/open?groupid=%d", group_id] 
-#else
-            actionWithLaunchBundleID:@"com.apple.MobileSMS"
-#endif
+            actionWithLaunchURL:[NSURL URLWithString:[NSString stringWithFormat:@"sms:/open?groupid=%d", group_id]]
             callblock:nil];
 
     if ([springboard isLocked]) {
