@@ -32,9 +32,10 @@ extern "C" {
 -(int)rowID;
 @end
 
-@interface CKBubbleData
+@interface CKTranscriptBubbleData
 -(id)messageAtIndex:(int)index;
 - (id)textAtIndex:(int)arg1;
+- (Class)balloonClassAtIndex:(int)arg1;
 @end
 
 @interface CKTranscriptController 
@@ -149,17 +150,23 @@ static void readDefaults() {
 */
 - (struct CGSize)sizeAtIndex:(int)index {
     CGSize size = %orig;
-    NSString *s = [self textAtIndex:index];
 
-    CGFloat width = size.width;
-    NSLog(@"width = %.1f", width);
+    if ([self balloonClassAtIndex:index] == objc_getClass("CKSimpleBalloonView")) {
+        NSString *s = [self textAtIndex:index];
 
-    if (showSmileys && width < 170)
-        width += 40;
+        CGFloat width = size.width;
+        NSLog(@"width = %.1f", width);
 
-    size = [objc_getClass("CKSimpleBalloonView") balloonSizeConstrainedToWidth:width text:s subject:nil
-        textBalloonSize:nil subjectBalloonSize:nil];
+        if (showSmileys && width < 170)
+            width += 40;
 
+        size = [objc_getClass("CKSimpleBalloonView") 
+                    balloonSizeConstrainedToWidth:width 
+                                             text:s 
+                                          subject:nil
+                                  textBalloonSize:nil 
+                               subjectBalloonSize:nil];
+    }
     return size;
 }
 %end
