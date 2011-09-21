@@ -46,42 +46,52 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 -(id)initWithDate:(NSDate *)d1  date:(NSDate *)d2 view:(UIView *)v {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
 	bool sameday = [d1 isSameDayAs:d2];
+	NSDateFormatterStyle format = NSDateFormatterMediumStyle ;
+	CGRect r, rr;
 
     [dateFormatter setLocale:[NSLocale currentLocale]];
+    font = [UIFont systemFontOfSize:10.0];
 
-    [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
-    [dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
+	do {
+    	[dateFormatter setDateStyle:format];
+    	[dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
+    	text1 =  [dateFormatter stringFromDate:d1];
 
-    text1 =  [dateFormatter stringFromDate:d1];
+    	[dateFormatter setDateStyle:sameday ? NSDateFormatterNoStyle : format];
+    	[dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
+    	text2 =  [dateFormatter stringFromDate:d2];
 
-    [dateFormatter setDateStyle:sameday ? NSDateFormatterNoStyle : NSDateFormatterMediumStyle];
-    [dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
+    	CGSize sz1, sz2;
 
-    text2 =  [dateFormatter stringFromDate:d2];
+    	sz1 = [text1 sizeWithFont:font];
+    	sz2 = [text2 sizeWithFont:font];
+
+    	rect1 = CGRectMake(3, 2, sz1.width + 8, sz1.height);
+    	rect2 = CGRectMake(3, 1 + sz1.height, sz2.width + 8 , sz2.height);
+
+		// align the second rect on the right
+		rect2.origin.x += (rect1.size.width - rect2.size.width);
+
+    	r = CGRectUnion(rect1, rect2);
+		r.size.width += 6;
+		r.size.height += 4;
+
+		// put it on the left
+		r = CGRectOffset(r, -max(sz1.width, sz2.width) - 20, 0.0);
+
+		rr = [v convertRect:r toView:v.superview];
+
+		if (format == NSDateFormatterMediumStyle) 
+			format = NSDateFormatterShortStyle;
+		else if (format == NSDateFormatterShortStyle) 
+			format = NSDateFormatterNoStyle;
+		else
+			break;
+	} while (rr.origin.x < 4.0);
 
 	[dateFormatter release];
-
-    font = [UIFont systemFontOfSize:10.0];
-    CGSize sz1, sz2;
-    
-    sz1 = [text1 sizeWithFont:font];
-    sz2 = [text2 sizeWithFont:font];
-
-    rect1 = CGRectMake(3, 2, sz1.width + 8, sz1.height);
-    rect2 = CGRectMake(3, 1 + sz1.height, sz2.width + 8 , sz2.height);
-
-	// align the second rect on the right
-	rect2.origin.x += (rect1.size.width - rect2.size.width);
-
-    CGRect r = CGRectUnion(rect1, rect2);
-	r.size.width += 6;
-	r.size.height += 4;
-
     [text1 retain];
     [text2 retain];
-
-	// put it on the left
-	r = CGRectOffset(r, -max(sz1.width, sz2.width) - 20, 0.0);
 
     self = [super initWithFrame:r];
 
