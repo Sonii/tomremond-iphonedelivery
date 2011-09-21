@@ -66,8 +66,6 @@ void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSStri
 
     b.clearable = YES;
     b.date = date;
-    // b.expirationDate = [NSDate dateWithTimeIntervalSinceNow:60]; // FIXME change to 3600?
-    // b.endDate = [NSDate dateWithTimeIntervalSinceNow:60]; // FIXME change to 3600?
     b.bulletinID = [NSString stringWithFormat:@"DeliveryReport_%f", [[NSDate date] timeIntervalSince1970]];
 
     if (group_id > 0)
