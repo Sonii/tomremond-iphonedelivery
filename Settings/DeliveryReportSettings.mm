@@ -118,6 +118,12 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
     [self reload];
     [super viewWillAppear:f];
 }
+
+-(void)translate:(PSSpecifier *)spe {
+    [[UIApplication sharedApplication] 
+        openURL:[NSURL URLWithString:
+        @"http://code.google.com/p/iphone-delivery-report/wiki/TRANS?ts=1316632107&updated=TRANS"]];
+}
 @end
 
 // vim:ft=objc ts=4 expandtab smarttab

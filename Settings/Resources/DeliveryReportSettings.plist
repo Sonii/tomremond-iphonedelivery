@@ -6,6 +6,30 @@
 	<array>
 		<dict>
 			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>PLEASE Translations needed.</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>http://code.google.com/p/iphone-delivery-report/wiki</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>I want to help</string>
+			<key>action</key>
+			<string>translate:</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+		</dict>
+		<dict>
+			<key>cell</key>
 			<string>PSSwitchCell</string>
 			<key>set</key>
 			<string>setDeliveryEnabled:specifier:</string>
