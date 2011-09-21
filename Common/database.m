@@ -189,7 +189,7 @@ retry:
 
 		if (type == PARAM_END) {
 			if (loop_start == NULL) {
-				NSLog(@"no more storage exit the loop" );
+				NSLog(@"no more storage exit" );
 				rc = nrow;
 				break;
 			}
@@ -515,7 +515,7 @@ bool convert_num_to_name(const char *num, char *name, char *surname) {
 
 int get_list_of_rowids(int max, uint32_t *buffer) {
 	const char *sql = "select ROWID from Message " 
-			          "where (flags < 128 and flags != 0 and flags != 2 and address is not null) order by date desc";
+			          "where (flags < 32 and flags != 0 and flags != 2 and address is not null) order by date desc";
 
 	return run_sql(SMS_DB, true, sql, PARAM_LOOP, max, PARAM_INT, buffer, PARAM_END);
 }
