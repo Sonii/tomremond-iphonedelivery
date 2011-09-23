@@ -69,8 +69,9 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
     	rect1 = CGRectMake(3, 2, sz1.width + 8, sz1.height);
     	rect2 = CGRectMake(3, 1 + sz1.height, sz2.width + 8 , sz2.height);
 
-		// align the second rect on the right
-		rect2.origin.x += (rect1.size.width - rect2.size.width);
+		// align the second rect on the right 
+		if ([NSLocale characterDirectionForLanguage:[[NSLocale currentLocale] identifier]] == kCFLocaleLanguageDirectionLeftToRight)
+			rect2.origin.x += (rect1.size.width - rect2.size.width);
 
     	r = CGRectUnion(rect1, rect2);
 		r.size.width += 6;
