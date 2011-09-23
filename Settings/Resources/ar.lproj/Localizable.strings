@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>Delivery reports</key>
-	<string>تقديم التقارير </string>
+	<string>تقارير التسليم</string>
 	<key>Enabled</key>
-	<string>Enable</string>
+	<string>مُفعّل</string>
 	<key>Full screen</key>
-	<string>إشعار يشغل كل الشاشة</string>
+	<string>كامل الشاشة</string>
 	<key>Mark</key>
-	<string>إشعار</string>
+	<string>أشّر</string>
 	<key>Notification center</key>
 	<string>في مركز الإشعارات</string>
 	<key>Silent</key>
@@ -17,9 +17,9 @@
 	<key>Smileys</key>
 	<string>😄  😊  😉</string>
 	<key>Sound</key>
-	<string>أصوات</string>
+	<string>صوت</string>
 	<key>Style</key>
-	<string>الإشعارات</string>
+	<string>نمط الإشعار</string>
 	<key>Vibrate</key>
-	<string>التنبيه بالاهتزاز</string></dict>
+	<string>إهتز</string></dict>
 </plist>

@@ -2,37 +2,34 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>MESSAGE_DELIVERED</key>
-	<string>رسالة إلى %@ مسلمة بتاريخ \r%@\r لصادرة في \r%@</string>
-	<key>MESSAGE_DELIVERED_SHORT</key>
-	<string>رسالة مسلمة</string>
-	<key>MESSAGE_GENERIC</key>
-	<string>رسالة إلى %@ مصدرة بتاريخ %@ حالة=%@</string>
-	<key>MESSAGE_GENERIC_SHORT</key>
-	<string>%@=رسالة مسلمة بتاريخ %@ حالة</string>
-	<key>MESSAGE_NOT_DELIVERED</key>
-	<string>رسالة إلى %@\r في حالة إنتظار</string>
-	<key>MESSAGE_NOT_DELIVERED_SHORT</key>
-	<string>رسالة في حالة إنتظار</string>
 	<key>STATUS_70</key>
-	<string>انتهت</string>
+	<string>منتهي الصلاحية</string>
+
 	<key>STATUS</key>
-	<string>code=%STATUS%</string>
+	<string>%STATUS% = الحالة</string>
+
 	<key>STATUS_48</key>
-	<string>ريثما</string>
+	<string>معلّق</string>
+
 	<key>DATE</key>
-	<string>%DATE% </string>
+	<string>%DATE% في</string>
+
 	<key>DELIVERED</key>
-	<string>أصدر %DATESPEC% %TIMESPEC%</string>
+	<string>%DATESPEC% %TIMESPEC% سُلِّمت</string>
+
 	<key>SUBMIT</key>
-	<string>مبعوث %DATESPEC% %TIMESPEC%</string>
+	<string>%DATESPEC% %TIMESPEC% أُرسِلت</string>
+
 	<key>TIME</key>
-	<string>%TIME% </string>
+	<string>%TIME% عند</string>
+
 	<key>TITLE</key>
-	<string>➜ %SURNAME% %NAME%</string>
+	<string>%NAME% %SURNAME% ←</string>
+
 	<key>TODAY</key>
 	<string>اليوم</string>
+
 	<key>YESTERDAY</key>
-	<string>أمس</string>
+	<string>البارحة</string>
 </dict>
 </plist>
