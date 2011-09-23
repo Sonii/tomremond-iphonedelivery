@@ -4,7 +4,11 @@ export TARGET_LD=$(SDKBINPATH)/gcc
 export DEBUG=0
 VERSION=0.5beta12
 REPO_URL=iphonedelivery@iphonedelivery.advinux.com
+ifneq ($(DEBUG),)
+REPO=ios5debug
+else
 REPO=ios5beta
+endif
 
 export TARGET_CXX=$(SDKBINPATH)/g++
 SDKVERSION = 5.0
