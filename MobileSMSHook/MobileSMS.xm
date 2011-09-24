@@ -35,6 +35,7 @@ extern "C" {
 @interface CKTranscriptBubbleData
 -(id)messageAtIndex:(int)index;
 - (id)textAtIndex:(int)arg1;
+- (CGSize)sizeAtIndex:(int)arg1;
 - (Class)balloonClassAtIndex:(int)arg1;
 @end
 
@@ -139,7 +140,7 @@ static void readDefaults() {
 -(NSString *)textAtIndex:(NSInteger)index {
     NSString *s = %orig;
     if (showSmileys) {
-        s = replaceSmileys(s);
+        s = [s replaceSmileys];
     }
     return s;
 }
@@ -194,6 +195,15 @@ static void readDefaults() {
         CFNotificationCenterPostNotification (CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("iphonedelivery.refresh"), NULL, NULL, YES);
     }
     %orig;
+}
+
+-(float)tableView:(id)view heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    CKTranscriptBubbleData *data = [self bubbleData];
+    float h = %orig;
+    NSString *s = [data textAtIndex:indexPath.row];
+
+    if (showSmileys && [s containsEmoji]) h *= 1.2;
+    return h;
 }
 
 /*
