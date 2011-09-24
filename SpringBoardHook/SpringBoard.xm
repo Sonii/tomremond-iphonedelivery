@@ -36,14 +36,14 @@ static Boolean deliveryEnabled;
 static int deliveryAlertMethod;
 
 @interface UIAlertViewControllerFlash : UIAlertViewController {
-    SBAlert *_alert;
+    id _alert;
 }
--(id)initWithAlert:(SBAlert *)alert;
+-(id)initWithAlert:(id)alert;
 -(void)touchOk:(id)sender;
 @end
 
 @implementation UIAlertViewControllerFlash
-- (id)initWithAlert:(SBAlert *)alert {
+- (id)initWithAlert:(id)alert {
     self = [super init];
     _alert = alert;
     return self;
@@ -279,7 +279,7 @@ static CFDataRef handle_report (
                     SBSMSClass0Alert *alert = [[objc_getClass("SBSMSClass0Alert") alloc] initWithString:str];
                     [alert activate];
 
-                    SBUSSDAlertDisplay *display = [alert display];
+                    UIView *display = [alert display];
                     UIButton *b = [display findSubButton];
 
                     if (b != nil) {
@@ -335,7 +335,7 @@ static CFDataRef handle_report (
                     SBSMSClass0Alert *alert = [[objc_getClass("SBSMSClass0Alert") alloc] initWithString:str];
                     [alert activate];
 
-                    SBUSSDAlertDisplay *display = [alert display];
+                    UIView *display = [alert display];
                     UIButton *b = [display findSubButton];
 
                     if (b != nil) {
