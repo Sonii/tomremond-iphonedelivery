@@ -60,13 +60,13 @@ void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSStri
     
     // build a bulletin
     id controller = nil;
-    BBBulletin *b = [[objc_getClass("BBBulletin") alloc] init];
+    BBBulletin *b2 = nil, *b = [[objc_getClass("BBBulletin") alloc] init];
     [b setTitle:title];
     [b setSectionID:sectionID];
-
     b.clearable = YES;
     b.date = date;
     b.bulletinID = [NSString stringWithFormat:@"DeliveryReport_%f", [[NSDate date] timeIntervalSince1970]];
+    [b setMessage:[NSString stringWithFormat:@"%@ %@", subtitle, message]];
 
     if (group_id > 0)
         b.defaultAction = [objc_getClass("BBAction") 
@@ -74,20 +74,28 @@ void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSStri
             callblock:nil];
 
     if ([springboard isLocked]) {
-        [b setSubtitle:message];
-        [b setMessage:subtitle];
+        b2 = [[objc_getClass("BBBulletin") alloc] init];
+        
+        [b2 setTitle:title];
+        [b2 setSubtitle:message];
+        [b2 setMessage:subtitle];
+        b2.clearable = YES;
+        b2.date = date;
+        b2.bulletinID = b.bulletinID;
+        b2.defaultAction = b.defaultAction;
 
         // and as a popup on the away screen
         controller = [[[objc_getClass("SBAwayController") sharedAwayController] awayView] bulletinController];
     }
     else {
-        [b setMessage:[NSString stringWithFormat:@"%@ %@", subtitle, message]];
+        b2 = [b retain];
 
         // publish it as a banner
         controller = [objc_getClass("SBBulletinBannerController") sharedInstance] ;
     }
-    [controller observer:observer addBulletin:b forFeed:0];
+    [controller observer:observer addBulletin:b2 forFeed:0];
     [blc observer:observer addBulletin:b forFeed:0];
     [b release];
+    [b2 release];
 }
 // vim: ft=objc ts=4 expandtab
