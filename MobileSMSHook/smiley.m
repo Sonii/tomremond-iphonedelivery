@@ -15,11 +15,9 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-NSString *replaceSmileys(NSString *s) {
-    struct {
+static struct {
         NSString *str, *repl;
-    }
-    smileys[]= {
+} smileys[]= {
         {   @":-)",  @"",  },      // smile: 0xe414
         {   @":)",  @"",   },      // smile: 0xe414
 
@@ -68,15 +66,28 @@ NSString *replaceSmileys(NSString *s) {
 
         {   @":-*", @""    },      // kiss: e418
         {   @":*",  @""    },      // kiss: e418
-    };
+};
 
+@implementation NSString(emojis)
+-(BOOL)containsEmoji {
     for (unsigned i = 0; i < sizeof(smileys)/sizeof(smileys[0]); i++) {
-            s = [s stringByReplacingOccurrencesOfString:smileys[i].str 
+        NSRange r = [self rangeOfString:smileys[i].repl];
+        if (r.location != NSNotFound)
+            return YES;
+    }
+    return NO;
+}
+
+-(NSString *)replaceSmileys {
+    NSString *str = self;
+    for (unsigned i = 0; i < sizeof(smileys)/sizeof(smileys[0]); i++) {
+            str = [str stringByReplacingOccurrencesOfString:smileys[i].str 
                                               withString:smileys[i].repl
                                                 options:NSCaseInsensitiveSearch   
-                                                range:NSMakeRange(0, [s length])];
+                                                range:NSMakeRange(0, [str length])];
     }
 
-    return s;
+    return str;
 }
+@end
 // vim: ft=objc ts=4 expandtab
