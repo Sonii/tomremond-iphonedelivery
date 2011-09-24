@@ -6,6 +6,7 @@
 -(id)initWithDate:(NSDate *)d1  date:(NSDate *)d2 view:(UIView *)v;
 -(void)drawRect:(CGRect)rect;
 @end
+#define TAG 5329
 // vim: ft=objc ts=4 expandtab
 
 

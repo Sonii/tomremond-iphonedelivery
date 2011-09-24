@@ -196,7 +196,6 @@ static void readDefaults() {
     %orig;
 }
 
-#define TAG 5329
 /*
    Draw the mark/date view
    Basically we check the database for thhe message and add an according view
@@ -209,9 +208,9 @@ static void readDefaults() {
 
     if ([cell class] == objc_getClass("CKMessageCell")) {
         CKMessageCell *mcell = (CKMessageCell *)cell;
-        UIView *bv = [mcell balloonView];
-        CGRect balloon_frame = bv.frame;
-        UIView *vv = [bv viewWithTag:TAG];
+        UIView *ballonView = [mcell balloonView];
+        CGRect balloon_frame = ballonView.frame;
+        UIView *markView = [ballonView viewWithTag:TAG];
 
         // don't do anything in edit mode
         if (!tv.editing) {
@@ -240,18 +239,18 @@ static void readDefaults() {
                                 NSDate *d1 = [NSDate dateWithTimeIntervalSince1970:date];
                                 NSDate *d2 = [NSDate dateWithTimeIntervalSince1970:date + delay];
 
-                                DeliveryDateView *iv = [[DeliveryDateView alloc] initWithDate:d1 date:d2 view:bv];
-                                iv.alpha = 0.0;
-                                iv.tag = TAG;
+                                DeliveryDateView *iv = [[DeliveryDateView alloc] initWithDate:d1 date:d2 view:ballonView];
 
                                 NSLog(@"date view = %@", iv);
 		                        mcell.clipsToBounds = NO;
-                                [bv addSubview:iv];
+
+                                // animate disappear of previous
                                 [UIView animateWithDuration:0.2 delay:0.0 options:0
-                                    animations:^{ iv.alpha = 1.0; vv.alpha = 0.0; }
-                                    completion:^(BOOL){ [vv removeFromSuperview]; }
+                                    animations:^{ markView.alpha = 0.0; }
+                                    completion:^(BOOL){ [markView removeFromSuperview]; }
                                 ];
-                                // TODO hide the dateview after some time (15 sec?)
+
+                                // hide the dateview after some time (15 sec?)
                                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1000000000LL * 15),
                                         dispatch_get_current_queue(), ^{
                                             if (tapped_rowid != -1 && inpectionTime != nil &&
@@ -269,37 +268,24 @@ static void readDefaults() {
                                 lastDateView = iv;
                             }
                             else {
-                                MarkView *iv = [[MarkView alloc] init:code cell:mcell status:status];
-                                iv.alpha = 1.0;
-                                iv.tag = TAG;
+                                MarkView *newMarkView = [[MarkView alloc] init:code cell:mcell status:status];
 
 		                        mcell.clipsToBounds = NO;
                                 if (status == 0 && delay == -1 && ref == 0) 
-                                    bv.hidden = YES;    // during send....
-#if 1
-                                else
-                                    [UIView animateWithDuration:0.2 delay:0.0 options:0
-                                        animations:^{ vv.alpha = 1.0; vv.alpha = 0.0; }
-                                        completion:^(BOOL){ [vv removeFromSuperview]; }
-                                    ];
-#endif
-                                NSLog(@"mark view = %@", iv);
-                                [bv addSubview:iv];
-                                [iv release];
+                                    newMarkView.hidden = YES;    // during send....
+
+                                NSLog(@"mark view = %@", newMarkView);
+                                [ballonView addSubview:newMarkView];
+                                [newMarkView release];
                             }
-                            [vv removeFromSuperview];
-                        }
-                        else {
-	                        // remove any present stamp
-                            UIView *vv = [bv viewWithTag:TAG];
-                            if (vv != nil) [vv removeFromSuperview];
+                            [markView removeFromSuperview];
                         }
                 });
-                vv = nil;
+                markView = nil;
             }
         }
-	    // remove any present stamp
-        [vv removeFromSuperview];
+	        // remove any present stamp
+        [markView removeFromSuperview];
     }
     return cell;
 }

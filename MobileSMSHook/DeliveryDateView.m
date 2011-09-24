@@ -43,7 +43,7 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 
 @implementation DeliveryDateView;
 
--(id)initWithDate:(NSDate *)d1  date:(NSDate *)d2 view:(UIView *)v {
+-(id)initWithDate:(NSDate *)d1  date:(NSDate *)d2 view:(UIView *)parent {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
 	bool sameday = [d1 isSameDayAs:d2];
 	NSDateFormatterStyle format = NSDateFormatterMediumStyle ;
@@ -83,7 +83,7 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 		// put it on the left
 		r = CGRectOffset(r, -max(sz1.width, sz2.width) - 20, 0.0);
 
-		rr = [v convertRect:r toView:v.superview];
+		rr = [parent convertRect:r toView:parent.superview];
 
 		if (format == NSDateFormatterMediumStyle) 
 			format = NSDateFormatterShortStyle;
@@ -100,6 +100,16 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
     self = [super initWithFrame:r];
 
     self.opaque = NO;
+	self.alpha = 0.0;
+	self.tag = TAG;
+	[parent addSubview:self];
+
+	// animate appearance
+	[UIView animateWithDuration:0.2 
+					 animations:^{ 
+						 self.alpha = 1.0; 
+				 }
+		   ];
 
     return self;
 }

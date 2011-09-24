@@ -95,6 +95,9 @@ static UIImage *get_image_for_status(int status) {
 	else if (showMark == NO)
 		self.hidden = YES;
 
+	self.alpha = 1.0;
+	self.tag = TAG;
+
 	return self;
 }
 @end
