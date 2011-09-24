@@ -61,6 +61,9 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
     	[dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
     	text2 =  [dateFormatter stringFromDate:d2];
 
+		text1 = [NSString stringWithFormat:@"%@ ⇡", text1];
+		text2 = [NSString stringWithFormat:@"%@ ⇣", text2];
+
     	CGSize sz1, sz2;
 
     	sz1 = [text1 sizeWithFont:font];
@@ -110,8 +113,8 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 -(void)drawRect:(CGRect)rect {
 	[super drawRect:rect];
 
-    UIColor *bg = [UIColor whiteColor],
-            *fg = [UIColor blueColor];
+	UIColor *bg = [UIColor colorWithHue:0.5 saturation:0.5 brightness:0.9 alpha:1.0],
+            *fg = [UIColor darkTextColor];
 
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextAddRoundRect(context, CGRectInset(self.bounds, 2.0, 2.0), 6.0);
