@@ -1,0 +1,9 @@
+Package: com.guilleme.QSB
+Name: QSB
+Version: 0.0
+Architecture: iphoneos-arm
+Description: QSB
+Maintainer: F. Guillemé
+Author: F. Guillemé
+Section: System
+Pre-Depends: firmware (>= 5.0)
