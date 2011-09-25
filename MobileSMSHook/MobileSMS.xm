@@ -198,11 +198,17 @@ static void readDefaults() {
 }
 
 -(float)tableView:(id)view heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    CKTranscriptBubbleData *data = [self bubbleData];
     float h = %orig;
-    NSString *s = [data textAtIndex:indexPath.row];
+    CKTranscriptBubbleData *data = [self bubbleData];
 
-    if (showSmileys && [s containsEmoji]) h *= 1.2;
+    if ([data balloonClassAtIndex:indexPath.row] == objc_getClass("CKSimpleBalloonView")) {
+        NSString *s = [data textAtIndex:indexPath.row];
+
+        if (showSmileys && [s containsEmoji]) {
+            CGSize size = [data sizeAtIndex:indexPath.row];
+            h = size.height + 8.0;
+        }
+    }
     return h;
 }
 
