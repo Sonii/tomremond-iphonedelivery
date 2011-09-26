@@ -5,6 +5,18 @@
 #include <objc/runtime.h>
 #import <dispatch/dispatch.h>
 
+@interface SBUIController
++(id)sharedInstance;
+-(void)clickedMenuButton;
+@end
+
+@interface SBUserAgent
++(id)sharedUserAgent;
+-(BOOL)springBoardIsActive;
+-(void)setBadgeNumberOrString:(id)string forApplicationWithID:(id)anId;
+-(void)setIdleText:(id)text;
+@end
+
 
 @interface SBIconController
 +(id)sharedInstance;
@@ -15,7 +27,12 @@
 -(id)icons;
 @end
 
+
+@interface SBNewsstandIcon : NSObject
+@end
+
 @interface SBFolderIcon : NSObject
+-(id)iconOverlayImageForLocation:(unsigned)n;
 @end
 
 @interface SBApplicationIcon  : NSObject
@@ -60,22 +77,23 @@
 #define kReportHeight (320.0 / SCALE)
 #define kPageWidth (320.0 / SCALE)
 
--(void)loadPage:(unsigned)n {
+-(BOOL)loadPage:(unsigned)n {
 	WeeQSBView *v = [[WeeQSBView alloc] initWithPage:n];
-	if (v == nil) return;
+	if (v == nil) return NO;
 
-	[scrollView addSubview:v];
-	[v release];
-	[scrollView setContentSize:CGSizeMake((n + 1) * kPageWidth, kReportHeight)];
+	dispatch_async(dispatch_get_main_queue(), ^{
+			[scrollView addSubview:v];
+			[v release];
+			[scrollView setContentSize:CGSizeMake((n + 1) * kPageWidth, kReportHeight)];
+			[scrollView setNeedsDisplay];
+	});	
+	return YES;
 }
 
 -(void)viewWillAppear {
-	[self loadPage:0];	
-	[self loadPage:1];	
-	[self loadPage:2];	
-	[self loadPage:3];	
-	[self loadPage:4];	
-	[self loadPage:5];	
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			for (int i = 0;[self loadPage:i++];);
+	});
 }
 
 - (void)viewDidDisappear {
@@ -89,17 +107,6 @@
     {
         _view = [[UIView alloc] initWithFrame:CGRectMake(2, 0, 316, kReportHeight)];
         
-#if 0
-        UIImage *bg = [[UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/WeeQSB.bundle/WeeAppBackground.png"] 
-					   stretchableImageWithLeftCapWidth:5 
-										   topCapHeight:kReportHeight]; 
-		
-		UIImageView *bgView = [[UIImageView alloc] initWithImage:bg];
-        bgView.frame = CGRectMake(0, 0, 316, kReportHeight);
-        [_view addSubview:bgView];
-        [bgView release];
-#endif
-
 		scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 316, kReportHeight)];
 
 		scrollView.scrollEnabled = YES;
@@ -153,10 +160,12 @@
 
 	self = [super initWithFrame:CGRectMake(width * page, 0.0, width, height)];
 
-	UIImageView *back = [[UIImageView alloc] initWithFrame:CGRectMake(x + 2 , y + 2 , width - 4 , height - 4)];
-	back.image = [[UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/WeeQSB.bundle/WeeAppBackground.png"]
-						stretchableImageWithLeftCapWidth:5 
-									 topCapHeight:5]; 
+	UIImageView *back = [[UIImageView alloc] initWithFrame:CGRectMake(x + 2 , y, width - 4 , height)];
+	NSBundle *b = [NSBundle bundleWithIdentifier:@"com.guilleme.WeeQSB"];
+	NSLog(@"%@", [b bundlePath]);
+	back.image = [[UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/WeeAppBackground.png", [b bundlePath]]]
+				  stretchableImageWithLeftCapWidth:5 
+									  topCapHeight:5]; 
 	[self addSubview:back];
 	[back release];
 
@@ -164,6 +173,9 @@
 	for (SBApplicationIcon *icon in icons) {
 		UIImageView *v = [[UIImageView alloc] 
 								initWithFrame:CGRectMake(x, y, width / 4 - margin * 2, height / 4 - margin * 2)];
+		if ([icon class] == [objc_getClass("SBFolderIcon")  class] ||
+			[icon class] == [objc_getClass("SBNewsstandIcon") class])
+			v.backgroundColor = [UIColor blackColor];
 		v.image = [icon generateIconImage:2];
 		[self addSubview:v];
 		[v release];
@@ -193,6 +205,11 @@
 	offset.x = 320.0 * (1 + page);
 
 	[[objc_getClass("SBBulletinListController") sharedInstance] hideListViewAnimated:YES];
+
+	// first simulate a click menu
+	if (![[objc_getClass("SBUserAgent") sharedUserAgent] springBoardIsActive])
+		[[objc_getClass("SBUIController") sharedInstance] clickedMenuButton];
+
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10000000), dispatch_get_current_queue(), 
 					^{ 
 						[sv setContentOffset:offset animated:YES];
