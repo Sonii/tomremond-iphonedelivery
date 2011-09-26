@@ -21,13 +21,15 @@ include $(THEOS_MAKE_PATH)/aggregate.mk
 archive:
 	git archive --format=tar HEAD | gzip > ~/idcc.${THEOS_PACKAGE_VERSION}.tar.gz
 
-publish: package
+publish: 
 	@dpkg-scanpackages . 2> /dev/null > Packages
 	@cat Packages
 	@bzip2 -f Packages
 	ssh $(REPO_URL) mkdir -p www/$(REPO)/
+	ssh $(REPO_URL) mkdir -p www/$(REPO)/QSB/
 	scp Packages.bz2 $(REPO_URL):www/$(REPO)/
 	scp com.guilleme.iphonedelivery_$(shell cat .theos/Packages/com.guilleme.iphonedelivery-$(VERSION))_iphoneos-arm.deb $(REPO_URL):www/$(REPO)/
+	scp QSB/com.guilleme.QSB_$(shell cat ./QSB/.theos/Packages/com.guilleme.QSB-1.0)_iphoneos-arm.deb $(REPO_URL):www/$(REPO)/QSB/
 
 after-stage::
 	@mv  _/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeBrowseID.dylib \
