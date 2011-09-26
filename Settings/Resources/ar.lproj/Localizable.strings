@@ -21,5 +21,12 @@
 	<key>Style</key>
 	<string>نمط الإشعار</string>
 	<key>Vibrate</key>
-	<string>إهتز</string></dict>
+	<string>إهتز</string>
+	<key>Small font size</key>
+	<string>نص صغير</string>
+	<key>Contact picture</key>
+	<string>صورة المتصل</string>
+	<key>Simple Alert</key>
+	<string>تنبيه بسيط</string>
+</dict>
 </plist>
