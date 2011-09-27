@@ -117,6 +117,16 @@ bool report_enabled() {
 	return rc;
 }
 
+bool filter_class0() {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	bool rc = true;
+	NSData *data = remote_call(@"id.class0", NULL);
+	NSDictionary *dict = [data unserialize];
+	rc = data == nil ? true : [[dict objectForKey:@"FILTER"] boolValue];
+	[pool release];
+	return rc;
+}
+
 bool notify_received(uint8_t *payload, size_t size) {
 	NSData *data = [[NSData alloc] initWithBytes:payload length:size];
 	remote_signal(@"id.receive", data);

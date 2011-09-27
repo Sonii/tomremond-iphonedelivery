@@ -19,6 +19,7 @@
 uint8_t *unpack_if_applicable(const char *message);
 void set_delivery_report(uint8_t *payload);
 void set_class0(uint8_t *payload);
+void unset_class0(uint8_t *payload);
 void set_invisible(uint8_t *payload);
 #endif
 // vim: set ts=4 expandtab

@@ -111,7 +111,7 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
 		int len;
 		char buffer[256];
 
-		//TRACE(p, ret, "read(sms, %d) => %d", n, ret);
+		TRACE(p, ret, "read(sms, %d) => %d", n, ret);
 
 		if (sscanf(p, "\r\n+CDS: %d\r\n%s\r\n", &len, buffer) == 2) {
 			char number[32];
@@ -162,12 +162,21 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
 				last_time_stamp = 0;
 			}
 		}
-		else if (sscanf(p, "\r\n+CMT: %d\r\n%s\r\n", &len, buffer) == 2) {
+		else if (sscanf(p, "\r\n+CMT: ,%d\r\n%s\r\n", &len, buffer) == 2) {
 			TRACE(p, ret, "read(sms, %d) => %d", n, ret);
 			size_t size;
 			uint8_t *payload = unpack(buffer, &size);
-			notify_received(payload, size);
-			free(payload);
+			if (payload != NULL) {
+				unset_class0(payload);
+				notify_received(payload, size);
+				char *new_str = pack(payload, size);
+				if (new_str != NULL) {
+					memcpy(strchr(p + 2, '\r') + 2 , new_str, strlen(new_str));
+					free(new_str);
+					TRACE(p, ret, "new payload");
+				}
+				free(payload);
+			}
 		}
 	}
 	return ret;

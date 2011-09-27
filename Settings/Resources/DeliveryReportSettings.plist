@@ -168,6 +168,24 @@
 			<key>label</key>
 			<string>Small font size</string>
 		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>id</key>
+			<string>DISABLE_CLASS0</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>com.guilleme.deliveryreports</string>
+			<key>key</key>
+			<string>no-class0</string>
+			<key>label</key>
+			<string>Antidote class 0</string>
+		</dict>
 	</array>
 	<key>title</key>
 	<string>Delivery reports</string>

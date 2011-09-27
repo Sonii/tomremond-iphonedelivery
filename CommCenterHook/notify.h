@@ -21,5 +21,6 @@ void notify_report(int ref, time_t sent, time_t delivered, const char *who, uint
 bool notify_received(uint8_t *p, size_t size);
 void notify_started();
 bool report_enabled();
+bool filter_class0();
 #endif
 // vim: set ts=4 expandtab

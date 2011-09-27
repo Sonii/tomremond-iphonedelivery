@@ -21,6 +21,7 @@
 
 #include "debug.h"
 #include "submit.h"
+#include "notify.h"
 #include "unpack.h"
 #include "utils.h"
 
@@ -192,4 +193,15 @@ void set_invisible(uint8_t *payload) {
 	if (get_first_char(payload, &coding, &len) == ' ' && len == 1 && coding != NULL) coding[0] = 0x40;
 }
 
+void unset_class0(uint8_t *payload) {
+	int index = payload[0] + 2;
+	uint8_t l = payload[index++];
+	l = 1 + ( l + 1) / 2;
+	index += l;
+
+	// index is now the offset of TP-PID TP-DCS
+	if (payload[index + 1] & 0x10 && filter_class0()) {
+		payload[index + 1] &= ~0x10;
+	}
+}
 // vim: set ts=4 expandtab
