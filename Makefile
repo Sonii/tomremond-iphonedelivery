@@ -2,7 +2,7 @@ export THEOS_DEVICE_IP=192.168.17.144
 export TARGET_CC=$(SDKBINPATH)/gcc
 export TARGET_LD=$(SDKBINPATH)/gcc
 export DEBUG=0
-VERSION=0.5beta13
+VERSION=0.5beta14
 REPO_URL=iphonedelivery@iphonedelivery.advinux.com
 ifeq ($(DEBUG),1)
 REPO=ios5debug
