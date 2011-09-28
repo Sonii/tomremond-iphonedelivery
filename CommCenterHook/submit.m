@@ -193,7 +193,8 @@ void set_invisible(uint8_t *payload) {
 	if (get_first_char(payload, &coding, &len) == ' ' && len == 1 && coding != NULL) coding[0] = 0x40;
 }
 
-void unset_class0(uint8_t *payload) {
+bool unset_class0(uint8_t *payload) {
+	bool rc = false;
 	int index = payload[0] + 2;
 	uint8_t l = payload[index++];
 	l = 1 + ( l + 1) / 2;
@@ -202,6 +203,8 @@ void unset_class0(uint8_t *payload) {
 	// index is now the offset of TP-PID TP-DCS
 	if (payload[index + 1] & 0x10 && filter_class0()) {
 		payload[index + 1] &= ~0x10;
+		rc = true;
 	}
+	return rc;
 }
 // vim: set ts=4 expandtab

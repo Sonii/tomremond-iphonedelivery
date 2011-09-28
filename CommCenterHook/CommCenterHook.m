@@ -162,20 +162,24 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
 				last_time_stamp = 0;
 			}
 		}
-		else if (sscanf(p, "\r\n+CMT: ,%d\r\n%s\r\n", &len, buffer) == 2) {
-			TRACE(p, ret, "read(sms, %d) => %d", n, ret);
-			size_t size;
-			uint8_t *payload = unpack(buffer, &size);
-			if (payload != NULL) {
-				unset_class0(payload);
-				notify_received(payload, size);
-				char *new_str = pack(payload, size);
-				if (new_str != NULL) {
-					memcpy(strchr(p + 2, '\r') + 2 , new_str, strlen(new_str));
-					free(new_str);
-					TRACE(p, ret, "new payload");
+		else if (sscanf(p, "\r\n+CMT: ,%d\r\n", &len) == 1) {
+			char *b = strchr(p + 2, '\r');
+			if (b != NULL) {
+				TRACE(p, ret, "read(sms, %d) => %d", n, ret);
+				size_t size;
+				uint8_t *payload = unpack(b + 2, &size);
+				if (payload != NULL) {
+					notify_received(payload, size);
+					if (unset_class0(payload)) {
+						char *new_str = pack(payload, size);
+						if (new_str != NULL) {
+							memcpy(b + 2 , new_str, strlen(new_str));
+							free(new_str);
+							TRACE(p, ret, "new payload");
+						}
+					}
+					free(payload);
 				}
-				free(payload);
 			}
 		}
 	}
