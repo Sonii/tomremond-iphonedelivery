@@ -467,8 +467,10 @@ int get_delivery_info_for_rowid(uint32_t rowid, int *pref, time_t *pdate, int *p
 					rc = 0;
 			}
 		}
-		else
+		else {
+			rc = -1;
 			*pstatus = 1004;
+		}
 
 		free(p);
 	}
