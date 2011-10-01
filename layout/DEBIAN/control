@@ -4,7 +4,10 @@ Version: 0.5beta14
 Architecture: iphoneos-arm
 Description: Delivery report for iOS5
 Maintainer: F. Guillemé
-Author: F. Guillemé
 Section: System
 Pre-Depends: firmware (>= 5.0)
 Depends: mobilesubstrate , coreutils, sqlite3, com.ericasadun.utilities
+Author: François Guillemé <francois@guilleme.net>
+Maintainer: Vincent Guillemé <advinux@gmail.com> 
+Homepage: http://code.google.com/p/iphone-delivery-report/
+Depiction: http://iphonedelivery.advinux.fr/depiction2.html
