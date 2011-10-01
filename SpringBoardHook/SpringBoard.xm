@@ -142,7 +142,7 @@ static NSString *get_localized_submit(NSDate *d, bool sameday) {
     s = [s stringByReplacingOccurrencesOfString:@"%DATESPEC%" withString:[localizer formatDate:d
                                 style:NSDateFormatterMediumStyle]];
     s = [s stringByReplacingOccurrencesOfString:@"%TIMESPEC%" withString:[localizer formatTime:d
-                                style:sameday?NSDateFormatterMediumStyle:NSDateFormatterNoStyle]];
+                                style:sameday?NSDateFormatterMediumStyle:NSDateFormatterShortStyle]];
     NSLog(@"%s %@ %@", __FUNCTION__, d, s); 
     return s;
 }
@@ -153,7 +153,7 @@ static NSString *get_localized_deliver(NSDate *d, bool sameday) {
     s = [s stringByReplacingOccurrencesOfString:@"%DATESPEC%" withString:[localizer formatDate:d
                                 style:sameday?NSDateFormatterNoStyle:NSDateFormatterMediumStyle]];
     s = [s stringByReplacingOccurrencesOfString:@"%TIMESPEC%" withString:[localizer formatTime:d
-                                style:sameday?NSDateFormatterMediumStyle:NSDateFormatterNoStyle]];
+                                style:sameday?NSDateFormatterMediumStyle:NSDateFormatterShortStyle]];
     NSLog(@"%s %@ %@", __FUNCTION__, d, s); 
     return s;
 }
