@@ -34,7 +34,7 @@ uint8_t *unpack(const char *p, size_t *pn) {
 	uint8_t *data = malloc(strlen(p) / 2);
 	size_t i = 0;
 
-	for (; *p && *p != 0x1A; i++) {
+	for (; *p && *p != 0x1A && *p != '\r' && *p != '\n'; i++) {
 		unsigned n = 0;
 		if (sscanf(p, "%02x", &n) != 1) {
 			LOG("unpacking failed at %d", (int)i);

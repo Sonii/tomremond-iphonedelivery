@@ -106,7 +106,7 @@ MSHook(int, close, int fd) {
  */
 MSHook(size_t, read, int fd, void *p, size_t n) {
 	size_t ret = _read(fd, p, n);
-	if (sms_fd != -1) {
+	if (sms_fd != -1 && sms_fd == fd) {
 		int ref;
 		int len;
 		char buffer[256];
@@ -204,7 +204,6 @@ MSHook(size_t, write, int fd, void *p, size_t n) {
 		if (cmgs_seen) {		
 			// in some case an "at" command comes out. so we can safely ignore it
 			if (memcmp(p, "at+", 3) != 0) {
-				TRACE(p, n, "write(sms, %d)", n);
 				uint8_t *payload = unpack_if_applicable(p); 
 				if (payload != NULL) {
 					last_time_stamp = time(NULL);
@@ -236,7 +235,6 @@ MSHook(size_t, write, int fd, void *p, size_t n) {
 			}
 		}
 		else if (sscanf(p, "at+cmgs=%d", &dummy)) {
-			TRACE(p, n, "write(sms, %d)", n);
 			cmgs_seen = report_enabled();
 		}
 		else {
