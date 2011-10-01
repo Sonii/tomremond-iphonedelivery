@@ -20,6 +20,7 @@ extern "C" {
 #import "smiley.h"
 }
 
+#import "ReportCache.h"
 #import "MarkView.h"
 #import "DeliveryDateView.h"
 #import <dispatch/dispatch.h>
@@ -85,6 +86,7 @@ static void launch_cb (
    CFDictionaryRef userInfo
 ) {
     [currentTranscript _reloadTranscriptLayer];
+    [DeliveryReportCache flush];
 }
 
 /** 
@@ -235,67 +237,58 @@ static void readDefaults() {
             int rowid = [[data messageAtIndex:path.row] rowID];
             if (rowid > 0) {
                 dispatch_async(dispatch_get_current_queue(), ^{
-                        int ref = 0, status = 0, delay = 0;
-                        time_t date = 0;
-                        int rc = get_delivery_info_for_rowid(rowid, &ref, &date, &delay, &status);
+                    DeliveryReport *report = [[DeliveryReportCache reportForRowid:rowid] retain];
 
-                        NSLog(@"rc=%d ref=%d status = %d date = %d delay = %d", rc, ref, status, date, delay);
+                    if (report != nil) {
+                        if (tapped_rowid == rowid && [report delivered]) {
+                            NSDate *d2 = [report.date dateByAddingTimeInterval:report.delay];
+                            DeliveryDateView *iv = [[DeliveryDateView alloc] initWithDate:report.date 
+                                                                                     date:d2 
+                                                                                     view:ballonView];
 
-                        if (rc == 0) {
-                            int code = 3;
+                            NSLog(@"date view = %@", iv);
+                            mcell.clipsToBounds = NO;
 
-                            if (date != 0 && delay >= 0 && status == 0)
-                                code = 1;
-                            else if (date != 0 && ref >= 0)
-                                code = 0;
-                            else if (status == 70)
-                                code = 2;
+                            // animate disappear of previous
+                            [UIView animateWithDuration:0.2 delay:0.0 options:0
+                                animations:^{ markView.alpha = 0.0; }
+                                completion:^(BOOL){ [markView removeFromSuperview]; }
+                            ];
 
-                            if (tapped_rowid == rowid && date != 0 && delay != -1 && status == 0) {
-                                NSDate *d1 = [NSDate dateWithTimeIntervalSince1970:date];
-                                NSDate *d2 = [NSDate dateWithTimeIntervalSince1970:date + delay];
+                            // hide the dateview after some time (15 sec?)
+                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1000000000LL * 15),
+                                    dispatch_get_current_queue(), ^{
+                                        if (tapped_rowid != -1 && inpectionTime != nil &&
+                                            [inpectionTime timeIntervalSinceNow] < 0) {
 
-                                DeliveryDateView *iv = [[DeliveryDateView alloc] initWithDate:d1 date:d2 view:ballonView];
+                                        [inpectionTime release];
+                                        inpectionTime = nil;
+                                        tapped_rowid = -1;
+                                        CFNotificationCenterPostNotification (CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("iphonedelivery.refresh"), NULL, NULL, YES);
+                                    }
+                            });
 
-                                NSLog(@"date view = %@", iv);
-		                        mcell.clipsToBounds = NO;
-
-                                // animate disappear of previous
-                                [UIView animateWithDuration:0.2 delay:0.0 options:0
-                                    animations:^{ markView.alpha = 0.0; }
-                                    completion:^(BOOL){ [markView removeFromSuperview]; }
-                                ];
-
-                                // hide the dateview after some time (15 sec?)
-                                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1000000000LL * 15),
-                                        dispatch_get_current_queue(), ^{
-                                            if (tapped_rowid != -1 && inpectionTime != nil &&
-                                                [inpectionTime timeIntervalSinceNow] < 0) {
-
-                                            [inpectionTime release];
-                                            inpectionTime = nil;
-                                            tapped_rowid = -1;
-                                            CFNotificationCenterPostNotification (CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("iphonedelivery.refresh"), NULL, NULL, YES);
-                                        }
-                                });
-
-                                [lastDateView removeFromSuperview];
-                                [lastDateView release];
-                                lastDateView = iv;
-                            }
-                            else {
-                                MarkView *newMarkView = [[MarkView alloc] init:code cell:mcell status:status];
-
-		                        mcell.clipsToBounds = NO;
-                                if (status == 0 && delay == -1 && ref == 0) 
-                                    newMarkView.hidden = YES;    // during send....
-
-                                NSLog(@"mark view = %@", newMarkView);
-                                [ballonView addSubview:newMarkView];
-                                [newMarkView release];
-                            }
-                            [markView removeFromSuperview];
+                            [lastDateView removeFromSuperview];
+                            [lastDateView release];
+                            lastDateView = iv;
                         }
+                        else {
+                            int code = [report category];
+                            MarkView *newMarkView = [[MarkView alloc] init:code 
+                                                                      cell:mcell 
+                                                                    status:report.status];
+
+                            mcell.clipsToBounds = NO;
+                            if ([report sending])
+                                newMarkView.hidden = YES;    // during send....
+
+                            NSLog(@"mark view = %@", newMarkView);
+                            [ballonView addSubview:newMarkView];
+                            [newMarkView release];
+                        }
+                        [report release];
+                    }
+                    [markView removeFromSuperview];
                 });
                 markView = nil;
             }
