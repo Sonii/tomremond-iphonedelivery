@@ -123,7 +123,7 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
 -(void)drawRect:(CGRect)rect {
 	[super drawRect:rect];
 
-	UIColor *bg = [UIColor colorWithHue:0.5 saturation:0.5 brightness:0.9 alpha:1.0],
+	UIColor *bg = [UIColor colorWithHue:0.5 saturation:0.1 brightness:1.0 alpha:1.0],
             *fg = [UIColor darkTextColor];
 
     CGContextRef context = UIGraphicsGetCurrentContext();
