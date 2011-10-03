@@ -352,11 +352,20 @@ static CFDataRef handle_report (
                 }
                 break;
             case 2:
-                showBulletin(
-                    get_person([dict objectForKey:@"WHO"]),
-                    get_localized_submit(submit_time, YES),
-                    get_localized_status(status),
-                    @"com.apple.MobileSMS", group_id, nil);
+                if (status == 0 || status > 63) {
+                    showBulletin(
+                            get_person([dict objectForKey:@"WHO"]),
+                            get_localized_submit(submit_time, YES),
+                            get_localized_status(status),
+                            @"com.apple.MobileSMS", group_id, nil);
+                }
+                else {
+                    showBulletinBannerOnly(
+                            get_person([dict objectForKey:@"WHO"]),
+                            get_localized_submit(submit_time, YES),
+                            get_localized_status(status),
+                            @"com.apple.MobileSMS", group_id, nil);
+                }
                 break;
             case 3: 
                 if (status == 0 || status > 63) {
@@ -463,4 +472,5 @@ static void register_port_handler(CFStringRef str, CFMessagePortCallBack cb)  {
             usingBlock:^(NSNotification *){ readDefaults(); }];
 }
 %end
+
 // vim: ft=objc ts=4 expandtab
