@@ -68,10 +68,14 @@ void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSStri
     b.bulletinID = [NSString stringWithFormat:@"DeliveryReport_%f", [[NSDate date] timeIntervalSince1970]];
     [b setMessage:[NSString stringWithFormat:@"%@ %@", subtitle, message]];
 
-    if (group_id > 0)
-        b.defaultAction = [objc_getClass("BBAction") 
+    if (group_id > 0) {
+        b.defaultAction = [objc_getClass("BBLaunchAction") 
             actionWithLaunchURL:[NSURL URLWithString:[NSString stringWithFormat:@"sms:/open?groupid=%d", group_id]]
-            callblock:nil];
+            callblock:^(id o) {
+                NSLog(@"BBLaunchAction block called %@", o);
+                [blc observer:observer removeBulletin:b];
+            }];
+    }
 
     if ([springboard isLocked]) {
         b2 = [[objc_getClass("BBBulletin") alloc] init];
@@ -97,5 +101,29 @@ void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSStri
     [blc observer:observer addBulletin:b forFeed:0];
     [b release];
     [b2 release];
+}
+
+void showBulletinBannerOnly(NSString *title, NSString *subtitle, NSString *message, NSString *sectionID, int group_id, NSDate *date) {
+    static id observer = nil;
+
+    // build a bulletin
+    id controller = nil;
+    BBBulletin *b = [[objc_getClass("BBBulletin") alloc] init];
+    [b setTitle:title];
+    [b setSectionID:sectionID];
+    b.clearable = YES;
+    b.date = date;
+    b.bulletinID = [NSString stringWithFormat:@"DeliveryReport_%f", [[NSDate date] timeIntervalSince1970]];
+    [b setMessage:[NSString stringWithFormat:@"%@ %@", subtitle, message]];
+
+    if (group_id > 0)
+        b.defaultAction = [objc_getClass("BBLaunchAction") 
+            actionWithLaunchURL:[NSURL URLWithString:[NSString stringWithFormat:@"sms:/open?groupid=%d", group_id]]
+                      callblock:nil];
+
+    // publish it as a banner
+    controller = [objc_getClass("SBBulletinBannerController") sharedInstance] ;
+    [controller observer:observer addBulletin:b forFeed:0];
+    [b release];
 }
 // vim: ft=objc ts=4 expandtab
