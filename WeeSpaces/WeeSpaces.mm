@@ -49,13 +49,13 @@
 -(void)hideListViewAnimated:(BOOL)animated;
 @end
 
-@interface WeeQSBView : UIView {
+@interface WeeSpacesView : UIView {
 }
 -(void)gotoPage:(unsigned)n;
 -(id)initWithPage:(unsigned)page;
 @end
 
-@interface WeeQSBController : NSObject <BBWeeAppController, UIScrollViewDelegate> {
+@interface WeeSpacesController : NSObject <BBWeeAppController, UIScrollViewDelegate> {
 	UIScrollView *scrollView;
     UIView *_view;
 }
@@ -64,7 +64,7 @@
 - (UIView *)view;
 @end
 
-@implementation WeeQSBController
+@implementation WeeSpacesController
 + (void)initialize {
 }
 
@@ -78,7 +78,7 @@
 #define kPageWidth (320.0 / SCALE)
 
 -(BOOL)loadPage:(unsigned)n {
-	WeeQSBView *v = [[WeeQSBView alloc] initWithPage:n];
+	WeeSpacesView *v = [[WeeSpacesView alloc] initWithPage:n];
 	if (v == nil) return NO;
 
 	dispatch_async(dispatch_get_main_queue(), ^{
@@ -135,7 +135,7 @@
 
 @end
 
-@implementation WeeQSBView
+@implementation WeeSpacesView
 
 -(void)onTouch:(UIControl*)view {
 	[view setSelected:YES];
@@ -161,7 +161,7 @@
 	self = [super initWithFrame:CGRectMake(width * page, 0.0, width, height)];
 
 	UIImageView *back = [[UIImageView alloc] initWithFrame:CGRectMake(x + 2 , y, width - 4 , height)];
-	NSBundle *b = [NSBundle bundleWithIdentifier:@"com.guilleme.WeeQSB"];
+	NSBundle *b = [NSBundle bundleWithIdentifier:@"com.guilleme.WeeSpaces"];
 	NSLog(@"%@", [b bundlePath]);
 	back.image = [[UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/WeeAppBackground.png", [b bundlePath]]]
 				  stretchableImageWithLeftCapWidth:5 

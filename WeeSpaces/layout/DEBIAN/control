@@ -1,8 +1,8 @@
-Package: com.guilleme.QSB
-Name: QSB
+Package: com.guilleme.WeeSpaces
+Name: WeeSpaces
 Version: 1.0
 Architecture: iphoneos-arm
-Description: QSB. A wee plugin to quicly select a SpringBoard page.
+Description: WeeSpace. A wee plugin to quickly select a SpringBoard page.
 Maintainer: F. Guillemé
 Author: F. Guillemé
 Section: System
