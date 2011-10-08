@@ -9,6 +9,10 @@ extern "C" {
 #import "database.h"
 }
 
+#if !defined(DEBUG)
+#define NSLog(...) 
+#endif
+
 static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radius) {
     CGContextBeginPath(context);
     CGContextMoveToPoint(context, rect.origin.x, rect.origin.y + radius);
