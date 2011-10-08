@@ -2,49 +2,25 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-<!-- not used
-	<key>MESSAGE_DELIVERED</key>
-	<string>發送給 %@ 的訊息 \r發送于 %@ \r于 %@ 送達</string>
-	<key>MESSAGE_DELIVERED_SHORT</key>
-	<string>訊息已送達</string>
-	<key>MESSAGE_GENERIC</key>
-	<string>發送給 %@ 的訊息 \r發送于 %@ \r狀態=%@</string>
-	<key>MESSAGE_GENERIC_SHORT</key>
-	<string>發送于 %@ 的訊息 \r狀態=%@</string>
-	<key>MESSAGE_NOT_DELIVERED</key>
-	<string>發送給 %@ 的訊息等待發送中</string>
-	<key>MESSAGE_NOT_DELIVERED_SHORT</key>
-	<string>訊息等待發送中</string>
-	<key>STATUS_64</key>
-	<string>遠程過程錯誤</string>
-	<key>STATUS_65</key>
-	<string>不完整的地址</string>
-	<key>STATUS_70</key>
-	<string>發送失敗</string>
-	<key>nameswap</key>
-	<true/>
-	<key>unicode</key>
-	<true/>
-	-->
 	<key>DATE</key>
-	<string>%DATE%</string>
+	<string>在 %DATE% </string>
 	<key>DELIVERED</key>
-	<string>交 付 %DATESPEC% %TIMESPEC%</string>
+	<string>在 %DATESPEC% %TIMESPEC% 寄出</string>
 	<key>STATUS</key>
-	<string>code=%STATUS%</string>
+	<string>錯誤碼=%STATUS%</string>
 	<key>STATUS_48</key>
-	<string>有 待</string>
+	<string>等待中</string>
 	<key>STATUS_70</key>
-	<string>過 期</string>
+	<string>過期</string>
 	<key>SUBMIT</key>
-	<string>提 交 %DATESPEC% %TIMESPEC%</string>
+	<string>在 %DATESPEC% %TIMESPEC% 寄出</string>
 	<key>TIME</key>
-	<string>%TIME% </string>
+	<string>在 %TIME% </string>
 	<key>TITLE</key>
-	<string>➜ %NAME% %SURNAME%</string>
+	<string>由 %NAME% %SURNAME% 寄出</string>
 	<key>TODAY</key>
-	<string>今 天 的</string>
+	<string>今日</string>
 	<key>YESTERDAY</key>
-	<string>昨 日</string>
+	<string>昨日</string>
 </dict>
 </plist>
