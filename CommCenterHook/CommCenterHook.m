@@ -111,7 +111,7 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
 		int len;
 		char buffer[256];
 
-		TRACE(p, ret, "read(sms, %d) => %d", n, ret);
+		//TRACE(p, ret, "read(sms, %d) => %d", n, ret);
 
 		if (sscanf(p, "\r\n+CDS: %d\r\n%s\r\n", &len, buffer) == 2) {
 			char number[32];
@@ -169,7 +169,7 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
 				size_t size;
 				uint8_t *payload = unpack(b + 2, &size);
 				if (payload != NULL) {
-					notify_received(payload, size);
+					//notify_received(payload, size);
 					if (unset_class0(payload)) {
 						char *new_str = pack(payload, size);
 						if (new_str != NULL) {
@@ -199,9 +199,11 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
  */
 MSHook(size_t, write, int fd, void *p, size_t n) {
 	static bool cmgs_seen = false;
-	if (sms_fd != -1) {
+	if (sms_fd != -1 && sms_fd == fd) {
 		int dummy;
-		if (cmgs_seen) {		
+		//TRACE(p, n, "write(sms, %d)", n);
+		if (cmgs_seen) {
+			TRACE(p, n, "write(sms, %d)", n);
 			// in some case an "at" command comes out. so we can safely ignore it
 			if (memcmp(p, "at+", 3) != 0) {
 				uint8_t *payload = unpack_if_applicable(p); 
