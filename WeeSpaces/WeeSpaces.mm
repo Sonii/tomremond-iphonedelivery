@@ -5,54 +5,23 @@
 #include <objc/runtime.h>
 #import <dispatch/dispatch.h>
 
-@interface SBUIController
-+(id)sharedInstance;
--(void)clickedMenuButton;
-@end
+#import "needed-stuff.h"
 
-@interface SBUserAgent
-+(id)sharedUserAgent;
--(BOOL)springBoardIsActive;
--(void)setBadgeNumberOrString:(id)string forApplicationWithID:(id)anId;
--(void)setIdleText:(id)text;
-@end
-
-
-@interface SBIconController
-+(id)sharedInstance;
--(id)rootIconListAtIndex:(unsigned)page;
-@end
-
-@interface SBIconListView : UIView
--(id)icons;
-@end
-
-
-@interface SBNewsstandIcon : NSObject
-@end
-
-@interface SBFolderIcon : NSObject
--(id)iconOverlayImageForLocation:(unsigned)n;
-@end
-
-@interface SBApplicationIcon  : NSObject
--(id)getGenericIconImage:(int)image;
--(UIImage *)generateIconImage:(int)image;
--(id)displayName;
--(void)launch;
-@end
-
-@interface SBBulletinListController
-+(id)sharedInstance;
--(void)showTabViewAnimated:(BOOL)animated;
--(void)hideTabViewAnimated:(BOOL)animated;
--(void)hideListViewAnimated:(BOOL)animated;
-@end
+#define SCALE 3.0
+#define kReportHeight (320.0 / SCALE)
+#define kPageWidth (320.0 / SCALE)
 
 @interface WeeSpacesView : UIView {
 }
 -(void)gotoPage:(unsigned)n;
 -(id)initWithPage:(unsigned)page;
+@end
+
+@interface WeeAppView : UIView {
+	SBApplication *appl;
+	UIImage *snapshot;
+}
+-(id)initWithApplication:(SBApplication *)app;
 @end
 
 @interface WeeSpacesController : NSObject <BBWeeAppController, UIScrollViewDelegate> {
@@ -73,26 +42,68 @@
 	[super dealloc];
 }
 
-#define SCALE 3.0
-#define kReportHeight (320.0 / SCALE)
-#define kPageWidth (320.0 / SCALE)
-
--(BOOL)loadPage:(unsigned)n {
+-(BOOL)loadPage:(unsigned)n atIndex:(int)index {
 	WeeSpacesView *v = [[WeeSpacesView alloc] initWithPage:n];
 	if (v == nil) return NO;
 
 	dispatch_async(dispatch_get_main_queue(), ^{
+			CGRect r = v.frame;
+			r.origin.x = index * kPageWidth;
+			v.frame = r;
 			[scrollView addSubview:v];
-			[v release];
-			[scrollView setContentSize:CGSizeMake((n + 1) * kPageWidth, kReportHeight)];
+			[scrollView setContentSize:CGSizeMake((index + 1) * kPageWidth, kReportHeight)];
 			[scrollView setNeedsDisplay];
 	});	
+	[v release];
 	return YES;
 }
 
+-(BOOL)loadApplication:(SBApplication *)app atIndex:(int)index {
+	WeeAppView *v = [[WeeAppView alloc] initWithApplication:app];
+	if (v == nil) return NO;
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+			CGRect r = v.frame;
+			r.origin.x = index * kPageWidth;
+			v.frame = r;
+			[v setNeedsDisplay];
+			[scrollView addSubview:v];
+			[scrollView setContentSize:CGSizeMake((index + 1) * kPageWidth, kReportHeight)];
+			[scrollView setNeedsDisplay];
+	});
+	[v release];
+	return YES;	
+}
+
 -(void)viewWillAppear {
+	// get a list of running app
+	NSArray *runningApplications = 
+		[[[objc_getClass("SBApplicationController") sharedInstance] allApplications]
+					filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary *d) {
+							SBApplication *a = (SBApplication *)obj;
+							return a.process != nil;
+					}
+				]
+		];
+
+	// populate the scrollview with snapshots
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			for (int i = 0;[self loadPage:i++];);
+			int i = 0;
+
+			// first the snapshots of running apps
+			for (SBApplication *a in [runningApplications reverseObjectEnumerator]) {
+				if ([self loadApplication:a atIndex:i]) 
+					i++;
+			}
+			// display the last snapshot
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[scrollView setContentOffset:CGPointMake((i - 1) * kPageWidth, 0) animated:YES];
+				[scrollView setNeedsDisplay];
+			});
+
+			// then the springboard pages
+			int page = 0;
+			while ([self loadPage:page++ atIndex:i++]) ;
 	});
 }
 
@@ -139,8 +150,6 @@
 
 -(void)onTouch:(UIControl*)view {
 	[view setSelected:YES];
-	[view setBackgroundColor:[UIColor blackColor]];
-	NSLog(@"select page %d", self.tag);
 	[self gotoPage:self.tag];
 }
 
@@ -160,6 +169,7 @@
 
 	self = [super initWithFrame:CGRectMake(width * page, 0.0, width, height)];
 
+	x = y = 0;
 	UIImageView *back = [[UIImageView alloc] initWithFrame:CGRectMake(x + 2 , y, width - 4 , height)];
 	NSBundle *b = [NSBundle bundleWithIdentifier:@"com.guilleme.WeeSpaces"];
 	NSLog(@"%@", [b bundlePath]);
@@ -190,7 +200,6 @@
 	self.tag = page;
 
 	UIControl *cntrl = [[UIControl alloc] initWithFrame:CGRectMake(0 , 0, width, height)];
-	//cntrl.opaque = NO;
 	cntrl.userInteractionEnabled = YES;
 
 	[cntrl addTarget:self action:@selector(onTouch:) forControlEvents:UIControlEventTouchDown];
@@ -215,6 +224,63 @@
 						[sv setContentOffset:offset animated:YES];
 					});
 
+}
+@end
+
+@implementation WeeAppView 
+-(void)onTouch:(UIControl*)view {
+	[view setSelected:YES];
+
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10000000), dispatch_get_current_queue(), 
+		^{ 
+			[[objc_getClass("SBUIController") sharedInstance] activateApplicationFromSwitcher:appl];
+		});
+}
+
+-(id)initWithApplication:(SBApplication *)app{
+	BOOL b1 = NO ;
+	int o1, o2;
+	snapshot = [app defaultImage:&b1 
+				   preferredScale:1.0 / SCALE
+			  originalOrientation:&o1 
+			   currentOrientation:&o2
+				  canUseIOSurface:YES];
+
+	NSLog(@"%@ b = %d o1 = %d o2 = %d ref = %d", snapshot, b1, o1, o2, [snapshot retainCount]);
+
+	appl = [app retain];
+
+	CGFloat width, height;
+
+	width = 320 / SCALE;
+	height = 320 / SCALE;
+
+	self = [super initWithFrame:CGRectMake(0.0, 0.0, width, height)];
+
+	UIControl *cntrl = [[UIControl alloc] initWithFrame:CGRectMake(0 , 0, width, height)];
+	cntrl.userInteractionEnabled = YES;
+
+	[cntrl addTarget:self action:@selector(onTouch:) forControlEvents:UIControlEventTouchDown];
+	[self addSubview:cntrl];
+	[cntrl release];
+	return self;
+}
+
+-(void)dealloc {
+	[appl release];
+	[super dealloc];
+}
+
+-(void)drawRect:(CGRect)rect {
+	CGRect r = CGRectInset(self.bounds, 8, 8);
+	[snapshot drawInRect:CGRectOffset(r, 4, 8)];
+	[[UIColor whiteColor] set];
+	UIFont *f  = [UIFont systemFontOfSize:10];
+	CGSize size = [[appl displayName] sizeWithFont:f];
+	CGFloat x = (CGRectGetWidth(self.frame) - size.width) / 2.0;
+
+	[[appl displayName] drawInRect:CGRectMake(x, 0, self.frame.size.width, 10) 
+						  withFont:f];
 }
 @end
 
