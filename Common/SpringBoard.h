@@ -8,6 +8,40 @@
 @interface UIAlertViewController : NSObject<UIAlertViewDelegate>
 @end
 
+#if 1
+@interface SBSMSClass0Alert : NSObject
+- (id)initWithString:(id)arg1;
+- (void)deactivate;
+- (void)activate;
+- (id)display;
+@end
+
+@interface TLToneManager : NSObject {
+}
+
++ (id)sharedRingtoneManager;
+- (id)nullTextToneName;
+- (id)defaultTextToneName;
+- (id)defaultTextToneIdentifier;
+- (id)systemNewSoundDirectory;
+- (id)systemSoundDirectory;
+- (id)systemRingtoneDirectory;
+- (id)iTunesRingtoneDirectory;
+- (id)ITunesRingtoneInformationPlist;
+- (id)deviceITunesRingtoneInformationPlist;
+- (id)deviceITunesRingtoneDirectory;
+- (id)rootDirectory;
+- (id)localizedRingtoneNameWithIdentifier:(id)arg1;
+- (id)localizedNameWithIdentifier:(id)arg1;
+- (id)defaultRingtonePath;
+- (id)defaultRingtoneName;
+- (id)defaultRingtoneIdentifier;
+- (void)loadITunesRingtoneInfoPlistAtPath:(id)arg1;
+- (unsigned long)soundIDForToneIdentifier:(id)arg1;
+@end
+
+#else
+/* we don't need what follow but I leave it in case.... */
 @class SBAlertDisplay;
 @class SBAlert;
 
@@ -372,6 +406,7 @@
 - (id)initWithChangeNotifications:(BOOL)arg1;
 - (id)init;
 @end
+#endif
 
 
 
