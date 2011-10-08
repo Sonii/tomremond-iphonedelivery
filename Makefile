@@ -2,7 +2,7 @@ export THEOS_DEVICE_IP=192.168.17.144
 export TARGET_CC=$(SDKBINPATH)/gcc
 export TARGET_LD=$(SDKBINPATH)/gcc
 export DEBUG=0
-VERSION=0.5beta14
+VERSION=0.5beta15
 REPO_URL=iphonedelivery@iphonedelivery.advinux.com
 ifeq ($(DEBUG),1)
 REPO=ios5debug
@@ -29,7 +29,7 @@ publish:
 	ssh $(REPO_URL) mkdir -p www/$(REPO)/QSB/
 	scp Packages.bz2 $(REPO_URL):www/$(REPO)/
 	scp com.guilleme.iphonedelivery_$(shell cat .theos/Packages/com.guilleme.iphonedelivery-$(VERSION))_iphoneos-arm.deb $(REPO_URL):www/$(REPO)/
-	scp QSB/com.guilleme.QSB_$(shell cat ./QSB/.theos/Packages/com.guilleme.QSB-1.0)_iphoneos-arm.deb $(REPO_URL):www/$(REPO)/QSB/
+	scp WeeSpaces/com.guilleme.WeeSpaces_$(shell cat ./WeeSpaces/.theos/Packages/com.guilleme.WeeSpaces-1.1)_iphoneos-arm.deb $(REPO_URL):www/$(REPO)/WeeSpaces/
 
 after-stage::
 	@mv  _/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeBrowseID.dylib \
