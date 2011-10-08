@@ -30,14 +30,12 @@
    return a data
    */
 static NSData *remote_call(NSString *method, NSData *data) {
-	CFDataRef d = NULL, rv = NULL;
-	if (data != nil) d = CFDataCreate(NULL, [data bytes], [data length]);
+	CFDataRef rv = NULL;
     CFMessagePortRef port = CFMessagePortCreateRemote(NULL, (CFStringRef)method);
     if (port != NULL) {
-        CFMessagePortSendRequest (port, 0, d, 1.0, 1.0, kCFRunLoopDefaultMode, &rv);
+        CFMessagePortSendRequest (port, 0, (CFDataRef)data, 1.0, 1.0, kCFRunLoopDefaultMode, &rv);
         CFRelease(port);
     }
-	if (d != NULL) CFRelease(d);
 	return [[NSData dataWithBytes:CFDataGetBytePtr(rv) length:CFDataGetLength(rv)] retain];
 }
 
@@ -48,14 +46,11 @@ static NSData *remote_call(NSString *method, NSData *data) {
  * @param payload data (itis a serialized dictionary)
  */
 static void remote_signal(NSString *method, NSData *data) {
-	CFDataRef d = NULL;
-	if (data != nil) d = CFDataCreate(NULL, [data bytes], [data length]);
     CFMessagePortRef port = CFMessagePortCreateRemote(NULL, (CFStringRef)method);
     if (port != NULL) {
-        CFMessagePortSendRequest (port, 0, d, 1.0, 0, NULL, NULL);
+        CFMessagePortSendRequest (port, 0, (CFDataRef)data, 1.0, 0, NULL, NULL);
         CFRelease(port);
     }
-	if (d != NULL) CFRelease(d);
 }
 
 /** 
@@ -113,6 +108,7 @@ bool report_enabled() {
 	NSData *data = remote_call(@"id.enabled", NULL);
 	NSDictionary *dict = [data unserialize];
 	rc = data == nil ? true : [[dict objectForKey:@"ENABLED"] boolValue];
+	[data release];
 	[pool release];
 	return rc;
 }
@@ -123,6 +119,7 @@ bool filter_class0() {
 	NSData *data = remote_call(@"id.class0", NULL);
 	NSDictionary *dict = [data unserialize];
 	rc = data == nil ? true : [[dict objectForKey:@"FILTER"] boolValue];
+	[data release];
 	[pool release];
 	return rc;
 }
