@@ -3,6 +3,10 @@
 
 #define MAX_CACHE_SIZE 256
 
+#if !defined(DEBUG)
+#define NSLog(...) 
+#endif
+
 static NSMutableDictionary *cache = nil;
 
 @implementation DeliveryReportCache 

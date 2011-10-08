@@ -26,9 +26,7 @@
 								format:&format
 								errorDescription:&error];
 	if (error != nil) {
-#ifdef DEBUG
         NSLog(@"Deserialization error: %@", error);
-#endif
         [error release];
 	}
 	
