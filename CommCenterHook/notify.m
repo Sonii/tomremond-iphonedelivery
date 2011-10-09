@@ -36,7 +36,7 @@ static NSData *remote_call(NSString *method, NSData *data) {
         CFMessagePortSendRequest (port, 0, (CFDataRef)data, 1.0, 1.0, kCFRunLoopDefaultMode, &rv);
         CFRelease(port);
     }
-	return [[NSData dataWithBytes:CFDataGetBytePtr(rv) length:CFDataGetLength(rv)] retain];
+	return [[[NSData dataWithBytes:CFDataGetBytePtr(rv) length:CFDataGetLength(rv)] retain] autorelease];
 }
 
 /** 
@@ -61,9 +61,11 @@ static void remote_signal(NSString *method, NSData *data) {
  * @param who 
  */
 void notify_submit(int ref, time_t when, const char *who) {
+#ifdef DEBUG
 	char tmp[32];
 	strftime(tmp, sizeof(tmp), "%D %T", localtime(&when));
 	LOG("SMS submited to %s at %s ref = %d", who, tmp, ref);
+#endif
 
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 		NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -71,18 +73,19 @@ void notify_submit(int ref, time_t when, const char *who) {
 			[NSNumber numberWithInt:when], @"WHEN",
 			[NSNumber numberWithInt:ref], @"REF",
 			nil];
-		NSData *data = [NSData serializeFromDictionary:dict];
-		remote_signal(@"id.submit", data);
+		remote_signal(@"id.submit", [[NSData serializeFromDictionary:dict] autorelease]);
 	[pool release];
 }
 
 void notify_report(int ref, time_t when_sent, time_t when_delivered, const char *who, uint8_t status, uint8_t *payload, size_t size) { 
+#ifdef DEBUG
 	char tmp1[32];
 	char tmp2[32];
 
 	strftime(tmp1, sizeof(tmp1), "%D %T", localtime(&when_sent));
 	strftime(tmp2, sizeof(tmp2), "%D %T", localtime(&when_delivered));
 	LOG("Report from %s sent at %s delivered at %s ref = %d status %d", who, tmp1, tmp2, ref, status);
+#endif
 
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 		NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -93,8 +96,7 @@ void notify_report(int ref, time_t when_sent, time_t when_delivered, const char 
 			[NSNumber numberWithInt:status], @"STATUS",
 			[NSData dataWithBytes:payload length:size], @"PAYLOAD",
 			nil];
-		NSData *data = [NSData serializeFromDictionary:dict];
-		remote_signal(@"id.report", data);
+		remote_signal(@"id.report", [[NSData serializeFromDictionary:dict] autorelease]);
 	[pool release];
 }
 
@@ -106,9 +108,10 @@ bool report_enabled() {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	bool rc = true;
 	NSData *data = remote_call(@"id.enabled", NULL);
-	NSDictionary *dict = [data unserialize];
-	rc = data == nil ? true : [[dict objectForKey:@"ENABLED"] boolValue];
-	[data release];
+	if (data != nil) {
+		NSDictionary *dict = [[data unserialize] autorelease];
+		rc = [[dict objectForKey:@"ENABLED"] boolValue];
+	}
 	[pool release];
 	return rc;
 }
@@ -117,9 +120,10 @@ bool filter_class0() {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	bool rc = true;
 	NSData *data = remote_call(@"id.class0", NULL);
-	NSDictionary *dict = [data unserialize];
-	rc = data == nil ? true : [[dict objectForKey:@"FILTER"] boolValue];
-	[data release];
+	if (data != nil) {
+		NSDictionary *dict = [[data unserialize] autorelease];
+		rc = [[dict objectForKey:@"FILTER"] boolValue];
+	}
 	[pool release];
 	return rc;
 }

@@ -36,16 +36,29 @@ static Boolean deliveryEnabled;
 static Boolean filterClass0;
 static int deliveryAlertMethod;
 
+/*
+   Just a tiny object acting as a receiver for te touch dismiss
+   */
 @interface UIAlertViewControllerFlash : UIAlertViewController {
     id _alert;
 }
++(id)sharedInstance;
 -(id)initWithAlert:(id)alert;
 -(void)touchOk:(id)sender;
 @end
 
 @implementation UIAlertViewControllerFlash
+
++(id)sharedInstance {
+    static id instance = nil;
+
+    if (instance == nil) {
+        instance = [[UIAlertViewControllerFlash alloc] init];
+    }
+    return instance;
+}
+
 - (id)initWithAlert:(id)alert {
-    self = [super init];
     _alert = alert;
     return self;
 }
@@ -53,7 +66,6 @@ static int deliveryAlertMethod;
 -(void)touchOk:(id)sender {
     [_alert deactivate];
     [_alert release];
-    [self release];
 }
 @end
 
@@ -107,6 +119,7 @@ static void readDefaults() {
     CFPropertyListRef value = CFPreferencesCopyValue(CFSTR("dr-style"), app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
     if (value) {
         CFNumberGetValue((CFNumberRef)value, kCFNumberIntType, &alert_method);
+        CFRelease(value);
     }
     deliveryAlertMethod = alert_method;
 
@@ -115,6 +128,7 @@ static void readDefaults() {
     CFPropertyListRef p = CFPreferencesCopyValue(CFSTR("dr-sound"), app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
     if (p != nil) {
         setDeliverySound((NSString *)(CFStringRef)p);
+        CFRelease(p);
     }
 }
 
@@ -238,6 +252,25 @@ static void playVibeAndSound() {
     }
 }
 
+static void displayClass0Alert(NSString *str) {
+    /* 
+       this is very dirty and I am not really proud of it....
+       We create a SMS alert and we look for a button in its view hierarchy
+       then we attach an action to this button to dismiss the alert
+       pretty ugly but it works fine
+     */
+    SBSMSClass0Alert *alert = [[objc_getClass("SBSMSClass0Alert") alloc] initWithString:str];
+    [alert activate];
+
+    UIView *display = [alert display];
+    UIButton *b = [display findSubButton];
+
+    if (b != nil) {
+        UIAlertViewControllerFlash *y = [[UIAlertViewControllerFlash sharedInstance] initWithAlert:alert];
+        [b addTarget:y action:@selector(touchOk:)  forControlEvents:UIControlEventTouchUpInside];
+    }
+}
+
 static CFDataRef handle_report (
    CFMessagePortRef local,
    SInt32 msgid,
@@ -245,10 +278,10 @@ static CFDataRef handle_report (
    void *info
 ) {
     NSData *data = (NSData*)d;
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     readDefaults();
     NSDictionary *dict = [data unserialize];
     if (dict != nil) {
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
         time_t s_date = [[dict objectForKey:@"WHENSENT"] intValue];
         const char *who = [[dict objectForKey:@"WHO"] UTF8String];
@@ -257,7 +290,7 @@ static CFDataRef handle_report (
         int sent_date = get_sent_time_for_sms(who, ref);
         int group_id = get_groupid_for_smsc_ref(ref);
 
-        localizer = [[Localizer alloc] init];
+        localizer = [Localizer sharedInstance];
 
         if (status == 0) {
             time_t d_date = [[dict objectForKey:@"WHENDELIVERED"] intValue];
@@ -283,16 +316,8 @@ static CFDataRef handle_report (
                                               get_localized_submit(submit_time, sameday),
                                         get_localized_deliver(deliver_time, sameday)];
 
-                    SBSMSClass0Alert *alert = [[objc_getClass("SBSMSClass0Alert") alloc] initWithString:str];
-                    [alert activate];
+                    displayClass0Alert(str);
 
-                    UIView *display = [alert display];
-                    UIButton *b = [display findSubButton];
-
-                    if (b != nil) {
-                        UIAlertViewControllerFlash *y = [[UIAlertViewControllerFlash alloc] initWithAlert:alert];
-                        [b addTarget:y action:@selector(touchOk:)  forControlEvents:UIControlEventTouchUpInside];
-                    }
                 }
                 break;
             case 2:     // notification center
@@ -339,16 +364,7 @@ static CFDataRef handle_report (
                                               get_localized_submit(submit_time, YES),
                                               get_localized_status(status)];
 
-                    SBSMSClass0Alert *alert = [[objc_getClass("SBSMSClass0Alert") alloc] initWithString:str];
-                    [alert activate];
-
-                    UIView *display = [alert display];
-                    UIButton *b = [display findSubButton];
-
-                    if (b != nil) {
-                        UIAlertViewControllerFlash *y = [[UIAlertViewControllerFlash alloc] initWithAlert:alert];
-                        [b addTarget:y action:@selector(touchOk:)  forControlEvents:UIControlEventTouchUpInside];
-                    }
+                    displayClass0Alert(str);
                 }
                 break;
             case 2:
@@ -369,7 +385,7 @@ static CFDataRef handle_report (
                 break;
             case 3: 
                 if (status == 0 || status > 63) {
-                    UIAlertViewController *y =[[UIAlertViewController alloc] init];
+                    UIAlertViewController *y = [[UIAlertViewController alloc] init];
 	                UIAlertView *x = [[UIAlertView alloc] 
                         initWithTitle:get_person([dict objectForKey:@"WHO"])
 						      message: [NSString stringWithFormat:@"%@\n%@", 
@@ -379,6 +395,7 @@ static CFDataRef handle_report (
 					cancelButtonTitle:nil
 					otherButtonTitles:@"", nil];
                     [x show];
+                    [x release];
                 }
                 break;
             default:
@@ -387,13 +404,11 @@ static CFDataRef handle_report (
             }
         }
         refreshMobileSMS(dict);
-
         [dict release];
+
         NSLog(@"CommCenter has received a report %@", dict);
-        
-        [Localizer release];
-        [pool release];
     }
+    [pool release];
     return nil;
 }
 
@@ -455,7 +470,7 @@ static void register_port_handler(CFStringRef str, CFMessagePortCallBack cb)  {
 -(void) applicationDidFinishLaunching:(id)appl {
     %orig;
     setSpringBoard(appl);
-    NSLog(@"%s", appl);
+    NSLog(@"%@", appl);
     register_port_handler(CFSTR("id.submit"), handle_submit);
     register_port_handler(CFSTR("id.report"), handle_report);
     register_port_handler(CFSTR("id.start"), handle_start);

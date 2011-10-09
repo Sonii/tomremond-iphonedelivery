@@ -50,6 +50,7 @@ static Localizer *instance = nil;
 			key = CFSTR("en");
 	}
 	NSLog(@"Localization dict => %@", dict);
+	CFRelease(pref);
 	return self;
 }
 
@@ -79,17 +80,16 @@ static Localizer *instance = nil;
 
 	if ([date isSameDayAs:now])  {
 		if (style != NSDateFormatterNoStyle) s = [self getString:@"TODAY"];
-		return s == nil ? @"" : s;
+		if (s != nil) return s;
 	}
 	else if ([date isYesterdayOf:now]) {
 		if (style != NSDateFormatterNoStyle) s = [self getString:@"YESTERDAY"];
-		return s == nil ? @"" : s;
+		if (s != nil) return s;
 	}
 
 	NSString *sd = [date descriptionOfDateWithLocale:loc style:style];
 	s = [self getString:@"DATE"];
 	if (s != nil) return [s stringByReplacingOccurrencesOfString:@"%DATE%" withString:sd];
-	if (s == nil) s = @"";
 	return sd;
 }
 

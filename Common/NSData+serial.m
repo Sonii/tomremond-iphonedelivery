@@ -19,41 +19,38 @@
 
 @implementation NSData(serial) 
 -(NSDictionary *)unserialize {
-    NSString *error = nil;
+	NSLog(@"%s %@", __FUNCTION__, self);
+    NSError *error = nil;
 	NSPropertyListFormat format;
-	NSDictionary *dict = [NSPropertyListSerialization propertyListFromData:self
-								mutabilityOption:NSPropertyListImmutable
-								format:&format
-								errorDescription:&error];
+	NSDictionary *dict = [NSPropertyListSerialization 
+					propertyListWithData:self
+								 options:NSPropertyListImmutable
+								  format:&format
+								   error:&error];
 	if (error != nil) {
         NSLog(@"Deserialization error: %@", error);
-        [error release];
 	}
-	
-	if (dict != nil) {
-		[dict retain];
-	}
+	[dict retain];
+	NSLog(@"%s %@ %@", __FUNCTION__, dict, error);
 	return dict;
 }
 
 +(NSData *)serializeFromDictionary:(NSDictionary *)dict {
-    NSString *error = nil;
+    NSError *error = nil;
+	NSLog(@"%s %@", __FUNCTION__, dict);
 #ifdef DEBUG
 	NSLog(@"serialize %@", dict);
 #endif
-    NSData *data = [NSPropertyListSerialization dataFromPropertyList:dict
-                                       format:NSPropertyListXMLFormat_v1_0
-                                       errorDescription:&error];
+    NSData *data = [NSPropertyListSerialization 
+								dataWithPropertyList:dict
+											  format:NSPropertyListBinaryFormat_v1_0
+											 options:NSPropertyListImmutable
+											   error:&error];
+	NSLog(@"%s %@ %@", __FUNCTION__, data, error);
 	if (error != nil) {
         NSLog(@"Serialization error: %@", error);
-        [error release];
 	}
-	if (data != nil) {
-		[data retain];
-#ifdef DEBUG
-		NSLog(@"serialize = %d bytes", [data length]);
-#endif
-	}
+	[data retain];
 	return data;
 }
 @end
