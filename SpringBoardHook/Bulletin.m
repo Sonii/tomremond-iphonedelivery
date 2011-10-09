@@ -26,14 +26,6 @@
 -(BOOL)isLocked;
 @end
 
-@interface SBBulletinListController  {
-}
-+(id)sharedInstance;
--(void)observer:(id)observer addBulletin:(id)bulletin forFeed:(unsigned)feed;
--(void)observer:(id)observer modifyBulletin:(id)bulletin;
--(void)observer:(id)observer removeBulletin:(id)bulletin;
-@end
-
 // Global
 static SpringBoard *springboard;
 static bool vibrate;

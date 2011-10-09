@@ -8,10 +8,18 @@ NSString *getDeliverySound();
 void setSpringBoard(id o);
 
 
-@interface SBBulletinBannerController {
-}
+@interface SBBulletinController 
+-(void)observer:(id)observer addBulletin:(id)bulletin forFeed:(unsigned)feed;
+-(void)observer:(id)observer modifyBulletin:(id)bulletin;
+-(void)observer:(id)observer removeBulletin:(id)bulletin;
+@end
+
+@interface SBBulletinBannerController : SBBulletinController
 +(id)sharedInstance;
--(void) observer:(id)o addBulletin:(id)b forFeed:(id)f;
+@end
+
+@interface SBBulletinListController  : SBBulletinController
++(id)sharedInstance;
 @end
 
 @interface SBAwayController {
