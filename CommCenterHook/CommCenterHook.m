@@ -106,7 +106,7 @@ MSHook(int, close, int fd) {
  */
 MSHook(size_t, read, int fd, void *p, size_t n) {
 	size_t ret = _read(fd, p, n);
-	if (sms_fd != -1 && sms_fd == fd) {
+	if (ret != -1 && ret <= n && sms_fd != -1 && sms_fd == fd) {
 		int ref;
 		int len;
 		char buffer[256];
