@@ -227,7 +227,7 @@ static void readDefaults() {
     if ([cell class] == objc_getClass("CKMessageCell")) {
         CKMessageCell *mcell = (CKMessageCell *)cell;
         UIView *ballonView = [mcell balloonView];
-        CGRect balloon_frame = ballonView.frame;
+        //CGRect balloon_frame = ballonView.frame;
         UIView *markView = [ballonView viewWithTag:TAG];
 
         // don't do anything in edit mode
