@@ -1,7 +1,9 @@
 export THEOS_DEVICE_IP=192.168.17.144
-export TARGET_CC=$(SDKBINPATH)/gcc
-export TARGET_LD=$(SDKBINPATH)/gcc
-export TARGET_CXX=$(SDKBINPATH)/g++
+CLANG=/Users/francois/llvm_build/Release+Asserts/bin/clang
+
+export TARGET_CC=$(CLANG)
+export TARGET_LD=$(CLANG)
+export TARGET_CXX=$(CLANG)++
 
 include theos/makefiles/common.mk
 
