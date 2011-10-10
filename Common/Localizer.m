@@ -79,11 +79,15 @@ static Localizer *instance = nil;
 	NSString *s = nil;
 
 	if ([date isSameDayAs:now])  {
-		if (style != NSDateFormatterNoStyle) s = [self getString:@"TODAY"];
+		if (style != NSDateFormatterNoStyle) 
+			s = [self getString:@"TODAY"];
+		else
+			s = @"";
 		if (s != nil) return s;
 	}
 	else if ([date isYesterdayOf:now]) {
-		if (style != NSDateFormatterNoStyle) s = [self getString:@"YESTERDAY"];
+		if (style != NSDateFormatterNoStyle) 
+			s = [self getString:@"YESTERDAY"];
 		if (s != nil) return s;
 	}
 
