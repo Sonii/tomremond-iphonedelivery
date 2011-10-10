@@ -358,7 +358,7 @@ static BOOL visible = NO;
 
 -(void)drawRect:(CGRect)r {
 
-    CGRect rect = self.bounds;
+    //CGRect rect = self.bounds;
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextAddRoundRect(context, CGRectInset(self.bounds, 2.0, 2.0), 6.0);
 	CGContextSetLineWidth(context, 2.0);
