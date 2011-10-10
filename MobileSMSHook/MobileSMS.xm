@@ -208,7 +208,7 @@ static void readDefaults() {
 
         if (showSmileys && [s containsEmoji]) {
             CGSize size = [data sizeAtIndex:indexPath.row];
-            h = size.height + 12.0;
+            h = size.height * 1.05;
         }
     }
     return h;
