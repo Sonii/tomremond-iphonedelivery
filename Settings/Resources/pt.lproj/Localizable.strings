@@ -3,24 +3,30 @@
 <plist version="1.0">
 <dict>
 	<key>Delivery reports</key>
-	<string>Relatório de Entrega</string>
+	<string>Relatórios de entrega</string>
 	<key>Enabled</key>
-	<string>Ativar</string>
+	<string>Activo</string>
 	<key>Full screen</key>
-	<string>Alerta de ecrã completo</string>
+	<string>Ecrã completo</string>
 	<key>Mark</key>
 	<string>Marca</string>
 	<key>Notification center</key>
-	<string>Dentro da Central de Notificações</string>
+	<string>No centro de notificações</string>
+	<key>Simple Alert</key>
+	<string>Alerta simples</string>
 	<key>Silent</key>
 	<string>Discreto</string>
 	<key>Smileys</key>
 	<string>😄  😊  😉</string>
 	<key>Sound</key>
-	<string>Sons</string>
+	<string>Som</string>
 	<key>Style</key>
-	<string>Notificações</string>
+	<string>Estilo de notificação</string>
 	<key>Vibrate</key>
 	<string>Vibrar</string>
+	<key>Contact picture</key>
+	<string>Imagem de contacto</string>
+	<key>Small font size</key>
+	<string>Texto pequeno</string>
 </dict>
 </plist>

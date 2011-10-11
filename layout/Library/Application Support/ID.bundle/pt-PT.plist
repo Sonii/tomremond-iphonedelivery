@@ -2,44 +2,25 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-<!-- not used
-	<key>MESSAGE_DELIVERED</key>
-	<string>Mensagem para %@ submetida em %@ entregue em %@</string>
-	<key>MESSAGE_DELIVERED_SHORT</key>
-	<string>Mensagem entregue</string>
-	<key>MESSAGE_GENERIC</key>
-	<string>Mensagem para %@ submetida em %@ estado=%@</string>
-	<key>MESSAGE_GENERIC_SHORT</key>
-	<string>Mensagem submetida em %@ estado=%@</string>
-	<key>MESSAGE_NOT_DELIVERED</key>
-	<string>Mensagem para %@ pendente</string>
-	<key>MESSAGE_NOT_DELIVERED_SHORT</key>
-	<string>Mensagem pendente</string>
-	<key>STATUS_70</key>
-	<string>expired</string>
-	<key>unicode</key>
-	<false/>
-	-->
+	<key>TIME</key>
+	<string>às %TIME%</string>
 	<key>DATE</key>
 	<string>em %DATE% </string>
+	<key>SUBMIT</key>
+	<string>enviada %DATESPEC% %TIMESPEC%</string>
 	<key>DELIVERED</key>
 	<string>entregue %DATESPEC% %TIMESPEC%</string>
 	<key>STATUS</key>
 	<string>code=%STATUS%</string>
 	<key>STATUS_48</key>
-	<string>pendente</string>
+	<string>Pendente</string>
 	<key>STATUS_70</key>
-	<string>expirado</string>
-	<key>SUBMIT</key>
-	<string>submetida %DATESPEC% %TIMESPEC%</string>
-	<key>TIME</key>
-	<string>%TIME%</string>
+	<string>Expirado</string>
 	<key>TITLE</key>
-	<string>➜ %SURNAME% %NAME%</string>
+	<string>➜ %NAME% %SURNAME%</string>
 	<key>TODAY</key>
-	<string>hoje</string>
+	<string>Hoje</string>
 	<key>YESTERDAY</key>
-	<string>ontem</string>
-
+	<string>Ontem</string>
 </dict>
 </plist>
