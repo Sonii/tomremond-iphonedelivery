@@ -31,6 +31,8 @@
 		<dict>
 			<key>cell</key>
 			<string>PSSwitchCell</string>
+			<key>alternateColors</key>
+			<true/>
 			<key>set</key>
 			<string>setDeliveryEnabled:specifier:</string>
 			<key>default</key>

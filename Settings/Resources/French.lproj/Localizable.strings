@@ -9,7 +9,7 @@
 	<key>Full screen</key>
 	<string>Plein écran</string>
 	<key>Mark</key>
-	<string>Tick</string>
+	<string>✔ Marque</string>
 	<key>Notification center</key>
 	<string>Centre de notification</string>
 	<key>Simple Alert</key>
@@ -25,8 +25,8 @@
 	<key>Vibrate</key>
 	<string>Vibreur</string>
 	<key>Small font size</key>
-	<string>Petits caractères</string>
+	<string>🔍  Petits caractères</string>
 	<key>Contact picture</key>
-	<string>Vignette du contact</string>
+	<string>📷  Photo du contact</string>
 </dict>
 </plist>
