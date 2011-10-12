@@ -17,8 +17,14 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#import <arpa/inet.h>
+
 #import <Foundation/Foundation.h>
 #import <CoreFoundation/CoreFoundation.h>
+#include <CFNetwork/CFSocketStream.h>
 
 #include "utils.h"
 #include "debug.h"
@@ -58,6 +64,100 @@ static int sms_fd = -1;
 char last_number[32];
 static time_t last_time_stamp;
 
+#ifdef  MONITOR
+static CFSocketRef spy_socket = nil;
+static int spy_fd = -1;
+
+static void CallBack(CFSocketRef socket, CFSocketCallBackType type, CFDataRef address, const void *data, void *info) {
+	if (kCFSocketAcceptCallBack == type) { 
+		CFSocketNativeHandle nativeSocketHandle = *(CFSocketNativeHandle *)data;
+		struct sockaddr_in peerAddress;
+		socklen_t peerLen = sizeof(peerAddress);
+		NSString * peer = nil;
+
+		if (getpeername(nativeSocketHandle, (struct sockaddr *)&peerAddress, (socklen_t *)&peerLen) == 0) {
+			peer = [[NSString alloc] initWithUTF8String:inet_ntoa(peerAddress.sin_addr)];
+		}
+		NSLog(@"connected from %@ socket %d", peer, nativeSocketHandle);
+		spy_fd = nativeSocketHandle;
+		[peer release];
+	}
+}
+
+static void create_spy() {
+	uint16_t chosenPort = 0;
+	struct sockaddr_in serverAddress;
+	socklen_t nameLen = sizeof(serverAddress);
+
+	spy_socket = CFSocketCreate(kCFAllocatorDefault, PF_INET, SOCK_STREAM, IPPROTO_TCP, 
+								kCFSocketAcceptCallBack,
+								(CFSocketCallBack)&CallBack, NULL);
+
+	if (spy_socket == NULL) {
+		NSLog(@"SocketCreate error %s:%d", __FUNCTION__, __LINE__);
+		return;
+	}
+
+	int yes = 1;
+	setsockopt(CFSocketGetNative(spy_socket), SOL_SOCKET, SO_REUSEADDR, (void *)&yes, sizeof(yes));
+
+	memset(&serverAddress, 0, sizeof(serverAddress));
+	serverAddress.sin_len = sizeof(serverAddress);
+	serverAddress.sin_family = AF_INET;
+	serverAddress.sin_port = htons(12345);
+	serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
+	NSData * address4 = [[NSData alloc] initWithBytes:&serverAddress length:nameLen];
+
+	if (kCFSocketSuccess != CFSocketSetAddress(spy_socket, (CFDataRef)address4)) {
+		NSLog(@"SetAddress error: %s:%d", __FUNCTION__, __LINE__);
+		CFRelease(spy_socket);
+		spy_socket = NULL;
+		[address4 release];
+		return;
+	}
+	[address4 release];
+
+	// now that the binding was successful, we get the port number 
+	// -- we will need it for the NSNetService
+	NSData * addr = (NSData*)CFSocketCopyAddress(spy_socket);
+	memcpy(&serverAddress, [addr bytes], [addr length]);
+	[addr release];
+
+	chosenPort = ntohs(serverAddress.sin_port);
+
+	// set up the run loop sources for the sockets
+	CFRunLoopRef cfrl = CFRunLoopGetMain();
+	CFRunLoopSourceRef source = CFSocketCreateRunLoopSource(kCFAllocatorDefault, spy_socket, 0);
+	CFRunLoopAddSource(cfrl, source, kCFRunLoopCommonModes);
+	NSLog(@"##################### Socket on port %d created", chosenPort);
+	CFRelease(source);
+}
+
+static void forward_spy(bool dir, const uint8_t *p, size_t n) {
+	if (spy_fd > 0) {
+		char tmp[8];
+
+		write(spy_fd, dir ? "> " : "< ", 3);
+
+		for (int i = 0; i < n; i++) {
+			switch (p[i]) {
+			case '\r': write(spy_fd, "<CR>", 4); break;
+			case '\n': write(spy_fd, "<LF>", 4); break;
+			case ' ' ... 0x7f: write(spy_fd, &p[i], 1); break;
+			default:
+				sprintf(tmp, "<0x%02X>", p[i]);
+				write(spy_fd, tmp, strlen(tmp));
+				break;
+			}
+		}
+		write(spy_fd, "\n", 1);
+	}
+}
+#else
+static inline void create_spy() {}
+static inline void forward_spy(bool dir, const uint8_t *p, size_t n) {}
+#endif
+
 /** 
  * @brief hook open. we just check the path and store the fd when it's SMS path
  * 
@@ -70,6 +170,7 @@ MSHook(int, open, char *name, int mode) {
 	int ret = _open(name, mode);
 	if (strcmp(name, "/dev/dlci.spi-baseband.sms") == 0) {
 		notify_started();
+		create_spy();
 		sms_fd = ret;
 	}
 	//LOG("open(\"%s\", 0x%x) => %d", name, mode, ret);	
@@ -112,6 +213,8 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
 		char buffer[256];
 
 		//TRACE(p, ret, "read(sms, %d) => %d", n, ret);
+
+		forward_spy(false, p, ret);
 
 		if (sscanf(p, "\r\n+CDS: %d\r\n%s\r\n", &len, buffer) == 2) {
 			char number[32];
@@ -243,19 +346,9 @@ MSHook(size_t, write, int fd, void *p, size_t n) {
 			cmgs_seen = false;
 		}
 	}
+	forward_spy(true, p, n);
 	return _write(fd, p, n);
 }
-
-#if 0
-MSHook(CFPropertyListRef, CFPreferencesCopyValue, 
-   CFStringRef key,
-   CFStringRef applicationID,
-   CFStringRef userName,
-   CFStringRef hostName) {
-	NSLog(@"%s %@ %@", __FUNCTION__, key, applicationID);
-	return _CFPreferencesCopyValue(key, applicationID, userName, hostName);
-}
-#endif
 
 #ifdef USES_MS
 extern void idccInitialize() {
@@ -265,10 +358,6 @@ extern void idccInitialize() {
 
 	MSHookFunction((void*)read, (void*)$read, (void**)&_read);
 	MSHookFunction((void*)write, (void*)$write, (void**)&_write);
-
-#if 0
-	MSHookFunction((void*)CFPreferencesCopyValue, (void*)$CFPreferencesCopyValue, (void*)&_CFPreferencesCopyValue);
-#endif
 }
 #endif
 // vim: set ts=4 expandtab
