@@ -118,20 +118,6 @@
 			<key>cell</key>
 			<string>PSSwitchCell</string>
 			<key>id</key>
-			<string>DELIVERY_MARK</string>
-			<key>default</key>
-			<true/>
-			<key>defaults</key>
-			<string>com.guilleme.deliveryreports</string>
-			<key>key</key>
-			<string>dr-tick</string>
-			<key>label</key>
-			<string>Mark</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSSwitchCell</string>
-			<key>id</key>
 			<string>DELIVERY_SMILEY</string>
 			<key>default</key>
 			<true/>
@@ -141,6 +127,20 @@
 			<string>dr-smileys</string>
 			<key>label</key>
 			<string>Smileys</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>id</key>
+			<string>DELIVERY_MARK</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>com.guilleme.deliveryreports</string>
+			<key>key</key>
+			<string>dr-tick</string>
+			<key>label</key>
+			<string>Mark</string>
 		</dict>
 		<dict>
 			<key>cell</key>

@@ -3,24 +3,30 @@
 <plist version="1.0">
 <dict>
 	<key>Delivery reports</key>
-	<string>Отчет о доставке</string>
+	<string>Отчеты о доставке</string>
 	<key>Enabled</key>
 	<string>Включить</string>
 	<key>Full screen</key>
-	<string>Полноэкранное уведомление</string>
-	<key>Mark</key>
-	<string>отметки</string>
+	<string>Полноэкранный</string>
 	<key>Notification center</key>
 	<string>В Центре уведомлений</string>
+	<key>Simple Alert</key>
+	<string>Простое уведомление</string>
 	<key>Silent</key>
-	<string>Скромный</string>
-	<key>Smileys</key>
-	<string>😄  😊  😉</string>
+	<string>Краткий</string>
 	<key>Sound</key>
-	<string>Звуки</string>
+	<string>Звук</string>
 	<key>Style</key>
-	<string>Уведомления</string>
+	<string>Стиль оповещения</string>
 	<key>Vibrate</key>
 	<string>Вибрация</string>
+	<key>Mark</key>
+	<string> ✔  Отметка</string>
+	<key>Smileys</key>
+	<string>😄  😊  😉</string>
+	<key>Small font size</key>
+	<string>🔍  Короткий текст</string>
+	<key>Contact picture</key>
+	<string>📷  Картинка контакта</string>
 </dict>
 </plist>

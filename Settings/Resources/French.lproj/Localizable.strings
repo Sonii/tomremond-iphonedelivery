@@ -9,7 +9,7 @@
 	<key>Full screen</key>
 	<string>Plein écran</string>
 	<key>Mark</key>
-	<string>✔ Marque</string>
+	<string> ✔  Marque</string>
 	<key>Notification center</key>
 	<string>Centre de notification</string>
 	<key>Simple Alert</key>
@@ -17,9 +17,9 @@
 	<key>Silent</key>
 	<string>Discret</string>
 	<key>Smileys</key>
-	<string>😄  😊  😉</string>
+	<string>😄  Affiche les smileys</string>
 	<key>Sound</key>
-	<string>Son</string>
+	<string>Effet sonore</string>
 	<key>Style</key>
 	<string>Style de notification</string>
 	<key>Vibrate</key>
