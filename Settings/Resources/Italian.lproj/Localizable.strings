@@ -9,18 +9,26 @@
 	<key>Full screen</key>
 	<string>Notifica full screen</string>
 	<key>Mark</key>
-	<string>Marca</string>
+	<string> ✔  Marca</string>
 	<key>Notification center</key>
 	<string>In Centro notifiche</string>
+	<key>Simple Alert</key>
+	<string>Alarme standard</string>
 	<key>Silent</key>
 	<string>Discreta</string>
 	<key>Smileys</key>
 	<string>😄  😊  😉</string>
 	<key>Sound</key>
-	<string>Suoni</string>
+	<string>📢  Suoni</string>
 	<key>Style</key>
 	<string>Notifiche</string>
 	<key>Vibrate</key>
-	<string>Vibrazione</string>
+	<string>💤  Vibrazione</string>
+	<key>Small font size</key>
+	<string>🔍  Piccoli caratteri</string>
+	<key>Contact picture</key>
+	<string>📷  Foto del contatto</string>
+	<key>Antidote class 0</key>
+	<string>🚑  Antidoto classa 0</string>
 </dict>
 </plist>
