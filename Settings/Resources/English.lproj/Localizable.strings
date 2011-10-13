@@ -8,19 +8,29 @@
 	<string>Enabled</string>
 	<key>Full screen</key>
 	<string>Full screen</string>
-	<key>Mark</key>
-	<string>Mark</string>
 	<key>Notification center</key>
-	<string>In notification center</string>
+	<string>Notification center</string>
+	<key>Simple Alert</key>
+	<string>Simple alert</string>
 	<key>Silent</key>
 	<string>Discreet</string>
 	<key>Smileys</key>
 	<string>😄  😊  😉</string>
 	<key>Sound</key>
-	<string>Sound</string>
+	<string>📢  Sound</string>
 	<key>Style</key>
 	<string>Notification style</string>
 	<key>Vibrate</key>
-	<string>Vibrate</string>
+	<string>💤  Vibrate</string>
+	<key>Smileys</key>
+	<string>😄  Display smileys</string>
+	<key>Small font size</key>
+	<string>🔍  Small text</string>
+	<key>Mark</key>
+	<string> ✔  Mark</string>
+	<key>Contact picture</key>
+	<string>📷  Contact picture</string>
+	<key>Antidote class 0</key>
+	<string>🚑  Antidote class 0</string>
 </dict>
 </plist>

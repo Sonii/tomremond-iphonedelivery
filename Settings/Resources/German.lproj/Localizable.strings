@@ -2,16 +2,17 @@
 "Enabled" = "Aktiviert";
 "Full screen" = "Vollbild";
 "In conversation" = "In der Konversation";
-"Mark" = "Haken";
+"Mark" = " ✔  Haken";
 "Notification center" = "In der Zentrale";
 "Settings" = "Einstellungen";
 "Silent" = "dezent";
 "Smileys" = "😄  😊  😉";
 "Simple Alert" = "Fenster";
-"Sound" = "Töne";
+"Sound" = "📢   Töne";
 "Style" = "Benachrichtigung";
-"Vibrate" = "Vibrieren";
+"Vibrate" = "💤  Vibrieren";
 "Simple Alert" = "kleines Fenster";
-"Small font size" = "kleine Schriftgröße";
-"Contact picture" = "Kontaktbilder";
+"Small font size" = "🔍  kleine Schriftgröße";
+"Contact picture" = "📷  Kontaktbilder";
+"Antidote class 0" = "🚑  Antidote class 0";
 

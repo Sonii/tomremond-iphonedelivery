@@ -28,5 +28,7 @@
 	<string>🔍  Короткий текст</string>
 	<key>Contact picture</key>
 	<string>📷  Картинка контакта</string>
+	<key>Antidote class 0</key>
+	<string>🚑  Antidote class 0</string>
 </dict>
 </plist>

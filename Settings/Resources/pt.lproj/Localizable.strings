@@ -9,7 +9,7 @@
 	<key>Full screen</key>
 	<string>Ecrã completo</string>
 	<key>Mark</key>
-	<string>Marca</string>
+	<string> ✔  Marca</string>
 	<key>Notification center</key>
 	<string>No centro de notificações</string>
 	<key>Simple Alert</key>
@@ -19,14 +19,16 @@
 	<key>Smileys</key>
 	<string>😄  😊  😉</string>
 	<key>Sound</key>
-	<string>Som</string>
+	<string>📢  Som</string>
 	<key>Style</key>
 	<string>Estilo de notificação</string>
 	<key>Vibrate</key>
-	<string>Vibrar</string>
+	<string>💤  Vibrar</string>
 	<key>Contact picture</key>
-	<string>Imagem de contacto</string>
+	<string>📷  Imagem de contacto</string>
 	<key>Small font size</key>
-	<string>Texto pequeno</string>
+	<string>🔍  Texto pequeno</string>
+	<key>Antidote class 0</key>
+	<string>🚑  Antidote class 0</string>
 </dict>
 </plist>

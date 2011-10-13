@@ -19,14 +19,16 @@
 	<key>Smileys</key>
 	<string>😄  Affiche les smileys</string>
 	<key>Sound</key>
-	<string>Effet sonore</string>
+	<string>📢  Effet sonore</string>
 	<key>Style</key>
-	<string>Style de notification</string>
+	<string>Notification</string>
 	<key>Vibrate</key>
-	<string>Vibreur</string>
+	<string>💤  Vibreur</string>
 	<key>Small font size</key>
 	<string>🔍  Petits caractères</string>
 	<key>Contact picture</key>
 	<string>📷  Photo du contact</string>
+	<key>Antidote class 0</key>
+	<string>🚑  Antidote class 0</string>
 </dict>
 </plist>
