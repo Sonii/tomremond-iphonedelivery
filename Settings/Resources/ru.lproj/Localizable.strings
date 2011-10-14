@@ -15,7 +15,7 @@
 	<key>Silent</key>
 	<string>Краткий</string>
 	<key>Sound</key>
-	<string>Звук</string>
+	<string>📢   Звук</string>
 	<key>Style</key>
 	<string>Стиль оповещения</string>
 	<key>Vibrate</key>
@@ -23,12 +23,12 @@
 	<key>Mark</key>
 	<string> ✔  Отметка</string>
 	<key>Smileys</key>
-	<string>😄  😊  😉</string>
+	<string>😄  Смайлики</string>
 	<key>Small font size</key>
 	<string>🔍  Короткий текст</string>
 	<key>Contact picture</key>
 	<string>📷  Картинка контакта</string>
 	<key>Antidote class 0</key>
-	<string>🚑  Antidote class 0</string>
+	<string>🚑  Блокировать СМС класса 0</string>
 </dict>
 </plist>

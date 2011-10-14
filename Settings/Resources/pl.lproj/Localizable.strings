@@ -1,26 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>Delivery reports</key>
-	<string>Raporty SMS</string>
-	<key>Enabled</key>
-	<string>Włącz</string>
-	<key>Full screen</key>
-	<string>Komunikaty</string>
-	<key>Mark</key>
-	<string>znaczki</string>
-	<key>Notification center</key>
-	<string>W centrum powiadomień</string>
-	<key>Silent</key>
-	<string>Dyskretne</string>
-	<key>Smileys</key>
-	<string>😄  😊  😉</string>
-	<key>Sound</key>
-	<string>Dźwięki</string>
-	<key>Style</key>
-	<string>Powiadomienia</string>
-	<key>Vibrate</key>
-	<string>Wibrowanie</string>
-</dict>
-</plist>
+"Delivery reports" = "Raporty doręczeń";
+"Enabled" = "włączone";
+"Full screen" = "Pełny ekran";
+"Mark" = " ✔  zaznacz";
+"Notification center" = "W centrum powiadomień";
+"Silent" = "dezent";
+"Smileys" = "😄 wyświetlanie emotikonów";
+"Simple Alert" = "prosty alarm";
+"Sound" = "📢 dźwięk";
+"Style" = "Styl powiadomień";
+"Vibrate" = "💤 wibracja";
+"Small font size" = "🔍 mały tekst";
+"Contact picture" = "📷 zdjęcie kontaktu";
+"Antidote class 0" = "🚑 Blokada SMSów klasy 0";
+
+

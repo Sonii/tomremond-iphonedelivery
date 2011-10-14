@@ -17,7 +17,7 @@
 	<key>TIME</key>
 	<string>%TIME% </string>
 	<key>TITLE</key>
-	<string>➜ %SURNAME% %NAME%</string>
+	<string>➜ %NAME% %SURNAME%</string>
 	<key>TODAY</key>
 	<string>Сегодня</string>
 	<key>YESTERDAY</key>

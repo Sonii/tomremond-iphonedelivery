@@ -1,26 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>Delivery reports</key>
-	<string>訊息回執提示</string>
-	<key>Enabled</key>
-	<string>啟用 </string>
-	<key>Full screen</key>
-	<string>閃訊模式</string>
-	<key>Mark</key>
-	<string>符號</string>
-	<key>Notification center</key>
-	<string>已顯示於“通知中心</string>
-	<key>Silent</key>
-	<string>僅提示</string>
-	<key>Smileys</key>
-	<string>😄  😊  😉</string>
-	<key>Sound</key>
-	<string>聲音</string>
-	<key>Style</key>
-	<string>通知</string>
-	<key>Vibrate</key>
-	<string>符號</string>
-</dict>
-</plist>
+"Delivery reports" = "短信回执";
+"Enabled" = "开启";
+"Full screen" = "全屏模式";
+"Mark" = " ✔  标记";
+"Notification center" = "通知中心模式";
+"Silent" = "静默模式";
+"Smileys" = "😄 显示表情";
+"Simple Alert" = "简单提醒";
+"Sound" = "📢   声音 ";
+"Style" = "通知模式";
+"Vibrate" = "💤  振动";
+"Simple Alert" = "简单提醒";
+"Small font size" = "🔍  型文本";
+"Contact picture" = "📷  通讯录照片";
+"Antidote class 0" = "🚑  阻止闪信";
+
