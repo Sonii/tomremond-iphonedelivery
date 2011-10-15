@@ -207,6 +207,11 @@
 	return self;
 }
 
+-(void)dealloc {
+	NSLog(@"%s page %d", __FUNCTION__, self.tag);
+	[super dealloc];
+}
+
 -(void)gotoPage:(unsigned)page {
 	UIScrollView *sv = [[objc_getClass("SBIconController") sharedInstance] scrollView];
 	CGPoint offset = sv.contentOffset;
@@ -246,9 +251,12 @@
 			   currentOrientation:&o2
 				  canUseIOSurface:YES];
 
-	NSLog(@"%@ b = %d o1 = %d o2 = %d ref = %d", snapshot, b1, o1, o2, [snapshot retainCount]);
-
+	if (snapshot == nil) {
+		[self release];
+		return nil;
+	}
 	appl = [app retain];
+	[snapshot retain];
 
 	CGFloat width, height;
 
@@ -267,6 +275,8 @@
 }
 
 -(void)dealloc {
+	NSLog(@"%s %@", __FUNCTION__, [appl displayName]);
+	[snapshot release];
 	[appl release];
 	[super dealloc];
 }
