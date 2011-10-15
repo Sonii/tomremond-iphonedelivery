@@ -1,0 +1,156 @@
+ID=/Users/francois/Dev/iphone-delivery-report filter="*.c *.h Makefile *.m*k *.xm *.mm *.m *.strings *.plist" {
+ Makefile
+ Settings=Settings {
+  Makefile
+  Preferences.h
+  DeliveryReportSettings.mm
+  Resources=Resources {
+   DeliveryReportSettings.plist
+
+   Info.plist
+   Dutch.lproj=Dutch.lproj {
+    Localizable.strings
+   }
+   English.lproj=English.lproj {
+    Localizable.strings
+   }
+   French.lproj=French.lproj {
+    Localizable.strings
+   }
+   German.lproj=German.lproj {
+    Localizable.strings
+   }
+   Italian.lproj=Italian.lproj {
+    Localizable.strings
+   }
+   Japanese.lproj=Japanese.lproj {
+    Localizable.strings
+   }
+   Spanish.lproj=Spanish.lproj {
+    Localizable.strings
+   }
+   ar.lproj=ar.lproj {
+    Localizable.strings
+   }
+   cs.lproj=cs.lproj {
+    Localizable.strings
+   }
+   el.lproj=el.lproj {
+    Localizable.strings
+   }
+   pl.lproj=pl.lproj {
+    Localizable.strings
+   }
+   pt.lproj=pt.lproj {
+    Localizable.strings
+   }
+   ro.lproj=ro.lproj {
+    Localizable.strings
+   }
+   ru.lproj=ru.lproj {
+    Localizable.strings
+   }
+   sk.lproj=sk.lproj {
+    Localizable.strings
+   }
+   tr.lproj=tr.lproj {
+    Localizable.strings
+   }
+   uk.lproj=uk.lproj {
+    Localizable.strings
+   }
+   zh_CN.lproj=zh_CN.lproj {
+    Localizable.strings
+   }
+   zh_TW.lproj=zh_TW.lproj {
+    Localizable.strings
+   }
+  }
+ }
+ SpringBoardHook=SpringBoardHook {
+  Makefile
+  Bulletin.h
+  Bulletin.m
+  SpringBoard.xm
+  libidsp.plist
+ }
+ MobileSMSHook=MobileSMSHook {
+  Makefile
+  DeliveryDateView.h
+  DeliveryDateView.m
+  MarkView.h
+  MarkView.m
+  MobileSMS.xm
+  libidsms.plist
+  smiley.h
+  smiley.m
+  ReportCache.m
+  ReportCache.h
+ }
+ CommCenterHook=CommCenterHook {
+  Makefile
+  CommCenterHook.m
+  notify.h
+  notify.m
+  rewrite.h
+  rewrite.m
+  submit.h
+  submit.m
+  unpack.c
+  unpack.h
+  utils.c
+  utils.h
+ }
+ WeeBrowseID=WeeBrowseID {
+  BBWeeAppController-Protocol.h
+  Makefile
+  WeeBrowseID.mm
+  }
+ Common=Common {
+  Date+extra.h
+  Date+extra.m
+  Localizer.h
+  Localizer.m
+  NSData+serial.h
+  NSData+serial.m
+  SpringBoard.h
+  database.h
+  database.m
+  debug.h
+  debug.m
+ }
+ layout=layout {
+  DEBIAN=DEBIAN {
+   control
+   	postinst
+	prerm
+  }
+  Library=Library {
+   Application Support="Application Support" {
+    ID.bundle=ID.bundle {
+     ar.plist
+     cs.plist
+     de.plist
+     el.plist
+     en.plist
+     es.plist
+     fr.plist
+     hu.plist
+     it.plist
+     ja.plist
+     nl.plist
+     pl.plist
+     pt-PT.plist
+     pt.plist
+     ro.plist
+     ru.plist
+     sk.plist
+     tr.plist
+     uk.plist
+     zh-Hans.plist
+     zh-Hant.plist
+    }
+   }
+  }
+ }
+}
