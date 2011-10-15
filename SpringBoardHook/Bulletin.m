@@ -51,46 +51,58 @@ void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSStri
     static id observer = nil;
     
     // build a bulletin
-    id controller = nil;
-    BBBulletin *b2 = nil, *b = [[objc_getClass("BBBulletin") alloc] init];
-    [b setTitle:title];
-    [b setSectionID:sectionID];
+    BBBulletin *b2, *b = [[objc_getClass("BBBulletin") alloc] init];
+    b.title = title;
+    b.sectionID = sectionID;
     b.clearable = YES;
     b.date = date;
     b.bulletinID = [NSString stringWithFormat:@"DeliveryReport_%f", [[NSDate date] timeIntervalSince1970]];
-    [b setMessage:[NSString stringWithFormat:@"%@ %@", subtitle, message]];
+    b.message = [NSString stringWithFormat:@"%@ %@", subtitle, message];
 
     if (group_id > 0) {
         b.defaultAction = [objc_getClass("BBLaunchAction") 
             actionWithLaunchURL:[NSURL URLWithString:[NSString stringWithFormat:@"sms:/open?groupid=%d", group_id]]
             callblock:^(id o) {
+                // it does not work anyway
                 NSLog(@"BBLaunchAction block called %@", o);
                 [blc observer:observer removeBulletin:b];
             }];
     }
 
-    if ([springboard isLocked]) {
-        b2 = [[objc_getClass("BBBulletin") alloc] init];
-        
-        [b2 setTitle:title];
-        [b2 setSubtitle:message];
-        [b2 setMessage:subtitle];
-        b2.clearable = YES;
-        b2.date = date;
-        b2.bulletinID = b.bulletinID;
-        b2.defaultAction = b.defaultAction;
+    b2 = [[objc_getClass("BBBulletin") alloc] init];
+    b2.title = title;
+    b2.subtitle = message;
+    b2.message = subtitle;
+    b2.sectionID = sectionID;
+    b2.clearable = YES;
+    b2.date = date;
+    b2.bulletinID = b.bulletinID;
+    b2.defaultAction = b.defaultAction;
 
+    NSString *s = b.message;
+    CGSize size = [s sizeWithFont:[UIFont systemFontOfSize:8]];
+    NSLog(@"Bulletin width = %.1f", size.width);
+
+    if ([springboard isLocked]) {
+        id controller = nil;
         // and as a popup on the away screen
         controller = [[[objc_getClass("SBAwayController") sharedAwayController] awayView] bulletinController];
+        [controller observer:observer addBulletin:b2 forFeed:0];
     }
     else {
-        b2 = [b retain];
-
+        id controller = nil;
         // publish it as a banner
         controller = [objc_getClass("SBBulletinBannerController") sharedInstance] ;
+
+        [controller observer:observer addBulletin:b forFeed:0];
     }
-    [controller observer:observer addBulletin:b2 forFeed:0];
-    [blc observer:observer addBulletin:b forFeed:0];
+
+    // depending on the length of the message we use the one line/two lines version of the bulletin
+    if (size.width > 180)
+        [blc observer:observer addBulletin:b2 forFeed:0];
+    else
+        [blc observer:observer addBulletin:b forFeed:0];
+
     [b release];
     [b2 release];
 }
