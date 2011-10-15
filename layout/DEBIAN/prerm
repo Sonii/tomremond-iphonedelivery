@@ -2,7 +2,17 @@
 declare -a cydia
 cydia=($CYDIA)
 
-plutil -key EnvironmentVariables -remove /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist > /dev/null
+PLIST=/System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
+LIBRARY=$(plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES $PLIST 2> /dev/null)
+if [ -n "$LIBRARY" ]; then
+	LIBRARY=$(echo $LIBRARY | sed -e s^/usr/local/lib/libidcc.dylib^^ -e s/^:// -e s/::// -e 's/:$//')
+	if [ -z "$LIBRARY" ]; then
+		plutil -key EnvironmentVariables -remove $PLIST > /dev/null
+
+	else
+		plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES -setValue "$LIBRARY" $PLIST > /dev/null
+	fi
+fi
 
 cd /Applications/Preferences.app/
 MESSAGES_PLIST=/System/Library/PrivateFrameworks/Conference.framework/Messages.plist
