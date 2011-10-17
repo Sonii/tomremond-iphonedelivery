@@ -3,32 +3,33 @@
 <plist version="1.0">
 <dict>
 	<key>Delivery reports</key>
-	<string>訊息回執提示</string>
+	<string>短信回执</string>
 	<key>Enabled</key>
-	<string>啟用 </string>
+	<string>开启</string>
 	<key>Full screen</key>
-	<string>全螢幕</string>
+	<string>闪信提示</string>
 	<key>Mark</key>
-	<string>符號</string>
+	<string>标记</string>
 	<key>Notification center</key>
-	<string>顯示在通知中心</string>
+	<string>通知中心提示</string>
 	<key>Simple Alert</key>
 	<string>一般提示</string>
 	<key>Silent</key>
-	<string>僅提示</string>
+	<string>仅提示</string>
 	<key>Smileys</key>
-	<string>表情符號</string>
+	<string>表情</string>
 	<key>Sound</key>
-	<string>聲音</string>
+	<string>声音</string>
 	<key>Style</key>
-	<string>類型</string>
+	<string>提示类型</string>
 	<key>Vibrate</key>
-	<string>振動</string>
+	<string>振动</string>
 	<key>Small font size</key>
-	<string>小型字大小</string>
+	<string>小型字体</string>
 	<key>Contact picture</key>
-	<string>聯絡人圖片</string>
+	<string>联系人图片</string>
 	<key>Antidote class 0</key>
-	<string>拒收 Class 0 廣告簡訊</string>
+	<string>阻止广告闪信</string>
 </dict>
 </plist>
+
