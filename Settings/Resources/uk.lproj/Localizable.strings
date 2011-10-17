@@ -1,26 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>Delivery reports</key>
-	<string>Звіт про доставку</string>
-	<key>Enabled</key>
-	<string>Увімкнути</string>
-	<key>Full screen</key>
-	<string>Повноекранне повідомлення</string>
-	<key>Mark</key>
-	<string>позначки</string>
-	<key>Notification center</key>
-	<string>У Центрі оповіщень</string>
-	<key>Silent</key>
-	<string>Скромний</string>
-	<key>Smileys</key>
-	<string>😄  😊  😉</string>
-	<key>Sound</key>
-	<string>Звуки</string>
-	<key>Style</key>
-	<string>Оповіщення</string>
-	<key>Vibrate</key>
-	<string>Вібро</string>
-</dict>
-</plist>
+"Delivery reports" = "Сповіщення про доставку";
+"Enabled" = "Ввімкнено";
+"Style" = "Стиль сповіщень";
+"Silent" = "Стриманий";
+"Notification center" = "У центрі сповіщень";
+"Full screen" = "Стриманий";
+"Simple Alert" = "Просте попередження";
+"Sound" = "📢  Звук";
+"Vibrate" = "💤  Вібрувати";
+"Mark" = " ✔  Відмітка";
+"Smileys" = "😄  Відображення смайлів";
+"Contact picture" = "📷  Зображення контакту";
+"Small font size" = "🔍  Маленький текст";
+"Antidote class 0" = "🚑  Блокування flash повідомлень";

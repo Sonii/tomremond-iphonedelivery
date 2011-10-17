@@ -2,47 +2,25 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-<!--  not used
-	<key>MESSAGE_DELIVERED</key>
-	<string>Повідомлення для %@, відправлене в %@, доставлено %@</string>
-	<key>MESSAGE_DELIVERED_SHORT</key>
-	<string>Повідомлення доставлено</string>
-	<key>MESSAGE_GENERIC</key>
-	<string>Статус повідомлення, відправленого для %@ в %@: %@</string>
-	<key>MESSAGE_GENERIC_SHORT</key>
-	<string>Статус повідомлення, відправленого в %@: %@</string>
-	<key>MESSAGE_NOT_DELIVERED</key>
-	<string>Повідомлення для %@ в очікуванні</string>
-	<key>MESSAGE_NOT_DELIVERED_SHORT</key>
-	<string>Повідомлення в очікуванні</string>
-	<key>STATUS_64</key>
-	<string>Помилка віддаленої процедури</string>
-	<key>STATUS_65</key>
-	<string>Несумісний адреса призначення</string>
-	<key>STATUS_70</key>
-	<string>закінчився</string>
-	<key>unicode</key>
-	<true/>
-	-->
 	<key>DATE</key>
-	<string>в %DATE% </string>
+	<string>%DATE% </string>
 	<key>DELIVERED</key>
 	<string>доставлено %DATESPEC% %TIMESPEC%</string>
 	<key>STATUS</key>
-	<string>code=%STATUS%</string>
+	<string>%STATUS% статус</string>
 	<key>STATUS_48</key>
-	<string>очікуваний</string>
+	<string>В процесі доставки</string>
 	<key>STATUS_70</key>
-	<string>минулий</string>
+	<string>Час доставки вийшов</string>
 	<key>SUBMIT</key>
-	<string>відправлене %DATESPEC% %TIMESPEC%</string>
+	<string>надіслано %DATESPEC% %TIMESPEC%</string>
 	<key>TIME</key>
-	<string>%TIME%</string>
+	<string>o %TIME%</string>
 	<key>TITLE</key>
-	<string>➜ %SURNAME% %NAME%</string>
+	<string>➜ %NAME% %SURNAME%</string>
 	<key>TODAY</key>
-	<string>сьогодні</string>
+	<string>Сьогодні</string>
 	<key>YESTERDAY</key>
-	<string>вчора</string>
+	<string>Вчора</string>
 </dict>
 </plist>
