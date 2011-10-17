@@ -1,26 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>Delivery reports</key>
-	<string>Αναφορά Παράδοσης</string>
-	<key>Enabled</key>
-	<string>Ενεργοποίηση</string>
-	<key>Full screen</key>
-	<string>Ειδοποίηση και τσεκάρισμα</string>
-	<key>Mark</key>
-	<string>τσεκάρισμα</string>
-	<key>Notification center</key>
-	<string>Στο Κέντρο γνωστοποιήσεων</string>
-	<key>Silent</key>
-	<string>Διακριτική</string>
-	<key>Smileys</key>
-	<string>😄  😊  😉</string>
-	<key>Sound</key>
-	<string>Ήχοι</string>
-	<key>Style</key>
-	<string>Γνωστοποιήσεις</string>
-	<key>Vibrate</key>
-	<string>Δόνηση</string>
-</dict>
-</plist>
+"Silent" = "Διακριτική";
+"Smileys" = "😄  😊  😉";
+"Style" = "Στυλ Γνωστοποιήσεις";
+"Delivery reports" = "Αναφορά Παράδοσης";
+"Enabled" = "Ενεργοποίηση";
+"Full screen" = "Πλήρης οθόνη";
+"Notification center" = "Στο Κέντρο γνωστοποιήσεων";
+"Simple Alert" = "Απλή ειδοποίηση";
+"Sound" = "📢  Ήχοι";
+
+"Vibrate" = "💤  Δόνηση";
+"Mark" = " ✔  τσεκάρισμα";
+"Contact picture" = "📷  Φωτογραφία επαφής";
+"Antidote class 0" = "🚑  Antidote class 0";
+"Small font size" = "🔍  Μικρό κείμενο";
