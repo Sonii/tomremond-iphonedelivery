@@ -212,7 +212,7 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
 		int len;
 		char buffer[256];
 
-		//TRACE(p, ret, "read(sms, %d) => %d", n, ret);
+		TRACE(p, ret, "read(sms, %d) => %d", n, ret);
 
 		forward_spy(false, p, ret);
 
@@ -304,7 +304,7 @@ MSHook(size_t, write, int fd, void *p, size_t n) {
 	static bool cmgs_seen = false;
 	if (sms_fd != -1 && sms_fd == fd) {
 		int dummy;
-		//TRACE(p, n, "write(sms, %d)", n);
+		TRACE(p, n, "write(sms, %d)", n);
 		if (cmgs_seen) {
 			TRACE(p, n, "write(sms, %d)", n);
 			// in some case an "at" command comes out. so we can safely ignore it
