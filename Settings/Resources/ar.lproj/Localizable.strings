@@ -28,5 +28,7 @@
 	<string>صورة المتصل</string>
 	<key>Simple Alert</key>
 	<string>تنبيه بسيط</string>
+	<key>Antidote class 0</key>
+	<string>ترياق فئة</string>
 </dict>
 </plist>
