@@ -295,6 +295,7 @@ static CFDataRef handle_report (
         if (status == 0) {
             time_t d_date = [[dict objectForKey:@"WHENDELIVERED"] intValue];
             int delta = d_date - s_date;
+            if (delta == 0) delta = 1;  // a wero delay disturbs some
             if (sent_date < 3600*24*365*10) { // ten years. There were no SMS in 1981?
                 // HACK in case we don't get the sent date
                 sent_date = time(NULL) - delta;
