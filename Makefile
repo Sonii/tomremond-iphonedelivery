@@ -51,3 +51,8 @@ publish:
 after-stage::
 	@mv  _/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeBrowseID.dylib \
 		_/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeBrowseID
+
+ifeq ($(DEBUG),1)
+before-package::
+	@sed -i "" '/^Depends:/s/$$/, syslogd/' _/DEBIAN/control 
+endif
