@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 	<key>DATE</key>
-	<string>Στις %DATE% </string>
+	<string>στις %DATE% </string>
 	<key>DELIVERED</key>
-	<string>Παραδόθηκε %DATESPEC% %TIMESPEC%</string>
+	<string>Παραδόθηκε%DATESPEC% %TIMESPEC%</string>
 	<key>STATUS</key>
 	<string>%STATUS%</string>
 	<key>STATUS_48</key>
@@ -15,12 +15,12 @@
 	<key>SUBMIT</key>
 	<string>Στάλθηκε %DATESPEC% %TIMESPEC%</string>
 	<key>TIME</key>
-	<string>Στις %TIME%</string>
+	<string>στις %TIME%</string>
 	<key>TITLE</key>
-	<string>➜ %SURNAME% %NAME%</string>
+	<string>➜ %NAME% %SURNAME%</string>
 	<key>TODAY</key>
-	<string>Σήμερα</string>
+	<string>σήμερα</string>
 	<key>YESTERDAY</key>
-	<string>Χθες</string>
+	<string>χθες</string>
 </dict>
 </plist>
