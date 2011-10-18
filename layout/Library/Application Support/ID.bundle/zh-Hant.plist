@@ -3,24 +3,24 @@
 <plist version="1.0">
 <dict>
 	<key>DATE</key>
-	<string>%DATE% </string>
+	<string>在 %DATE% </string>
 	<key>DELIVERED</key>
-	<string>发送 %DATESPEC% %TIMESPEC%</string>
+	<string>在 %DATESPEC% %TIMESPEC% 寄出</string>
 	<key>STATUS</key>
-	<string>状态  =%STATUS%</string>
+	<string>錯誤碼=%STATUS%</string>
 	<key>STATUS_48</key>
-	<string>等待</string>
+	<string>等待中</string>
 	<key>STATUS_70</key>
-	<string>终止</string>
+	<string>過期</string>
 	<key>SUBMIT</key>
-	<string>送达 %DATESPEC% %TIMESPEC%</string>
+	<string>在 %DATESPEC% %TIMESPEC% 寄出</string>
 	<key>TIME</key>
-	<string>%TIME% </string>
+	<string>在 %TIME% </string>
 	<key>TITLE</key>
 	<string>由 %NAME% %SURNAME% 寄出</string>
 	<key>TODAY</key>
-	<string>今天</string>
+	<string>今日</string>
 	<key>YESTERDAY</key>
-	<string>昨天</string>
+	<string>昨日</string>
 </dict>
 </plist>

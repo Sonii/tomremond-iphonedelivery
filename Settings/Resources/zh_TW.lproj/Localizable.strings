@@ -1,16 +1,34 @@
-"Delivery reports" = "短信回执";
-"Enabled" = "开启";
-"Full screen" = "全屏模式";
-"Mark" = " ✔  标记";
-"Notification center" = "通知中心模式";
-"Silent" = "静默模式";
-"Smileys" = "😄 显示表情";
-"Simple Alert" = "简单提醒";
-"Sound" = "📢   声音 ";
-"Style" = "通知模式";
-"Vibrate" = "💤  振动";
-"Simple Alert" = "简单提醒";
-"Small font size" = "🔍  型文本";
-"Contact picture" = "📷  通讯录照片";
-"Antidote class 0" = "🚑  阻止闪信";
-
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Delivery reports</key>
+	<string>訊息回執提示</string>
+	<key>Enabled</key>
+	<string>啟用 </string>
+	<key>Full screen</key>
+	<string>全螢幕</string>
+	<key>Mark</key>
+	<string>符號</string>
+	<key>Notification center</key>
+	<string>顯示在通知中心</string>
+	<key>Simple Alert</key>
+	<string>一般提示</string>
+	<key>Silent</key>
+	<string>僅提示</string>
+	<key>Smileys</key>
+	<string>表情符號</string>
+	<key>Sound</key>
+	<string>聲音</string>
+	<key>Style</key>
+	<string>類型</string>
+	<key>Vibrate</key>
+	<string>振動</string>
+	<key>Small font size</key>
+	<string>小型字大小</string>
+	<key>Contact picture</key>
+	<string>聯絡人圖片</string>
+	<key>Antidote class 0</key>
+	<string>拒收 Class 0 廣告簡訊</string>
+</dict>
+</plist>
