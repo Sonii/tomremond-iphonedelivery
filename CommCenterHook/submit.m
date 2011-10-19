@@ -201,7 +201,9 @@ bool unset_class0(uint8_t *payload) {
 	index += l;
 
 	// index is now the offset of TP-PID TP-DCS
-	if (payload[index + 1] & 0x10 && filter_class0()) {
+	if ((payload[index] & 0x40) == 0 && 			// not invisible
+		 (payload[index + 1] & 0x10) && 			// class 0
+		 filter_class0()) {
 		payload[index + 1] &= ~0x10;
 		rc = true;
 	}
