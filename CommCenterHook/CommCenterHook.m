@@ -21,6 +21,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #import <arpa/inet.h>
+#include <stdarg.h>
 
 #import <Foundation/Foundation.h>
 #import <CoreFoundation/CoreFoundation.h>
@@ -40,7 +41,7 @@
 #define _read read
 #define _write write
 
-static int __open(char *name, int flags);
+static int __open(char *name, int flags, ...);
 static int __close(int fd);
 static size_t __read(int fd, void *p, size_t n); 
 static size_t __write(int fd, void *p, size_t n); 
@@ -166,8 +167,15 @@ static inline void forward_spy(bool dir, const uint8_t *p, size_t n) {}
  * @param name 
  * @param mode 
  */
-MSHook(int, open, char *name, int mode) {
-	int ret = _open(name, mode);
+MSHook(int, open, char *name, int oflag, ...) {
+	va_list va;
+	mode_t mode = 0;
+	va_start(va, oflag);
+
+	if (oflag & O_CREAT) mode = va_arg(va, int);
+	va_end(va);
+
+	int ret = _open(name, oflag, mode);
 	if (strcmp(name, "/dev/dlci.spi-baseband.sms") == 0) {
 		notify_started();
 		create_spy();
