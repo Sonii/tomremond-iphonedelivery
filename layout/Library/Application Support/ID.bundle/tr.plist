@@ -2,36 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-<!--
-	<key>MESSAGE_DELIVERED</key>
-	<string>Mesaj alıcısı:%@, Gönderim zamanı:%@, İletim zamanı:%@</string>
-	<key>MESSAGE_DELIVERED_SHORT</key>
-	<string>Mesaj iletildi</string>
-	<key>MESSAGE_GENERIC</key>
-	<string>%@ alıcısına %@ itibariyle gönderilen mesaj=%@</string>
-	<key>MESSAGE_GENERIC_SHORT</key>
-	<string>%@ itibariyle gönderilen mesaj=%@</string>
-	<key>MESSAGE_NOT_DELIVERED</key>
-	<string>%@ alıcısına gönderilen mesaj beklemede</string>
-	<key>MESSAGE_NOT_DELIVERED_SHORT</key>
-	<string>Mesaj beklemede</string>
-	<key>STATUS_70</key>
-	<string>Zaman aşımına uğradı</string>
-	<key>unicode</key>
-	<false/>
-	-->
 	<key>DATE</key>
 	<string>%DATE% </string>
 	<key>DELIVERED</key>
-	<string>İletim %DATESPEC% %TIMESPEC%</string>
+	<string>iletildi %DATESPEC% %TIMESPEC%</string>
 	<key>STATUS</key>
-	<string>code=%STATUS%</string>
+	<string>durum=%STATUS%</string>
 	<key>STATUS_48</key>
-	<string>sarkan</string>
+	<string>beklemede</string>
 	<key>STATUS_70</key>
-	<string>süresi doldu</string>
+	<string>süre aşımı</string>
 	<key>SUBMIT</key>
-	<string>Gönderim %DATESPEC% %TIMESPEC%</string>
+	<string>gönderildi %DATESPEC% %TIMESPEC%</string>
 	<key>TIME</key>
 	<string>%TIME% </string>
 	<key>TITLE</key>

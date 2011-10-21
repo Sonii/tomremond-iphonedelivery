@@ -1,26 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>Delivery reports</key>
-	<string>İletim raporu</string>
-	<key>Enabled</key>
-	<string>Etkinleştir</string>
-	<key>Full screen</key>
-	<string>Tam ekran rapor</string>
-	<key>Mark</key>
-	<string>İşaret</string>
-	<key>Notification center</key>
-	<string>Bildirim Merkezi’nde</string>
-	<key>Silent</key>
-	<string>Gizli</string>
-	<key>Smileys</key>
-	<string>😄  😊  😉</string>
-	<key>Sound</key>
-	<string>Sesler</string>
-	<key>Style</key>
-	<string>Bildirimler</string>
-	<key>Vibrate</key>
-	<string>Titreşim</string>
-</dict>
-</plist>
+"Vibrate" = "💤  titreşim";
+"Mark" = " ✔  işaret";
+"Smileys" = "😄  gülücükler görünsün mü";
+"Style" = "uyarı çeşidi";
+"Simple Alert" = "basitçe uyarır";
+"Delivery reports" = "Iletim raporu";
+"Silent" = "rahatsız etmez";
+"Sound" = "📢  ses";
+"Notification center" = "uyarı merkezinde";
+"Contact picture" = "📷  kişi resimleri";
+"Full screen" = "tüm ekranda çıkar";
+"Antidote class 0" = "🚑  spam panzehiri";
+"Enabled" = "aktif";
+"Small font size" = "🔍  küçük karakterler";
