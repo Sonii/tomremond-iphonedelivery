@@ -489,4 +489,21 @@ static void register_port_handler(CFStringRef str, CFMessagePortCallBack cb)  {
 }
 %end
 
+
+MSHook(Boolean, CFPreferencesGetAppBooleanValue , CFStringRef key, CFStringRef app, Boolean *exists) {
+    CFStringRef s1 = CFSTR("ShowClass0SMSFromField");
+    CFStringRef s2 = CFSTR("com.apple.carrier");
+
+    NSLog(@"%s %@ %@", __FUNCTION__, key, app);
+    if (CFStringCompare(app, s2, 0) == 0 && CFStringCompare(key, s1, 0) == 0) {
+        if (exists != nil) *exists = YES;
+        return YES;
+    } 
+    
+    return  _CFPreferencesGetAppBooleanValue(key, app, exists);
+}
+
+static __attribute__((constructor)) void localInit() {
+	MSHookFunction((void*)CFPreferencesGetAppBooleanValue, (void*)$CFPreferencesGetAppBooleanValue, (void**)&_CFPreferencesGetAppBooleanValue);
+}
 // vim: ft=objc ts=4 expandtab

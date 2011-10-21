@@ -170,6 +170,7 @@
 			<key>label</key>
 			<string>Small font size</string>
 		</dict>
+		<!--
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
@@ -188,6 +189,7 @@
 			<key>label</key>
 			<string>Antidote class 0</string>
 		</dict>
+		-->
 	</array>
 	<key>title</key>
 	<string>Delivery reports</string>

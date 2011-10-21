@@ -273,6 +273,7 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
 				last_time_stamp = 0;
 			}
 		}
+#if 0
 		else if (sscanf(p, "\r\n+CMT: ,%d\r\n", &len) == 1) {
 			char *b = strchr(p + 2, '\r');
 			if (b != NULL) {
@@ -293,6 +294,7 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
 				}
 			}
 		}
+#endif
 	}
 	return ret;
 }
