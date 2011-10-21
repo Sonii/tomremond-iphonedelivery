@@ -160,7 +160,7 @@ static void readDefaults() {
         CGFloat width = size.width;
         NSLog(@"width = %.1f", width);
 
-        if (showSmileys && width < 170)
+      if (showSmileys && [s length]  < 15 && [s containsEmoji] )
             width += 40;
 
         size = [objc_getClass("CKSimpleBalloonView") 
