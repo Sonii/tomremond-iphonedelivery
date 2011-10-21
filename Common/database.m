@@ -517,7 +517,7 @@ bool convert_num_to_name(const char *num, char *name, char *surname) {
 
 int get_list_of_rowids(int max, uint32_t *buffer) {
 	const char *sql = "select ROWID from Message " 
-			          "where (flags < 32 and flags != 0 and flags != 2 and address is not null) order by date desc";
+			          "where address not like '%@%' and (flags < 32 and flags != 0 and flags != 2 and address is not null) order by date desc";
 
 	return run_sql(SMS_DB, true, sql, PARAM_LOOP, max, PARAM_INT, buffer, PARAM_END);
 }
