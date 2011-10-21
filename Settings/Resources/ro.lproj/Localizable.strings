@@ -1,26 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>Delivery reports</key>
-	<string>Raport livrare</string>
-	<key>Enabled</key>
-	<string>Activați</string>
-	<key>Full screen</key>
-	<string>Alertă ecran complet</string>
-	<key>Mark</key>
-	<string>Semn livrare</string>
-	<key>Notification center</key>
-	<string>Se află în centrul de notificări</string>
-	<key>Silent</key>
-	<string>Discret</string>
-	<key>Smileys</key>
-	<string>😄  😊  😉</string>
-	<key>Sound</key>
-	<string>Sunete</string>
-	<key>Style</key>
-	<string>Notificări</string>
-	<key>Vibrate</key>
-	<string>Vibrație</string>
-</dict>
-</plist>
+"Vibrate" = "💤  Vibratii";
+"Mark" = " ✔  Marcheaza";
+"Smileys" = "😄  Afisare de emoticonuri";
+"Style" = "Stilul de notificare";
+"Simple Alert" = "Alerta simpla";
+"Delivery reports" = "Rapoarte livrare";
+"Silent" = "Discret";
+"Sound" = "📢  Sunet";
+"Notification center" = "In centrul de notificari";
+"Contact picture" = "📷  Fotografia contactului";
+"Full screen" = "Ecran intreg";
+"Antidote class 0" = "🚑  Antidote clasa 0";
+"Enabled" = "Activat";
+"Small font size" = "🔍  Text mic";
