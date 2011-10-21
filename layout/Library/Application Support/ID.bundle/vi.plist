@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>DATE</key>
+	<string>%DATE%</string>
+	<key>DELIVERED</key>
+	<string>Đã gửi %DATESPEC% %TIMESPEC%</string>
+	<key>STATUS</key>
+	<string>Trạng thái=%STATUS%</string>
+	<key>STATUS_48</key>
+	<string>Đang gửi</string>
+	<key>STATUS_70</key>
+	<string>Hết hiệu lực</string>
+	<key>SUBMIT</key>
+	<string>Đã gửi lúc %DATESPEC% %TIMESPEC%</string>
+	<key>TIME</key>
+	<string>%TIME%</string>
+	<key>TITLE</key>
+	<string>➜ %SURNAME% %NAME%</string>
+	<key>TODAY</key>
+	<string>Hôm nay</string>
+	<key>YESTERDAY</key>
+	<string>Hôm qua</string>
+</dict>
+</plist>

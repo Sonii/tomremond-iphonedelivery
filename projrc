@@ -62,6 +62,12 @@ ID=/Users/francois/Dev/iphone-delivery-report filter="*.c *.h Makefile *.m*k *.x
    uk.lproj=uk.lproj {
     Localizable.strings
    }
+   fa.lproj=fa.lproj {
+    Localizable.strings
+   }
+   vi.lproj=vi.lproj {
+    Localizable.strings
+   }
    zh_CN.lproj=zh_CN.lproj {
     Localizable.strings
    }
@@ -151,6 +157,8 @@ ID=/Users/francois/Dev/iphone-delivery-report filter="*.c *.h Makefile *.m*k *.x
      sk.plist
      tr.plist
      uk.plist
+     fa.plist
+     vi.plist
      zh-Hans.plist
      zh-Hant.plist
     }
