@@ -2,24 +2,30 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>Contact picture</key>
+	<string>顔写真</string>
 	<key>Delivery reports</key>
 	<string>配信レポート</string>
 	<key>Enabled</key>
-	<string>の使用</string>
+	<string>有効</string>
 	<key>Full screen</key>
 	<string>フルスクリーン</string>
 	<key>Mark</key>
 	<string>マーク</string>
 	<key>Notification center</key>
-	<string>通知センターで表示する</string>
+	<string>通知センターに表示</string>
 	<key>Silent</key>
 	<string>サイレント</string>
+	<key>Simple Alert</key>
+	<string>シンプル表示</string>
+	<key>Small font size</key>
+	<string>小さな文字</string>
 	<key>Smileys</key>
 	<string>😄  😊  😉</string>
 	<key>Sound</key>
-	<string>サウンド</string>
+	<string>通知音</string>
 	<key>Style</key>
-	<string>Notification</string>
+	<string>通知形式</string>
 	<key>Vibrate</key>
 	<string>バイブレーション</string>
 </dict>

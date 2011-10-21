@@ -5,21 +5,21 @@
 	<key>DATE</key>
 	<string>%DATE%</string>
 	<key>DELIVERED</key>
-	<string>受信 %DATESPEC% %TIMESPEC%</string>
+	<string> 着信：%DATESPEC% %TIMESPEC%</string>
 	<key>STATUS</key>
 	<string>code=%STATUS%</string>
 	<key>STATUS_48</key>
-	<string>ペンディング</string>
+	<string>保留</string>
 	<key>STATUS_70</key>
-	<string>お届け</string>
+	<string>無効</string>
 	<key>SUBMIT</key>
-	<string>使者 %DATESPEC% %TIMESPEC%</string>
+	<string>送信：%DATESPEC% %TIMESPEC% </string>
 	<key>TIME</key>
 	<string>%TIME%</string>
 	<key>TITLE</key>
 	<string>➜ %NAME% %SURNAME%</string>
 	<key>TODAY</key>
-	<string>今日の</string>
+	<string>本日</string>
 	<key>YESTERDAY</key>
 	<string>昨日</string>
 </dict>
