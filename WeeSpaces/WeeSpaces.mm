@@ -186,8 +186,11 @@
 		if ([icon class] == [objc_getClass("SBFolderIcon")  class] ||
 			[icon class] == [objc_getClass("SBNewsstandIcon") class])
 			v.backgroundColor = [UIColor blackColor];
-		v.image = [icon generateIconImage:2];
-		[self addSubview:v];
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			v.image = [icon generateIconImage:2];
+			[self addSubview:v];
+		});
 		[v release];
 
 		x += width / 4;
