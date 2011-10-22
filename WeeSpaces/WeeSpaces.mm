@@ -11,13 +11,13 @@
 #define kReportHeight (320.0 / SCALE)
 #define kPageWidth (320.0 / SCALE)
 
-@interface WeeSpacesView : UIView {
+@interface WeeSpacesView : UIControl {
 }
 -(void)gotoPage:(unsigned)n;
 -(id)initWithPage:(unsigned)page;
 @end
 
-@interface WeeAppView : UIView {
+@interface WeeAppView : UIControl {
 	SBApplication *appl;
 	UIImage *snapshot;
 }
@@ -126,12 +126,12 @@
 		scrollView.showsHorizontalScrollIndicator = NO;
 		scrollView.opaque = NO;
 		scrollView.delegate = self;
-
+#if 0
+		scrollView.delaysContentTouches = NO;
+		scrollView.directionalLockEnabled = YES;
 		scrollView.userInteractionEnabled = YES;
-		_view.userInteractionEnabled = YES;
-		_view.opaque = NO;
-		[_view addSubview:scrollView];
-		
+#endif
+
 		_view.userInteractionEnabled = YES;
 		_view.opaque = NO;
 		[_view addSubview:scrollView];
@@ -202,11 +202,7 @@
 
 	self.tag = page;
 
-	UIControl *cntrl = [[UIControl alloc] initWithFrame:CGRectMake(0 , 0, width, height)];
-	cntrl.userInteractionEnabled = YES;
-
-	[cntrl addTarget:self action:@selector(onTouch:) forControlEvents:UIControlEventTouchDown];
-	[self addSubview:cntrl];
+	[self addTarget:self action:@selector(onTouch:) forControlEvents:UIControlEventTouchDown];
 	return self;
 }
 
@@ -268,12 +264,7 @@
 
 	self = [super initWithFrame:CGRectMake(0.0, 0.0, width, height)];
 
-	UIControl *cntrl = [[UIControl alloc] initWithFrame:CGRectMake(0 , 0, width, height)];
-	cntrl.userInteractionEnabled = YES;
-
-	[cntrl addTarget:self action:@selector(onTouch:) forControlEvents:UIControlEventTouchDown];
-	[self addSubview:cntrl];
-	[cntrl release];
+	[self addTarget:self action:@selector(onTouch:) forControlEvents:UIControlEventTouchDown];
 	return self;
 }
 
