@@ -160,7 +160,7 @@ static void readDefaults() {
         CGFloat width = size.width;
         NSLog(@"width = %.1f", width);
 
-      if (showSmileys && [s length]  < 15 && [s containsEmoji] )
+      if (showSmileys && [s length]  < 20 && [s containsEmoji] )
             width += 40;
 
         size = [objc_getClass("CKSimpleBalloonView") 
@@ -174,6 +174,33 @@ static void readDefaults() {
 }
 %end
 
+@interface UIView(_private)
+-(UIView *)markView;
+@end
+
+@implementation UIView(_private)
+-(UIView *)markView {
+	NSArray *tagged = [self.subviews filteredArrayUsingPredicate:
+                            [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary *d) {
+                                UIView *v = (UIView *)obj;
+                                return v.tag == TAG;
+					}
+				]
+		];
+    size_t n = [tagged count];
+
+    switch (n) {
+        // if there are severl marks!!! remove all but one
+    default:
+        for (int i = 1; i < n; i++) {
+            UIView *v = [tagged objectAtIndex:i];
+            [v removeFromSuperview];
+        }
+    case 1: return [tagged objectAtIndex:0];
+    case 0: return nil;
+    }
+}
+@end
 
 %hook CKTranscriptController
 /* 
@@ -228,7 +255,7 @@ static void readDefaults() {
         CKMessageCell *mcell = (CKMessageCell *)cell;
         UIView *ballonView = [mcell balloonView];
         //CGRect balloon_frame = ballonView.frame;
-        UIView *markView = [ballonView viewWithTag:TAG];
+        UIView *markView = [ballonView markView];
 
         // don't do anything in edit mode
         if (!tv.editing) {
