@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>DATE</key>
-	<string>в %DATE% </string>
+	<string>в %DATE%</string>
 	<key>DELIVERED</key>
 	<string>Доставлено %DATESPEC% %TIMESPEC%</string>
 	<key>STATUS</key>
@@ -15,7 +15,7 @@
 	<key>SUBMIT</key>
 	<string>Отправлено %DATESPEC% %TIMESPEC%</string>
 	<key>TIME</key>
-	<string>%TIME% </string>
+	<string>%TIME%</string>
 	<key>TITLE</key>
 	<string>➜ %NAME% %SURNAME%</string>
 	<key>TODAY</key>

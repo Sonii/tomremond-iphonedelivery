@@ -2,28 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-<!-- not used
-	<key>MESSAGE_DELIVERED</key>
-	<string>Bericht voor %@ verzonden op %@ is aangekomen om %@</string>
-	<key>MESSAGE_DELIVERED_SHORT</key>
-	<string>Bericht aangekomen</string>
-	<key>MESSAGE_GENERIC</key>
-	<string>Bericht voor %@ verzonden op %@ status%@</string>
-	<key>MESSAGE_GENERIC_SHORT</key>
-	<string>Bericht verzonden op %@ status=%@</string>
-	<key>MESSAGE_NOT_DELIVERED</key>
-	<string>Bericht voor %@ is onderweg</string>
-	<key>MESSAGE_NOT_DELIVERED_SHORT</key>
-	<string>Bericht onderweg</string>
-	<key>STATUS_64</key>
-	<string>Remote procedure error</string>
-	<key>STATUS_65</key>
-	<string>Incompatible destination</string>
-	<key>STATUS_70</key>
-	<string>expired</string>
-	<key>unicode</key>
-	<false/>
-	-->
 	<key>DATE</key>
 	<string>%DATE%</string>
 	<key>DELIVERED</key>

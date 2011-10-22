@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>DATE</key>
-	<string>on %DATE% </string>
+	<string>on %DATE%</string>
 	<key>DELIVERED</key>
 	<string>delivered %DATESPEC% %TIMESPEC%</string>
 	<key>STATUS</key>

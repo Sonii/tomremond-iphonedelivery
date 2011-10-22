@@ -2,25 +2,27 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>STATUS_70</key>
-	<string>expirado</string>
+	<key>TIME</key>
+	<string>às %TIME%</string>
 	<key>DATE</key>
-	<string>el %DATE%</string>
+	<string>em %DATE%</string>
+	<key>SUBMIT</key>
+	<string>enviada %DATESPEC% %TIMESPEC%</string>
 	<key>DELIVERED</key>
-	<string>recibido %DATESPEC% %TIMESPEC%</string>
+	<string>entregue %DATESPEC% %TIMESPEC%</string>
 	<key>STATUS</key>
 	<string>code=%STATUS%</string>
 	<key>STATUS_48</key>
-	<string>pending</string>
-	<key>SUBMIT</key>
-	<string>enviado %DATESPEC% %TIMESPEC%</string>
-	<key>TIME</key>
-	<string>%TIME%</string>
+	<string>Pendente</string>
+	<key>STATUS_70</key>
+	<string>Expirado</string>
 	<key>TITLE</key>
-	<string>➜ %SURNAME% %NAME%</string>
+	<string>➜ %NAME% %SURNAME%</string>
 	<key>TODAY</key>
-	<string>hoy</string>
+	<string>Hoje</string>
 	<key>YESTERDAY</key>
-	<string>ayer</string>
+	<string>Ontem</string>
 </dict>
 </plist>
+
+

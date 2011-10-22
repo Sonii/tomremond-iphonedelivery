@@ -2,24 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-<!-- not used
-	<key>MESSAGE_DELIVERED</key>
-	<string>Zpráva pro %@ byla odeslána %@ a doručena %@</string>
-	<key>MESSAGE_DELIVERED_SHORT</key>
-	<string>Zpráva doručena</string>
-	<key>MESSAGE_GENERIC</key>
-	<string>Zpráva pro %@ byla odeslána %@ stav=%@</string>
-	<key>MESSAGE_GENERIC_SHORT</key>
-	<string>Zpráva byla odeslána na %@ stav=%@</string>
-	<key>MESSAGE_NOT_DELIVERED</key>
-	<string>Doručení zprávy pro %@ selhalo</string>
-	<key>MESSAGE_NOT_DELIVERED_SHORT</key>
-	<string>Doručení zprávy selhalo</string>
-	<key>STATUS_70</key>
-	<string>expired</string>
-	<key>unicode</key>
-	<false/>
-	-->
 	<key>DATE</key>
 	<string>%DATE%</string>
 	<key>DELIVERED</key>
@@ -33,7 +15,7 @@
 	<key>SUBMIT</key>
 	<string>odeslána %DATESPEC% %TIMESPEC%</string>
 	<key>TIME</key>
-	<string>%TIME% </string>
+	<string>%TIME%</string>
 	<key>TITLE</key>
 	<string>➜ %SURNAME% %NAME%</string>
 	<key>TODAY</key>

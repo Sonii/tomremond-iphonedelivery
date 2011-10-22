@@ -2,25 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-<!-- not used
-	<key>MESSAGE_DELIVERED</key>
-	<string>Messaggio per %@ inviato alle %@ consegnato alle %@</string>
-	<key>MESSAGE_DELIVERED_SHORT</key>
-	<string>Messaggio consegnato</string>
-	<key>MESSAGE_GENERIC</key>
-	<string>Messaggio per %@ inviato alle %@ stato=%@</string>
-	<key>MESSAGE_GENERIC_SHORT</key>
-	<string>Messaggio inviato alle %@ stato=%@</string>
-	<key>MESSAGE_NOT_DELIVERED</key>
-	<string>Messaggio per %@ in sospeso</string>
-	<key>MESSAGE_NOT_DELIVERED_SHORT</key>
-	<string>Messaggio in sospeso</string>
-	<key>STATUS_70</key>
-	<string>expired</string>
-	<key>unicode</key>
-	<false/>
-	-->
-
 	<key>DATE</key>
 	<string>alle %DATE%</string>
 	<key>DELIVERED</key>

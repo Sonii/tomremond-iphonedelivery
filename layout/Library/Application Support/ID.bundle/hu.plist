@@ -2,28 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-<!-- not used
-	<key>MESSAGE_DELIVERED</key>
-	<string>Üzeneted %@ címzettnek elküldve\r %@ Megérkezett\r %@</string>
-	<key>MESSAGE_DELIVERED_SHORT</key>
-	<string>Üzeneted megérkezett</string>
-	<key>MESSAGE_GENERIC</key>
-	<string>Üzeneted %@ címzettnek elküldve %@ Megérkezett %@ Állapot=%@</string>
-	<key>MESSAGE_GENERIC_SHORT</key>
-	<string>Üzeneted Elküldve %@ Állapot=%@</string>
-	<key>MESSAGE_NOT_DELIVERED</key>
-	<string>Üzeneted nem lett elküldve %@ címzettnek</string>
-	<key>MESSAGE_NOT_DELIVERED_SHORT</key>
-	<string>Üzeneted függőben</string>
-	<key>STATUS_64</key>
-	<string>Távoli eljárás hiba</string>
-	<key>STATUS_65</key>
-	<string>Nem megfelelő a cél</string>
-	<key>STATUS_70</key>
-	<string>Lejárt</string>
-	<key>unicode</key>
-	<false/>
-	-->
 	<key>DATE</key>
 	<string>%DATE%</string>
 	<key>DELIVERED</key>
