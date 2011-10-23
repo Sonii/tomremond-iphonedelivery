@@ -28,27 +28,26 @@ static UIImage *get_image_for_status(int status) {
     static UIImage *images[4];
 
     if (!inited) {
+		int i;
+		NSString *scale = [[UIScreen mainScreen] scale] == 2.0 ? @"@2x" : @"";
+		NSString *pfx = @"/Library/Application Support/ID.bundle/";
+		NSString *arr[] = { @"pending", @"delivered", @"expired", @"error" };
+
         inited = true;
-        images[0] = [[UIImage alloc]
-            initWithContentsOfFile:[NSBundle
-                    pathForResource:@"pending"
-							 ofType:@"png" 
-						inDirectory:@"/Library/Application Support/ID.bundle"]];
-        images[1] = [[UIImage alloc]
-            initWithContentsOfFile:[NSBundle
-                    pathForResource:@"delivered"
-							 ofType:@"png" 
-						inDirectory:@"/Library/Application Support/ID.bundle"]];
-        images[2] = [[UIImage alloc]
-            initWithContentsOfFile:[NSBundle
-                    pathForResource:@"expired"
-							 ofType:@"png" 
-						inDirectory:@"/Library/Application Support/ID.bundle"]];
-        images[3] = [[UIImage alloc]
-            initWithContentsOfFile:[NSBundle
-                    pathForResource:@"error"
-							 ofType:@"png" 
-						inDirectory:@"/Library/Application Support/ID.bundle"]];
+		for (i = 0; i < 4; i++) {
+			UIImage *im = [UIImage alloc]; 
+			NSString *path = [NSString stringWithFormat:@"%@%@%@.png", pfx, arr[i], scale];
+
+			if ([[NSFileManager defaultManager] fileExistsAtPath:path])
+				images[i] = [im initWithContentsOfFile:path];
+			else {
+				NSString *path = [NSString stringWithFormat:@"%@%@.png", pfx, arr[i]];
+				if ([[NSFileManager defaultManager] fileExistsAtPath:path])
+			        images[i] = [im initWithContentsOfFile:path];
+				else
+					images[i] = im;
+			}
+		}	
     }
     return status >= 0 && status < 4 ? images[status] : nil;
 }
