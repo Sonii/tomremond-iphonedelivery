@@ -15,7 +15,7 @@
 	<key>STATUS_48</key>
 	<string>Pendente</string>
 	<key>STATUS_70</key>
-	<string>Expirado</string>
+	<string>Expirada</string>
 	<key>TITLE</key>
 	<string>➜ %NAME% %SURNAME%</string>
 	<key>TODAY</key>

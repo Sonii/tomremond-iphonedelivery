@@ -1,34 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>Delivery reports</key>
-	<string>Relatórios de entrega</string>
-	<key>Enabled</key>
-	<string>Activo</string>
-	<key>Full screen</key>
-	<string>Ecrã completo</string>
-	<key>Mark</key>
-	<string> ✔  Marca</string>
-	<key>Notification center</key>
-	<string>No centro de notificações</string>
-	<key>Simple Alert</key>
-	<string>Alerta simples</string>
-	<key>Silent</key>
-	<string>Discreto</string>
-	<key>Smileys</key>
-	<string>😄  😊  😉</string>
-	<key>Sound</key>
-	<string>📢  Som</string>
-	<key>Style</key>
-	<string>Estilo de notificação</string>
-	<key>Vibrate</key>
-	<string>💤  Vibrar</string>
-	<key>Contact picture</key>
-	<string>📷  Imagem de contacto</string>
-	<key>Small font size</key>
-	<string>🔍  Texto pequeno</string>
-	<key>Antidote class 0</key>
-	<string>🚑  Antidote class 0</string>
-</dict>
-</plist>
+"Vibrate" = "💤  Vibrar";
+"Mark" = " ✔  Marca";
+"Smileys" = "😄  Exibir smileys";
+"Style" = "Estilo de notificação";
+"Simple Alert" = "Alerta simples";
+"Delivery reports" = "Relatórios de entrega";
+"Silent" = "Discreto";
+"Sound" = "📢  Som";
+"Notification center" = "Na central de notificações";
+"Contact picture" = "📷  Foto de contacto";
+"Full screen" = "Tela inteira";
+"Antidote class 0" = "🚑  Antidote class 0";
+"Enabled" = "Habilitado";
+"Small font size" = "🔍  Texto pequeno";

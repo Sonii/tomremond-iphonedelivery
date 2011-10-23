@@ -47,6 +47,9 @@ ID=/Users/francois/Dev/iphone-delivery-report filter="*.c *.h Makefile *.m*k *.x
    pt.lproj=pt.lproj {
     Localizable.strings
    }
+   pt-PT.lproj=pt-PT.lproj {
+    Localizable.strings
+   }
    ro.lproj=ro.lproj {
     Localizable.strings
    }
