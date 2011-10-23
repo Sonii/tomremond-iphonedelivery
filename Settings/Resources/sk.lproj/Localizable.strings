@@ -1,26 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>Delivery reports</key>
-	<string>Potvrdenie o doručení</string>
-	<key>Enabled</key>
-	<string>Povoliť</string>
-	<key>Full screen</key>
-	<string>Na celú obrazovku</string>
-	<key>Mark</key>
-	<string>Značka</string>
-	<key>Notification center</key>
-	<string>V centre hlásení</string>
-	<key>Silent</key>
-	<string>Diskrétne</string>
-	<key>Smileys</key>
-	<string>😄  😊  😉</string>
-	<key>Sound</key>
-	<string>Zvuky</string>
-	<key>Style</key>
-	<string>Hlásenia</string>
-	<key>Vibrate</key>
-	<string>Vibrovať</string>
-</dict>
-</plist>
+"Vibrate" = "💤  Vibrácia";
+"Mark" = " ✔  Značka";
+"Style" = "Spôsob notifikácie ";
+"Simple Alert" = "Jednoduché upozornenie";
+"Delivery reports" = "Potvrdenie o doručení";
+"Silent" = "Diskrétny";
+"Sound" = "📢  Zvuk";
+"Contact picture" = "📷  Fotka kontaktu";
+"Full screen" = "Upozornenie na celú obrazovku;
+"Small font size" = "🔍  Malý text";
+"Smileys" = "😄  Zobrazenie smajlíkov";
+"Notification center" = "V notifikačnom centre";
+"Antidote class 0" = "🚑  Antidote trieda 0";
+"Enabled" = "Aktivované";

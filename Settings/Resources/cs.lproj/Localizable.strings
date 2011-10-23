@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+<key>Antidote class 0</key>
+	<string>🚑  Antidote třída 0</string>
+	<key>Contact picture</key>
+	<string>📷  Obrázek kontaktu</string>
 	<key>Delivery reports</key>
 	<string>Potvrzení o doručení</string>
 	<key>Enabled</key>
@@ -9,18 +13,22 @@
 	<key>Full screen</key>
 	<string>Upozornění na celou obrazovku</string>
 	<key>Mark</key>
-	<string>Značka</string>
+	<string> ✔  Značka</string>
 	<key>Notification center</key>
 	<string>Oznamovací centrum</string>
 	<key>Silent</key>
 	<string>Diskrétní</string>
+	<key>Simple Alert</key>
+	<string>Jednoduché upozornění</string>
+	<key>Small font size</key>
+	<string>🔍  Malý text</string>
 	<key>Smileys</key>
-	<string>😄  😊  😉</string>
+	<string>😄  Smajlíci</string>
 	<key>Sound</key>
-	<string>Zvuk</string>
+	<string>📢  Zvuk</string>
 	<key>Style</key>
-	<string>Oznámení</string>
+	<string>Styl oznámení</string>
 	<key>Vibrate</key>
-	<string>Vibrace</string>
+	<string>💤  Vibrace</string>
 </dict>
 </plist>

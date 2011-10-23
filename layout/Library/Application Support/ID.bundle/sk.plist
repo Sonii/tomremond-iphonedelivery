@@ -5,22 +5,22 @@
 	<key>DATE</key>
 	<string>%DATE%</string>
 	<key>DELIVERED</key>
-	<string>doručená %DATESPEC% %TIMESPEC%</string>
+	<string>Doručené %DATESPEC% %TIMESPEC%</string>
 	<key>STATUS</key>
-	<string>code=%STATUS%</string>
+	<string>Stav=%STATUS%</string>
 	<key>STATUS_48</key>
-	<string>pokračujúcej</string>
+	<string>Čaká na doručenie</string>
 	<key>STATUS_70</key>
-	<string>vypršal</string>
+	<string>Nedoručené</string>
 	<key>SUBMIT</key>
-	<string>odoslaná %DATESPEC% %TIMESPEC%</string>
+	<string>Odoslané %DATESPEC% %TIMESPEC%</string>
 	<key>TIME</key>
-	<string>%TIME%</string>
+	<string>o %TIME% </string>
 	<key>TITLE</key>
 	<string>➜ %SURNAME% %NAME%</string>
 	<key>TODAY</key>
-	<string>dnes</string>
+	<string>Dnes</string>
 	<key>YESTERDAY</key>
-	<string>včera</string>
+	<string>Včera</string>
 </dict>
 </plist>
