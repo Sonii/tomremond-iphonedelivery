@@ -20,7 +20,7 @@ export TARGET_LD=$(CLANG)
 endif
 
 export DEBUG=0
-VERSION=0.5gm
+VERSION=0.5gm2
 REPO_URL=iphonedelivery@iphonedelivery.advinux.com
 ifeq ($(DEBUG),1)
 REPO=ios5debug
