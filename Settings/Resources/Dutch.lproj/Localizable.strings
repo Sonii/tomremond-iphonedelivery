@@ -17,8 +17,7 @@
 	<key>Silent</key>
 	<string>Discreet</string>
 	<key>Smileys</key>
-	<string>😄  😊  😉</string>
-	<string>Smileys</string>
+	<string>😄  smileys</string>
 	<key>Sound</key>
 	<string>Geluiden</string>
 	<key>Style</key>
