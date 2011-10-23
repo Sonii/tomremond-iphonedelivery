@@ -1,15 +1,14 @@
-"Vibrate" = "💤  Vibriranje";
+"Vibrate" = "💤  Vibracija";
 "Mark" = " ✔  Obilježi";
-"Style" = "Tip notifikacije ";
-"Simple Alert" = "jednostavno";
-"Delivery reports" = "Izvještaj o dostavi";
+"Style" = "Vrsta obavijesti";
+"Simple Alert" = "Jednostavno";
+"Delivery reports" = "Izvještaj o isporuci";
 "Silent" = "Diskretno";
 "Sound" = "📢  Zvuk";
 "Contact picture" = "📷  Slika kontakta";
-"Full screen" = "Cijel ekran";
-"Small font size" = "🔍  umanjeni tekst";
-"Smileys" = "😄  Smajli";
-"Notification center" = "Centar za obavještenja";
+"Full screen" = "Puni zaslon";
+"Small font size" = "🔍  Umanjeni tekst";
+"Smileys" = "😄  Emotikoni";
+"Notification center" = "Centar za obavijesti";
 "Antidote class 0" = "🚑  Antidote class 0";
-"Enabled" = "uključeno";
-
+"Enabled" = "Uključeno";
