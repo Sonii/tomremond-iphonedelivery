@@ -29,6 +29,7 @@ REPO=ios5beta
 endif
 
 SDKVERSION = 5.0
+
 include theos/makefiles/common.mk
 
 SUBPROJECTS= CommCenterHook SpringBoardHook MobileSMSHook Settings WeeBrowseID
@@ -37,6 +38,10 @@ include $(THEOS_MAKE_PATH)/aggregate.mk
 
 archive:
 	git archive --format=tar HEAD | gzip > ~/idcc.${THEOS_PACKAGE_VERSION}.tar.gz
+
+check-plist:
+	@( cd 'layout/Library/Application Support/ID.bundle/'; for f in *.plist; do plutil $$f; done)
+	@( cd Settings/Resources/; for d in *.lproj; do plutil $$d/*.strings; done )
 
 publish: 
 	@dpkg-scanpackages . 2> /dev/null > Packages
