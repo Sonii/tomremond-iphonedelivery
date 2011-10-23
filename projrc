@@ -144,16 +144,16 @@ ID=/Users/francois/Dev/iphone-delivery-report filter="*.c *.h Makefile *.m*k *.x
    Application Support="Application Support" {
     ID.bundle=ID.bundle {
      ar.plist
+     bs.plist
      cs.plist
      de.plist
      el.plist
      en.plist
      es.plist
+     fa.plist
      fr.plist
-     hu.plist
-     sr.plist
-     bs.plist
      hr.plist
+     hu.plist
      it.plist
      ja.plist
      nl.plist
@@ -163,9 +163,9 @@ ID=/Users/francois/Dev/iphone-delivery-report filter="*.c *.h Makefile *.m*k *.x
      ro.plist
      ru.plist
      sk.plist
+     sr.plist
      tr.plist
      uk.plist
-     fa.plist
      vi.plist
      zh-Hans.plist
      zh-Hant.plist
