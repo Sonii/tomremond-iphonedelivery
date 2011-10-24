@@ -48,19 +48,19 @@ plutil -key items -key $((ENTRY+1)) -key isController -yes $MESSAGES_PLIST > /de
 plutil -key items -key $((ENTRY+1)) -key label -string DELIVERY_RECEIPTS $MESSAGES_PLIST > /dev/null
 
 echo "inject our magic potion into CommCenter"
-#PLIST=/System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
-#LIBRARY=$(plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES $PLIST 2> /dev/null)
-#if [ -z "$LIBRARY" ]; then
-#	plutil -key EnvironmentVariables -dict $PLIST > /dev/null
-#	plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES \
-#		   -setValue /usr/local/lib/libidcc.dylib \
-#	 	$PLIST > /dev/null
-#else
-#	plutil -key EnvironmentVariables -dict $PLIST > /dev/null
-#	plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES \
-#		   -setValue "${LIBRARY}:/usr/local/lib/libidcc.dylib" \
-#	 	$PLIST > /dev/null
-#fi
+PLIST=/System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
+LIBRARY=$(plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES $PLIST 2> /dev/null)
+if [ -z "$LIBRARY" ]; then
+	plutil -key EnvironmentVariables -dict $PLIST > /dev/null
+	plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES \
+		   -setValue /usr/local/lib/libidcc.dylib \
+	 	$PLIST > /dev/null
+else
+	plutil -key EnvironmentVariables -dict $PLIST > /dev/null
+	plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES \
+		   -setValue "${LIBRARY}:/usr/local/lib/libidcc.dylib" \
+	 	$PLIST > /dev/null
+fi
 
 echo "Reload CommCenter"
 launchctl unload /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist

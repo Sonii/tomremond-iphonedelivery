@@ -1,6 +1,5 @@
 include theos/makefiles/common.mk
 
-USES_MS=YES
 VPATH = ../Common
 
 LIBRARY_NAME = libidcc
