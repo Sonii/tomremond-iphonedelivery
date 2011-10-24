@@ -31,6 +31,10 @@ static void CGContextAddRoundRect(CGContextRef context, CGRect rect, float radiu
         -M_PI / 2, M_PI, 1);
 }
 
+@interface UIApplication(xxx)
+-(int)activeInterfaceOrientation;
+@end
+
 @protocol WeeReportError
 -(void)invalidReport:(uint32_t)rowid;
 @end
@@ -108,6 +112,8 @@ static BOOL visible = NO;
 	numberOfReports = 0;
 	for (UIView *v in scrollView.subviews)  
 		[v removeFromSuperview];
+	[_view release];
+	_view = nil;
 }
 
 + (void)initialize {
@@ -140,16 +146,27 @@ static BOOL visible = NO;
   	sharedInstance = self;
     if (_view == nil)
     {
-		numberOfReports = 0;
-        _view = [[UIView alloc] initWithFrame:CGRectMake(2, 0, 316, kReportHeight)];
+		int orientation = [[UIApplication sharedApplication] activeInterfaceOrientation];
+		CGSize size = [UIScreen mainScreen].bounds.size;
+		CGFloat w = size.width;
+		if (orientation == 3 || orientation == 4)
+			w = size.height;
+
+		NSLog(@"active orientation = %d", orientation);
+	
+        _view = [[UIView alloc] initWithFrame:CGRectMake(2, 0, w - 4, kReportHeight)];
         
-        UIImage *bg = [[UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeAppBackground.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:71];
+		numberOfReports = 0;
+        
+        UIImage *bg = [[UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeAppBackground.png"] 
+					   stretchableImageWithLeftCapWidth:5 
+										   topCapHeight:kReportHeight];
         UIImageView *bgView = [[UIImageView alloc] initWithImage:bg];
-        bgView.frame = CGRectMake(0, 0, 316, kReportHeight);
+        bgView.frame = CGRectMake(0, 0, w, kReportHeight);
         [_view addSubview:bgView];
         [bgView release];
 
-		scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 316, kReportHeight)];
+		scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, w - 4, kReportHeight)];
 
 		scrollView.scrollEnabled = YES;
 		scrollView.pagingEnabled = NO;
