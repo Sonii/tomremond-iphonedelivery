@@ -110,15 +110,25 @@
 - (void)viewDidDisappear {
 	for (UIView *v in scrollView.subviews)  
 		[v removeFromSuperview];
+	[_view release];
+	_view = nil;
 }
 
 
 - (UIView *)view {
     if (_view == nil)
     {
-        _view = [[UIView alloc] initWithFrame:CGRectMake(2, 0, 316, kReportHeight)];
+		int orientation = [[UIApplication sharedApplication] activeInterfaceOrientation];
+		CGSize size = [UIScreen mainScreen].bounds.size;
+		CGFloat w = size.width;
+		if (orientation == 3 || orientation == 4)
+			w = size.height;
+
+		NSLog(@"active orientation = %d", orientation);
+	
+        _view = [[UIView alloc] initWithFrame:CGRectMake(2, 0, w - 4, kReportHeight)];
         
-		scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 316, kReportHeight)];
+		scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, w - 4, kReportHeight)];
 
 		scrollView.scrollEnabled = YES;
 		scrollView.pagingEnabled = NO;

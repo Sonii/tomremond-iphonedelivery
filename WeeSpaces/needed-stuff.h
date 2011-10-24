@@ -5,6 +5,10 @@
 -(void)activateApplicationFromSwitcher:(id)app;
 @end
 
+@interface UIApplication(xxx)
+-(int)activeInterfaceOrientation;
+@end
+
 @interface SBUserAgent
 +(id)sharedUserAgent;
 -(BOOL)springBoardIsActive;
