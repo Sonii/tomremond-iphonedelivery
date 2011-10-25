@@ -1,6 +1,7 @@
 export THEOS_DEVICE_IP=192.168.17.144
 
-CLANG=~/llvm_build/Release+Asserts/bin/clang 
+#CLANG=~/llvm_build/Release+Asserts/bin/clang 
+CLANG=clang 
 
 ifeq ($(CLANG),)
 export TARGET_CC=$(SDKBINPATH)/gcc
@@ -22,12 +23,16 @@ endif
 export DEBUG=0
 export USES_MS=NO
 
-VERSION=0.5gm2
+VERSION=0.5gm3
 REPO_URL=iphonedelivery@iphonedelivery.advinux.com
 ifeq ($(DEBUG),1)
 REPO=ios5debug
 else
+ifeq ($(USES_MS),YES)
+REPO=ios5ms
+else
 REPO=ios5beta
+endif
 endif
 
 SDKVERSION = 5.0
@@ -59,7 +64,7 @@ after-stage::
 	@mv  _/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeBrowseID.dylib \
 		_/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeBrowseID
 ifeq ("${USES_MS}","YES")
-	@cp CommCenterHook/libidcc.plist _/Library/MobileSubstrate/DynamicLibraries
+	@echo cp CommCenterHook/libidcc.plist _/Library/MobileSubstrate/DynamicLibraries
 endif
 
 ifeq ($(DEBUG),1)
