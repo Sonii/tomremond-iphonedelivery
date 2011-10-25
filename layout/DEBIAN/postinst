@@ -47,6 +47,10 @@ plutil -key items -key $((ENTRY+1)) -key cell -string PSLinkCell $MESSAGES_PLIST
 plutil -key items -key $((ENTRY+1)) -key isController -yes $MESSAGES_PLIST > /dev/null
 plutil -key items -key $((ENTRY+1)) -key label -string DELIVERY_RECEIPTS $MESSAGES_PLIST > /dev/null
 
+# comment if not uses MS (and build accordingly)
+#USES_MS=YES
+
+if [ -z "$USES_MS" ]; then
 echo "inject our magic potion into CommCenter"
 PLIST=/System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 LIBRARY=$(plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES $PLIST 2> /dev/null)
@@ -60,6 +64,7 @@ else
 	plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES \
 		   -setValue "${LIBRARY}:/usr/local/lib/libidcc.dylib" \
 	 	$PLIST > /dev/null
+fi
 fi
 
 echo "Reload CommCenter"
