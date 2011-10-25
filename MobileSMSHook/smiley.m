@@ -68,12 +68,15 @@ static struct {
         {   @":*",  @""    },      // kiss: e418
 };
 
-@implementation NSString(emojis)
--(BOOL)containsEmoji {
+@implementation NSString(emojisxx)
+-(BOOL)containsEmojixx {
+    NSLog(@"%s %@", __FUNCTION__, self);
     for (unsigned i = 0; i < sizeof(smileys)/sizeof(smileys[0]); i++) {
         NSRange r = [self rangeOfString:smileys[i].repl];
-        if (r.location != NSNotFound)
+        if (r.location != NSNotFound) {
+            NSLog(@"YES");
             return YES;
+        }
     }
     return NO;
 }

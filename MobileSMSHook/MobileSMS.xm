@@ -155,13 +155,14 @@ static void readDefaults() {
     CGSize size = %orig;
 
     if ([self balloonClassAtIndex:index] == objc_getClass("CKSimpleBalloonView")) {
+
         NSString *s = [self textAtIndex:index];
 
         CGFloat width = size.width;
-        NSLog(@"width = %.1f", width);
 
-      if (showSmileys && [s length]  < 20 && [s containsEmoji] )
+      if (showSmileys && [s length]  < 20 && [s containsEmojixx] ) {
             width += 40;
+      }
 
         size = [objc_getClass("CKSimpleBalloonView") 
                     balloonSizeConstrainedToWidth:width 
@@ -187,7 +188,7 @@ static void readDefaults() {
 					}
 				]
 		];
-    size_t n = [tagged count];
+    int n = [tagged count];
 
     switch (n) {
         // if there are severl marks!!! remove all but one
@@ -233,7 +234,7 @@ static void readDefaults() {
     if ([data balloonClassAtIndex:indexPath.row] == objc_getClass("CKSimpleBalloonView")) {
         NSString *s = [data textAtIndex:indexPath.row];
 
-        if (showSmileys && [s containsEmoji]) {
+        if (showSmileys && [s containsEmojixx]) {
             CGSize size = [data sizeAtIndex:indexPath.row];
             h = size.height * 1.05;
         }
