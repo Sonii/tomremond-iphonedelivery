@@ -146,6 +146,7 @@ ID=/Users/francois/Dev/iphone-delivery-report filter="*.c *.h Makefile *.m*k *.x
   Library=Library {
    Application Support="Application Support" {
     ID.bundle=ID.bundle {
+	 smileys.strings
      ar.plist
      bs.plist
      cs.plist

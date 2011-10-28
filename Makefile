@@ -23,7 +23,7 @@ endif
 export DEBUG=0
 export USES_MS=NO
 
-VERSION=0.5gm3
+VERSION=0.5gm4
 REPO_URL=iphonedelivery@iphonedelivery.advinux.com
 ifeq ($(DEBUG),1)
 REPO=ios5debug
@@ -39,7 +39,7 @@ SDKVERSION = 5.0
 
 include theos/makefiles/common.mk
 
-SUBPROJECTS= CommCenterHook SpringBoardHook MobileSMSHook Settings WeeBrowseID
+SUBPROJECTS= CommCenterHook SpringBoardHook MobileSMSHook Settings WeeBrowseID libidtool
 
 include $(THEOS_MAKE_PATH)/aggregate.mk
 
@@ -65,7 +65,14 @@ after-stage::
 		_/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeBrowseID
 ifeq ("${USES_MS}","YES")
 	@echo cp CommCenterHook/libidcc.plist _/Library/MobileSubstrate/DynamicLibraries
+
+before-package::
+	@sed -i "" 's/^#USES_MS/USES_MS/' _/DEBIAN/postinst
+	@sed -i "" 's/com.guilleme.iphonedelivery/&ms/' _/DEBIAN/control
 endif
+
+before-package::
+	@sed -i "" 's/%VERSION%/${VERSION}/' _/DEBIAN/postinst
 
 ifeq ($(DEBUG),1)
 before-package::
