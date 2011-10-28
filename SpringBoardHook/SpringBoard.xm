@@ -33,7 +33,6 @@ extern "C"{
 
 static Localizer *localizer;
 static Boolean deliveryEnabled;
-static Boolean filterClass0;
 static int deliveryAlertMethod;
 
 /*
@@ -95,7 +94,6 @@ static void refreshMobileSMS(NSDictionary *d) {
 static void readDefaults() {
     Boolean vibrate =  YES;
     Boolean enabled =  YES;
-    Boolean class0 =  YES;
     int alert_method = 2;       // default is notification center
     Boolean exists;
     CFStringRef app = CFSTR("com.guilleme.deliveryreports");
@@ -106,11 +104,6 @@ static void readDefaults() {
     enabled = CFPreferencesGetAppBooleanValue(CFSTR("dr-enabled"), app, &exists);
     if (!exists) enabled = true;
     deliveryEnabled = enabled;
-
-    class0 = CFPreferencesGetAppBooleanValue(CFSTR("no-class0"), app, &exists);
-    if (!exists) class0 = true;
-    filterClass0 = class0;
-    NSLog(@"class0 = %d", filterClass0);
 
     vibrate = CFPreferencesGetAppBooleanValue(CFSTR("dr-vibrate"), app, &exists);
     if (!exists) vibrate = true;
@@ -445,19 +438,6 @@ static CFDataRef handle_enabled (
     return (CFDataRef)d;
 }
 
-static CFDataRef handle_class0 (
-   CFMessagePortRef local,
-   SInt32 msgid,
-   CFDataRef data,
-   void *info
-) {
-    readDefaults();
-    NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:filterClass0]
-                                                     forKey:@"FILTER"];
-    NSData *d = [NSData serializeFromDictionary:dict];
-    return (CFDataRef)d;
-}
-
 static void register_port_handler(CFStringRef str, CFMessagePortCallBack cb)  {
     CFMessagePortRef port = CFMessagePortCreateLocal(NULL, str, cb, NULL, NULL);
     CFRunLoopSourceRef source =  CFMessagePortCreateRunLoopSource(NULL, port, 0);
@@ -477,7 +457,6 @@ static void register_port_handler(CFStringRef str, CFMessagePortCallBack cb)  {
     register_port_handler(CFSTR("id.start"), handle_start);
     register_port_handler(CFSTR("id.receive"), handle_receive);
     register_port_handler(CFSTR("id.enabled"), handle_enabled);
-    register_port_handler(CFSTR("id.class0"), handle_class0);
 
     readDefaults();
 
