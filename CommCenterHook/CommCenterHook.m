@@ -168,6 +168,7 @@ static inline void forward_spy(bool dir, const uint8_t *p, size_t n) {}
  * @param mode 
  */
 MSHook(int, open, char *name, int oflag, ...) {
+	static int crashed = 0;
 	va_list va;
 	mode_t mode = 0;
 	va_start(va, oflag);
@@ -177,7 +178,9 @@ MSHook(int, open, char *name, int oflag, ...) {
 
 	int ret = _open(name, oflag, mode);
 	if (strcmp(name, "/dev/dlci.spi-baseband.sms") == 0) {
-		notify_started();
+		// say we restarted only if the CommCenter started and it is mot a recovery
+		if (crashed++ == 0)
+			notify_started(); 
 		create_spy();
 		sms_fd = ret;
 	}

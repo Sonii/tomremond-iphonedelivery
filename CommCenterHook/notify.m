@@ -104,27 +104,33 @@ void notify_started() {
 	remote_signal(@"id.start", NULL);
 }
 
+/** 
+ * @brief I had a report the the CommCenter crashed if there are two many destination
+ *        so in case we cache the enable value to avoid talking too much with the SpringBoard
+ * 
+ * @return 
+ */
 bool report_enabled() {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	static time_t last_time = 0;
+	static bool cached_enabled = true;
 	bool rc = true;
-	NSData *data = remote_call(@"id.enabled", NULL);
-	if (data != nil) {
-		NSDictionary *dict = [[data unserialize] autorelease];
-		rc = [[dict objectForKey:@"ENABLED"] boolValue];
-	}
-	[pool release];
-	return rc;
-}
 
-bool filter_class0() {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	bool rc = true;
-	NSData *data = remote_call(@"id.class0", NULL);
-	if (data != nil) {
-		NSDictionary *dict = [[data unserialize] autorelease];
-		rc = [[dict objectForKey:@"FILTER"] boolValue];
+	time_t now = time(NULL);
+	if (now - last_time > 60) { 
+		NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+		NSData *data = remote_call(@"id.enabled", NULL);
+		if (data != nil) {
+			NSDictionary *dict = [[data unserialize] autorelease];
+			rc = [[dict objectForKey:@"ENABLED"] boolValue];
+		}
+		[pool release];
+
+		cached_enabled = rc;
+		last_time = now;
 	}
-	[pool release];
+	else {
+		rc = cached_enabled;
+	}
 	return rc;
 }
 
