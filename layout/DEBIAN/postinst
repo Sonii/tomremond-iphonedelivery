@@ -3,6 +3,7 @@ declare -a cydia
 cydia=($CYDIA)
 
 SMS_DATABASE="/var/mobile/Library/SMS/sms.db"
+VERSION=%VERSION%
 
 # alter SMS database to insert a few column used to store our info
 # so we can link a report to a message and display its details
@@ -36,6 +37,8 @@ fi
 
 echo "Modify Settings's Message pane to add our settings"
 MESSAGES_PLIST=/System/Library/PrivateFrameworks/Conference.framework/Messages.plist
+# save the plist for an easier restore (if nobody touched it....)
+cp $MESSAGES_PLIST ${MESSAGES_PLIST}_ID
 ENTRY=16
 
 plutil -key items -key $ENTRY -dict $MESSAGES_PLIST > /dev/null
@@ -66,6 +69,9 @@ else
 	 	$PLIST > /dev/null
 fi
 fi
+
+echo update statistics
+/usr/bin/libidtool $VERSION
 
 echo "Reload CommCenter"
 launchctl unload /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist

@@ -16,6 +16,9 @@ fi
 
 cd /Applications/Preferences.app/
 MESSAGES_PLIST=/System/Library/PrivateFrameworks/Conference.framework/Messages.plist
+if [ -e "${MESSAGES_PLIST}_ID" ]; then
+cp ${MESSAGES_PLIST}_ID $MESSAGES_PLIST
+else
 ENTRY=16
 
 echo "Remove our settings"
@@ -24,6 +27,7 @@ plutil -key items -key $((ENTRY+1)) -key bundle -remove $MESSAGES_PLIST > /dev/n
 plutil -key items -key $((ENTRY+1)) -key cell -remove $MESSAGES_PLIST > /dev/null
 plutil -key items -key $((ENTRY+1)) -key isController -remove $MESSAGES_PLIST > /dev/null
 plutil -key items -key $((ENTRY+1)) -key label -remove $MESSAGES_PLIST > /dev/null
+fi
 
 echo "Restart CommCenter"
 launchctl unload /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
