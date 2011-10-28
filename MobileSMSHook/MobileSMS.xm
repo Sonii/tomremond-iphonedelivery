@@ -109,6 +109,7 @@ static void readDefaults() {
     smallFontSize = CFPreferencesGetAppBooleanValue(CFSTR("dr-small"), app, &exists);
     if (!exists) smallFontSize = false;
 
+    [NSString reloadSmileys]; 
 }
 
 %hook SMSApplication
