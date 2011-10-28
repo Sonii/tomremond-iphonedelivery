@@ -1,4 +1,5 @@
 @interface NSString(emojisxx)
++(void)reloadSmileys;
 -(BOOL)containsEmojixx;
 -(NSString *)replaceSmileys;
 @end

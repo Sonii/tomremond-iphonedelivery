@@ -66,15 +66,42 @@ static struct {
 
         {   @":-*", @""    },      // kiss: e418
         {   @":*",  @""    },      // kiss: e418
+
+        {   @"O_o",  @""    },      // surprised: e40d -- big oh, little oh
+        {   @"0_o", @""    },      // surprised: e40d -- zero, little oh
+        {   @"o_O",  @""    },      // surprised: e40d -- little oh, big oh
+        {   @"o_0", @""    },      // surprised: e40d -- little oh, zero
+
+        {   @"<3",  @""    },      // heart: e022
 };
 
+static NSDictionary *smileys_dict = NULL;
+
 @implementation NSString(emojisxx)
--(BOOL)containsEmojixx {
-    NSLog(@"%s %@", __FUNCTION__, self);
++(void)reloadSmileys {
+	NSString *path = [NSBundle pathForResource:@"smileys"
+										ofType:@"strings" 
+								   inDirectory:@"/Library/Application Support/ID.bundle"];
+    
+	NSDictionary *dict = [[NSDictionary dictionaryWithContentsOfFile:path] retain];
+
+    [smileys_dict release];
+    smileys_dict = [[NSMutableDictionary dictionary] retain];
+
     for (unsigned i = 0; i < sizeof(smileys)/sizeof(smileys[0]); i++) {
-        NSRange r = [self rangeOfString:smileys[i].repl];
+        [smileys_dict setValue:smileys[i].repl forKey:smileys[i].str];
+    }
+    if (dict != nil) {
+        for (NSString *k in [dict keyEnumerator]) {
+            [smileys_dict setValue:[dict valueForKey:k] forKey:k];
+        }
+    }
+}
+
+-(BOOL)containsEmojixx {
+    for (NSString *k in [smileys_dict keyEnumerator]) {
+        NSRange r = [self rangeOfString:[smileys_dict valueForKey:k]];
         if (r.location != NSNotFound) {
-            NSLog(@"YES");
             return YES;
         }
     }
@@ -83,11 +110,11 @@ static struct {
 
 -(NSString *)replaceSmileys {
     NSString *str = self;
-    for (unsigned i = 0; i < sizeof(smileys)/sizeof(smileys[0]); i++) {
-            str = [str stringByReplacingOccurrencesOfString:smileys[i].str 
-                                              withString:smileys[i].repl
-                                                options:NSCaseInsensitiveSearch   
-                                                range:NSMakeRange(0, [str length])];
+    for (NSString *k in [smileys_dict keyEnumerator]) {
+            str = [str stringByReplacingOccurrencesOfString:k
+                                                 withString:[smileys_dict valueForKey:k]
+                                                    options:NSCaseInsensitiveSearch   
+                                                      range:NSMakeRange(0, [str length])];
     }
 
     return str;
