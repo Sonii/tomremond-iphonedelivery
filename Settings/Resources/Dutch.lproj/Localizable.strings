@@ -1,28 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>Delivery reports</key>
-	<string>Ontvangst Bericht</string>
-	<key>Enabled</key>
-	<string>Schakel</string>
-	<key>Full screen</key>
-	<string>Het volledige scherm</string>
-	<key>Mark</key>
-	<string>Mark</string>
-	<key>Notification center</key>
-	<string>In berichtencentrum</string>
-	<key>Settings</key>
-	<string>cwInstellingenSettings</string>
-	<key>Silent</key>
-	<string>Discreet</string>
-	<key>Smileys</key>
-	<string>😄  smileys</string>
-	<key>Sound</key>
-	<string>Geluiden</string>
-	<key>Style</key>
-	<string>Berichtgeving</string>
-	<key>Vibrate</key>
-	<string>Trillen</string>
-</dict>
-</plist>
+"Vibrate" = "💤  tril";
+"Mark" = " ✔  markeren";
+"Smileys" = "😄  scherm met iconen";
+"Style" = "notificatie Stijlen";
+"Simple Alert" = "simpel geluid";
+"Delivery reports" = "aflevering bewijs";
+"Silent" = "discreet";
+"Sound" = "📢  Geluid";
+"Notification center" = "in notificatie centrum";
+"Contact picture" = "📷  foto contact";
+"Full screen" = "volledig scherm";
+"Antidote class 0" = "🚑  Antidote class 0";
+"Enabled" = "aanzetten";
+"Small font size" = "🔍  klein tekst";
