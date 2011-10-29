@@ -5,15 +5,19 @@
 	<key>DATE</key>
 	<string>%DATE%</string>
 	<key>DELIVERED</key>
-	<string> 着信：%DATESPEC% %TIMESPEC%</string>
+	<string> 配信済み：%DATESPEC% %TIMESPEC% </string>
 	<key>STATUS</key>
 	<string>code=%STATUS%</string>
 	<key>STATUS_48</key>
 	<string>保留</string>
+	<key>STATUS_64</key>
+	<string>リモートプロシージャエラー</string>
+	<key>STATUS_65</key>
+	<string>端末属性不一致</string>
 	<key>STATUS_70</key>
 	<string>無効</string>
 	<key>SUBMIT</key>
-	<string>送信：%DATESPEC% %TIMESPEC% </string>
+	<string>送信：%DATESPEC% %TIMESPEC%</string>
 	<key>TIME</key>
 	<string>%TIME%</string>
 	<key>TITLE</key>
