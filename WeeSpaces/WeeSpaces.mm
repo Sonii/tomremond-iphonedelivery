@@ -223,21 +223,44 @@
 
 -(void)gotoPage:(unsigned)page {
 	UIScrollView *sv = [[objc_getClass("SBIconController") sharedInstance] scrollView];
+	SBUserAgent *agent = [objc_getClass("SBUserAgent") sharedUserAgent] ;
 	CGPoint offset = sv.contentOffset;
 
 	offset.x = 320.0 * (1 + page);
 
 	[[objc_getClass("SBBulletinListController") sharedInstance] hideListViewAnimated:YES];
 
-	// first simulate a click menu
-	if (![[objc_getClass("SBUserAgent") sharedUserAgent] springBoardIsActive])
-		[[objc_getClass("SBUIController") sharedInstance] clickedMenuButton];
+	const int64_t ONE_SECOND = 1000000000LL / 2;
+	dispatch_queue_t q = dispatch_get_current_queue();
+	void (^go2page)() = ^{ [sv setContentOffset:offset animated:YES]; };
+	void (^press_home)() = ^{ [[objc_getClass("SBUIController") sharedInstance] clickedMenuButton]; };
+	dispatch_time_t (^one_sec_delay)() = ^{ return dispatch_time(DISPATCH_TIME_NOW, ONE_SECOND); };
 
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10000000), dispatch_get_current_queue(), 
-					^{ 
-						[sv setContentOffset:offset animated:YES];
-					});
+	void (^switch_n_go)() =  ^{
+		if ([agent springBoardIsActive]) {
+			// we are on the springboard go to the page
+			dispatch_after(one_sec_delay(), q,  go2page);
+		}
+		else {
+			// inside an app, we need to exit it first
+			dispatch_after(one_sec_delay(), q,  ^{
+				press_home();
+				dispatch_after(one_sec_delay(), q,  go2page);
+			});
+		}
+	};
 
+	if ([agent deviceIsLocked]) {
+		// if the device is locked (intelliscreenx) we need to unlock first
+		[[objc_getClass("SBAwayController") sharedAwayController] unlockWithSound:YES];
+
+		// switch a bit later
+		dispatch_after(one_sec_delay(), q,  switch_n_go);
+	}
+	else {
+		// not locked 
+		switch_n_go();
+	}
 }
 @end
 

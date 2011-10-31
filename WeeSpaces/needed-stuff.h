@@ -14,6 +14,14 @@
 -(BOOL)springBoardIsActive;
 -(void)setBadgeNumberOrString:(id)string forApplicationWithID:(id)anId;
 -(void)setIdleText:(id)text;
+-(BOOL)deviceIsLocked;
+@end
+
+@interface SBAwayController
++(id)sharedAwayController;
+-(BOOL)isPasswordProtected;
+-(BOOL)isLocked;
+-(void)unlockWithSound:(BOOL)sound;
 @end
 
 
