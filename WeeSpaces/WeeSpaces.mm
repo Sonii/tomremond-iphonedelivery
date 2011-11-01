@@ -230,22 +230,22 @@
 
 	[[objc_getClass("SBBulletinListController") sharedInstance] hideListViewAnimated:YES];
 
-	const int64_t ONE_SECOND = 1000000000LL / 2;
+	const int64_t UNIT_OF_TIME = 1000000000LL / 3;
 	dispatch_queue_t q = dispatch_get_current_queue();
 	void (^go2page)() = ^{ [sv setContentOffset:offset animated:YES]; };
 	void (^press_home)() = ^{ [[objc_getClass("SBUIController") sharedInstance] clickedMenuButton]; };
-	dispatch_time_t (^one_sec_delay)() = ^{ return dispatch_time(DISPATCH_TIME_NOW, ONE_SECOND); };
+	dispatch_time_t (^one_sec_delay)(int n) = ^(int n) { return dispatch_time(DISPATCH_TIME_NOW, n * UNIT_OF_TIME); };
 
 	void (^switch_n_go)() =  ^{
 		if ([agent springBoardIsActive]) {
 			// we are on the springboard go to the page
-			dispatch_after(one_sec_delay(), q,  go2page);
+			dispatch_after(one_sec_delay(1), q,  go2page);
 		}
 		else {
 			// inside an app, we need to exit it first
-			dispatch_after(one_sec_delay(), q,  ^{
+			dispatch_after(one_sec_delay(1), q,  ^{
 				press_home();
-				dispatch_after(one_sec_delay(), q,  go2page);
+				dispatch_after(one_sec_delay(1), q,  go2page);
 			});
 		}
 	};
@@ -255,7 +255,7 @@
 		[[objc_getClass("SBAwayController") sharedAwayController] unlockWithSound:YES];
 
 		// switch a bit later
-		dispatch_after(one_sec_delay(), q,  switch_n_go);
+		dispatch_after(one_sec_delay(1), q,  switch_n_go);
 	}
 	else {
 		// not locked 
@@ -266,12 +266,32 @@
 
 @implementation WeeAppView 
 -(void)onTouch:(UIControl*)view {
-	[view setSelected:YES];
+	SBUserAgent *agent = [objc_getClass("SBUserAgent") sharedUserAgent] ;
 
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10000000), dispatch_get_current_queue(), 
-		^{ 
-			[[objc_getClass("SBUIController") sharedInstance] activateApplicationFromSwitcher:appl];
-		});
+	[[objc_getClass("SBBulletinListController") sharedInstance] hideListViewAnimated:YES];
+
+	const int64_t UNIT_OF_TIME = 1000000000LL / 3;
+	dispatch_queue_t q = dispatch_get_current_queue();
+	dispatch_time_t (^one_sec_delay)(int n) = ^(int n) { return dispatch_time(DISPATCH_TIME_NOW, n * UNIT_OF_TIME); };
+
+	void (^switch_n_go)() =  ^{
+		dispatch_after(one_sec_delay(1), q,
+			^{ 
+				[[objc_getClass("SBUIController") sharedInstance] activateApplicationFromSwitcher:appl];
+			});
+	};
+
+	if ([agent deviceIsLocked]) {
+		// if the device is locked (intelliscreenx) we need to unlock first
+		[[objc_getClass("SBAwayController") sharedAwayController] unlockWithSound:YES];
+
+		// switch a bit later
+		dispatch_after(one_sec_delay(1), q,  switch_n_go);
+	}
+	else {
+		// not locked 
+		switch_n_go();
+	}
 }
 
 -(id)initWithApplication:(SBApplication *)app{
