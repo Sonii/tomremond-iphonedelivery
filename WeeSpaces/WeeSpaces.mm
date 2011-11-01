@@ -11,13 +11,12 @@
 #define kReportHeight (320.0 / SCALE)
 #define kPageWidth (320.0 / SCALE)
 
-@interface WeeSpacesView : UIControl {
+@interface WeeSpacesView : UIView {
 }
--(void)gotoPage:(unsigned)n;
 -(id)initWithPage:(unsigned)page;
 @end
 
-@interface WeeAppView : UIControl {
+@interface WeeAppView : UIView {
 	SBApplication *appl;
 	UIImage *snapshot;
 }
@@ -79,8 +78,7 @@
 	// get a list of running app
 	NSArray *runningApplications = 
 		[[[objc_getClass("SBApplicationController") sharedInstance] allApplications]
-					filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary *d) {
-							SBApplication *a = (SBApplication *)obj;
+					filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(SBApplication *a, NSDictionary *d) {
 							return a.process != nil;
 					}
 				]
@@ -89,11 +87,13 @@
 	// populate the scrollview with snapshots
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 			int i = 0;
+			int n = [runningApplications count];
 
-			// first the snapshots of running apps
-			for (SBApplication *a in [runningApplications reverseObjectEnumerator]) {
-				if ([self loadApplication:a atIndex:i]) 
+			// first the snapshots of the first app
+			for (SBApplication *a in runningApplications) {
+	 			if ([self loadApplication:a atIndex:(n - i - 1)])  {
 					i++;
+				}
 			}
 			// display the last snapshot
 			dispatch_async(dispatch_get_main_queue(), ^{
@@ -136,11 +136,7 @@
 		scrollView.showsHorizontalScrollIndicator = NO;
 		scrollView.opaque = NO;
 		scrollView.delegate = self;
-#if 0
 		scrollView.delaysContentTouches = NO;
-		scrollView.directionalLockEnabled = YES;
-		scrollView.userInteractionEnabled = YES;
-#endif
 
 		_view.userInteractionEnabled = YES;
 		_view.opaque = NO;
@@ -157,11 +153,6 @@
 @end
 
 @implementation WeeSpacesView
-
--(void)onTouch:(UIControl*)view {
-	[view setSelected:YES];
-	[self gotoPage:self.tag];
-}
 
 -(id)initWithPage:(unsigned)page {
 	CGFloat x, y, width, height, margin;
@@ -212,7 +203,6 @@
 
 	self.tag = page;
 
-	[self addTarget:self action:@selector(onTouch:) forControlEvents:UIControlEventTouchDown];
 	return self;
 }
 
@@ -221,7 +211,10 @@
 	[super dealloc];
 }
 
--(void)gotoPage:(unsigned)page {
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+	NSLog(@"%s", __FUNCTION__);
+
+	unsigned page = self.tag;
 	UIScrollView *sv = [[objc_getClass("SBIconController") sharedInstance] scrollView];
 	SBUserAgent *agent = [objc_getClass("SBUserAgent") sharedUserAgent] ;
 	CGPoint offset = sv.contentOffset;
@@ -265,7 +258,8 @@
 @end
 
 @implementation WeeAppView 
--(void)onTouch:(UIControl*)view {
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+	NSLog(@"%s", __FUNCTION__);
 	SBUserAgent *agent = [objc_getClass("SBUserAgent") sharedUserAgent] ;
 
 	[[objc_getClass("SBBulletinListController") sharedInstance] hideListViewAnimated:YES];
@@ -317,7 +311,6 @@
 
 	self = [super initWithFrame:CGRectMake(0.0, 0.0, width, height)];
 
-	[self addTarget:self action:@selector(onTouch:) forControlEvents:UIControlEventTouchDown];
 	return self;
 }
 
