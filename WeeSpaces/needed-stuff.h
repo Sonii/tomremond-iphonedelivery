@@ -3,6 +3,8 @@
 -(void)clickedMenuButton;
 -(void)activateApplicationAnimated:(id)app;
 -(void)activateApplicationFromSwitcher:(id)app;
+- (id)_zoomViewForApplication:(id)app includeStatusBar:(char)s includeBanner:(char)b snapshotFrame:(struct CGRect *)r canUseIOSurface:(char)s;
+-(id)_zoomViewForAppDosado:(id)appDosado includeStatusBar:(BOOL)bar includeBanner:(BOOL)banner;
 @end
 
 @interface UIApplication(xxx)
@@ -65,5 +67,6 @@
 -(id)appSnapshotPath;
 -(id)displayName;
 -(void)kill;
+-(void)flushSnapshots;
 -(id)defaultImage:(BOOL*)image preferredScale:(float)scale originalOrientation:(int*)orientation currentOrientation:(int*)orientation4 canUseIOSurface:(BOOL)surface;
 @end;

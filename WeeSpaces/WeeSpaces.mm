@@ -11,6 +11,12 @@
 #define kReportHeight (320.0 / SCALE)
 #define kPageWidth (320.0 / SCALE)
 
+@interface UIImage (scale)
++ (UIImage*)imageFromView:(UIView*)view;
++ (UIImage*)imageFromView:(UIView*)view scaledToSize:(CGSize)newSize;
++ (UIImage*)imageWithImage:(UIImage*)image scaledToSize:(CGSize)newSize;
+@end
+
 @interface WeeSpacesView : UIView {
 }
 -(id)initWithPage:(unsigned)page;
@@ -289,25 +295,23 @@
 }
 
 -(id)initWithApplication:(SBApplication *)app{
-	BOOL b1 = NO ;
-	int o1, o2;
-	snapshot = [app defaultImage:&b1 
-				   preferredScale:1.0 / SCALE
-			  originalOrientation:&o1 
-			   currentOrientation:&o2
-				  canUseIOSurface:YES];
-
-	if (snapshot == nil) {
-		[self release];
-		return nil;
-	}
-	appl = [app retain];
-	[snapshot retain];
-
 	CGFloat width, height;
 
 	width = 320 / SCALE;
-	height = 320 / SCALE;
+	height = 480 / SCALE;
+
+	dispatch_async(dispatch_get_current_queue(), ^{
+		// get the latest live snapshot of the app
+		UIView *zoom = [[objc_getClass("SBUIController") sharedInstance] _zoomViewForAppDosado:app includeStatusBar:NO includeBanner:NO];
+		// build a snapshot of the image
+		snapshot = [UIImage imageFromView:zoom scaledToSize:CGSizeMake(320.0 / 3.0, 470.0 / 3.0)];
+
+		appl = [app retain];
+		[snapshot retain];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self setNeedsDisplay];
+			});
+	});
 
 	self = [super initWithFrame:CGRectMake(0.0, 0.0, width, height)];
 
@@ -322,8 +326,11 @@
 }
 
 -(void)drawRect:(CGRect)rect {
+	// draw the snapshot
 	CGRect r = CGRectInset(self.bounds, 8, 8);
-	[snapshot drawInRect:CGRectOffset(r, 4, 8)];
+	[snapshot drawInRect:CGRectOffset(r, 0, -2)];
+
+	// display the name of the app on top
 	[[UIColor whiteColor] set];
 	UIFont *f  = [UIFont systemFontOfSize:10];
 	CGSize size = [[appl displayName] sizeWithFont:f];
@@ -331,6 +338,55 @@
 
 	[[appl displayName] drawInRect:CGRectMake(x, 0, self.frame.size.width, 10) 
 						  withFont:f];
+}
+@end
+
+@implementation UIImage (scale)
+
++ (void)beginImageContextWithSize:(CGSize)size
+{
+    if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)]) {
+        if ([[UIScreen mainScreen] scale] == 2.0) {
+            UIGraphicsBeginImageContextWithOptions(size, YES, 2.0);
+        } else {
+            UIGraphicsBeginImageContext(size);
+        }
+    } else {
+        UIGraphicsBeginImageContext(size);
+    }
+}
+
++ (void)endImageContext
+{
+    UIGraphicsEndImageContext();
+}
+
++ (UIImage*)imageFromView:(UIView*)view
+{
+    [self beginImageContextWithSize:[view bounds].size];
+    [[view layer] renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    [self endImageContext];
+    return image;
+}
+
++ (UIImage*)imageFromView:(UIView*)view scaledToSize:(CGSize)newSize
+{
+    UIImage *image = [self imageFromView:view];
+    if ([view bounds].size.width != newSize.width ||
+            [view bounds].size.height != newSize.height) {
+        image = [self imageWithImage:image scaledToSize:newSize];
+    }
+    return image;
+}
+
++ (UIImage*)imageWithImage:(UIImage*)image scaledToSize:(CGSize)newSize
+{
+    [self beginImageContextWithSize:newSize];
+    [image drawInRect:CGRectMake(0,0,newSize.width,newSize.height)];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    [self endImageContext];
+    return newImage;
 }
 @end
 
