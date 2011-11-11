@@ -25,6 +25,24 @@
 - (UIView *)view;
 @end
 
+#if 0
+@interface ZZScrollView : UIScrollView
+-(id)initWithFrame:(CGRect)r;
+-(BOOL)touchesShouldBegin:(NSSet *)touches withEvent:(UIEvent *)event inContentView:(UIView *)view;
+@end
+
+@implementation ZZScrollView
+-(id)initWithFrame:(CGRect)r {
+	return [super initWithFrame:r];
+}
+
+- (BOOL)touchesShouldBegin:(NSSet *)touches withEvent:(UIEvent *)event inContentView:(UIView *)view {
+	NSLog(@"%s", __FUNCTION__);
+	return YES;
+}
+@end
+#endif
+
 @implementation WeeSpacesController
 + (void)initialize {
 }
@@ -124,7 +142,7 @@
 		CGSize size = [UIScreen mainScreen].bounds.size;
 		CGFloat w = size.width;
 		if (orientation == 3 || orientation == 4)
-			w = size.height;
+			w = 480.0; // w = size.height;
 
 		NSLog(@"active orientation = %d", orientation);
 	
@@ -134,14 +152,10 @@
 
 		scrollView.scrollEnabled = YES;
 		scrollView.pagingEnabled = NO;
-		[scrollView setCanCancelContentTouches:NO];
 		scrollView.showsHorizontalScrollIndicator = NO;
 		scrollView.opaque = NO;
 		scrollView.delegate = self;
-		scrollView.delaysContentTouches = NO;
 
-		_view.userInteractionEnabled = YES;
-		_view.opaque = NO;
 		[_view addSubview:scrollView];
 	}
     
