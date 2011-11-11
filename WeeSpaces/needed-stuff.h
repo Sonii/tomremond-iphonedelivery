@@ -62,11 +62,22 @@
 -(id)allApplications;
 @end
 
+@interface SBProcess 
+//@property(readonly, assign) int pid;
+//@property(readonly, assign) double execTime;
+@property(readonly, assign) double elapsedCPUTime;
+//@property(readonly, assign) int priority;
+//@property(readonly, assign) int suspendCount;
+//@property(assign, getter=isFrontmost) BOOL frontmost;
+//@property(assign, getter=isRunning) BOOL running;
+//+(id)_allProcesses;
+@end
+
 @interface SBApplication : NSObject
-@property(retain, nonatomic) id process;
--(id)appSnapshotPath;
+@property(retain, nonatomic) SBProcess *process;
+//-(id)appSnapshotPath;
 -(id)displayName;
--(void)kill;
--(void)flushSnapshots;
--(id)defaultImage:(BOOL*)image preferredScale:(float)scale originalOrientation:(int*)orientation currentOrientation:(int*)orientation4 canUseIOSurface:(BOOL)surface;
+//-(void)kill;
+//-(void)flushSnapshots;
+//-(id)defaultImage:(BOOL*)image preferredScale:(float)scale originalOrientation:(int*)orientation currentOrientation:(int*)orientation4 canUseIOSurface:(BOOL)surface;
 @end;

@@ -1,6 +1,6 @@
 Package: com.guilleme.WeeSpaces
 Name: WeeSpaces
-Version: 1.2
+Version: 1.3
 Architecture: iphoneos-arm
 Description: Wee plugin to quickly select a page and running apps.
 Maintainer: F. Guillemé

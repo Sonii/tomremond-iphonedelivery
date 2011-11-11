@@ -8,7 +8,7 @@ export TARGET_CXX=$(CLANG)++
 include theos/makefiles/common.mk
 
 LIBRARY_NAME = WeeSpaces
-WeeSpaces_FILES = WeeSpaces.mm
+WeeSpaces_FILES = WeeSpaces.mm Snapshot.m UIImage+scale.m WeeSpacesView.m WeeAppView.m
 WeeSpaces_INSTALL_PATH = /System/Library/WeeAppPlugins/WeeSpaces.bundle/
 WeeSpaces_FRAMEWORKS = UIKit CoreGraphics
 WeeSpaces_PRIVATE_FRAMEWORKS = BulletinBoard
