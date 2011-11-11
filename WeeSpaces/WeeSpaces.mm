@@ -71,6 +71,9 @@
 	return	[[[objc_getClass("SBApplicationController") sharedInstance] allApplications]
 					filteredArrayUsingPredicate:[NSPredicate 
 						predicateWithBlock:^BOOL(SBApplication *a, NSDictionary *d) {
+							if ([a.bundleIdentifier compare:@"com.apple.AdSheetPhone"] == 0)
+								return NO;
+
 							return a.process != nil;
 						}
 				]

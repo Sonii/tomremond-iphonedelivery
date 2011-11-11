@@ -55,7 +55,7 @@
 
 	app = [_app retain];
 	self = [super initWithFrame:CGRectMake(0.0, 0.0, width, height)];
-	[Snapshot snapshotWithApplication:app];
+	[Snapshot snapshotWithApplication:app view:self];
 	return self;
 }
 
@@ -68,7 +68,7 @@
 -(void)drawRect:(CGRect)rect {
 	// draw the snapshot
 	CGRect r = CGRectInset(self.bounds, 8, 8);
-	UIImage *snapshot = [Snapshot snapshotWithApplication:app];
+	UIImage *snapshot = [Snapshot snapshotWithApplication:app view:self];
 	[snapshot drawInRect:CGRectOffset(r, 0, -2)];
 
 	// display the name of the app on top

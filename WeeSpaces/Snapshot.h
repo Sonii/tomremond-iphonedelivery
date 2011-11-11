@@ -7,6 +7,6 @@
 -(id)initWithApplication:(id)app;
 
 +(void)gc;
-+(UIImage *)snapshotWithApplication:(id)app;
++(UIImage *)snapshotWithApplication:(id)app view:(UIView*)view;
 @end
 

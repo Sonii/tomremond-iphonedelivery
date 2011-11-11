@@ -2,8 +2,6 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/CALayer.h>
 
-#import "UIImage+scale.h"
-
 @implementation UIImage (scale)
 
 + (void)beginImageContextWithSize:(CGSize)size
@@ -22,6 +20,20 @@
 + (void)endImageContext
 {
     UIGraphicsEndImageContext();
+}
+
++ (UIImage*)imageFromView:(UIView*)view scaled:(CGFloat)scale
+{
+	CGSize s = [view bounds].size;
+	s.width *= scale;
+	s.height *= scale;
+	[self beginImageContextWithSize:s];
+	CGContextRef context = UIGraphicsGetCurrentContext();
+	CGContextScaleCTM(context, scale, scale);
+    [[view layer] renderInContext:context];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    [self endImageContext];
+    return image;
 }
 
 + (UIImage*)imageFromView:(UIView*)view

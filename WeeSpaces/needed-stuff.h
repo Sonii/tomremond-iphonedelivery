@@ -76,7 +76,8 @@
 @interface SBApplication : NSObject
 @property(retain, nonatomic) SBProcess *process;
 //-(id)appSnapshotPath;
--(id)displayName;
+-(NSString *)displayName;
+-(NSString *)bundleIdentifier;
 //-(void)kill;
 //-(void)flushSnapshots;
 //-(id)defaultImage:(BOOL*)image preferredScale:(float)scale originalOrientation:(int*)orientation currentOrientation:(int*)orientation4 canUseIOSurface:(BOOL)surface;
