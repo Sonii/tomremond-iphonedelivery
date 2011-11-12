@@ -326,6 +326,13 @@ static CFDataRef handle_report (
                         get_localized_deliver(deliver_time, sameday),
                         @"com.apple.MobileSMS", group_id, deliver_time);
                 break;
+            case 4:
+                showBulletinBannerOnly(
+                        get_person([dict objectForKey:@"WHO"]),
+                        get_localized_submit(submit_time, sameday),
+                        get_localized_deliver(deliver_time, sameday),
+                        @"com.apple.MobileSMS", group_id, deliver_time);
+                break;
             case 3:     // simple alert 
                 if (status == 0 || status > 63) {
                     UIAlertViewController *y =[[UIAlertViewController alloc] init];
@@ -381,6 +388,13 @@ static CFDataRef handle_report (
                             get_localized_status(status),
                             @"com.apple.MobileSMS", group_id, nil);
                 }
+                break;
+            case 4:
+                showBulletinBannerOnly(
+                        get_person([dict objectForKey:@"WHO"]),
+                        get_localized_submit(submit_time, YES),
+                        get_localized_status(status),
+                        @"com.apple.MobileSMS", group_id, nil);
                 break;
             case 3: 
                 if (status == 0 || status > 63) {

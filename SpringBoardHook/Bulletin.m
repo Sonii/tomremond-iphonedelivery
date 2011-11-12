@@ -37,6 +37,19 @@ void setDeliverySound(NSString *s) { [sound release]; sound = [s retain]; }
 NSString *getDeliverySound() { return sound; }
 void setSpringBoard(id o) { springboard = o; }
 
+static SBApplication * get_front_app() {
+    NSArray *apps = [[objc_getClass("SBApplicationController") sharedInstance] allApplications];
+    BOOL (^is_front)(id obj, NSUInteger idx, BOOL *stop)= ^BOOL (SBApplication *a, NSUInteger n,BOOL*stop) { 
+        if (a.process.frontmost) {
+            *stop = YES;
+            return YES;
+        }
+        return NO;
+    };
+    NSUInteger n = [apps indexOfObjectPassingTest:is_front];
+    return n == NSNotFound ? nil : [apps objectAtIndex:n];
+}
+
 /** 
  * @brief display an alert through the notification center. If the screen is locked it accumulates
  *        otherwise it is display as a banner that appears a couple of seconds
@@ -97,12 +110,17 @@ void showBulletin(NSString *title, NSString *subtitle, NSString *message, NSStri
         [controller observer:observer addBulletin:b forFeed:0];
     }
 
-    // depending on the length of the message we use the one line/two lines version of the bulletin
-    if (size.width > 180)
-        [blc observer:observer addBulletin:b2 forFeed:0];
-    else
-        [blc observer:observer addBulletin:b forFeed:0];
-
+    // if the fron app is sms something then do not inset the bulletin
+    SBApplication *front = get_front_app();
+    NSLog(@"front app = %@", front);
+    if (front == nil || ! [[[front bundleIdentifier] uppercaseString] hasSuffix:@"SMS"]) { 
+        NSLog(@"insert notification");
+        // depending on the length of the message we use the one line/two lines version of the bulletin
+        if (size.width > 180)
+            [blc observer:observer addBulletin:b2 forFeed:0];
+        else
+            [blc observer:observer addBulletin:b forFeed:0];
+    }
     [b release];
     [b2 release];
 }

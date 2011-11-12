@@ -238,3 +238,19 @@ void setSpringBoard(id o);
 - (void)dealloc;
 @end
 
+@interface SBProcess 
+@property(assign, getter=isFrontmost) BOOL frontmost;
+@property(assign, getter=isRunning) BOOL running;
+@end
+
+@interface SBApplication
+@property(retain, nonatomic) SBProcess* process;
+@property(copy) NSString* displayIdentifier;
+-(NSString*)bundleIdentifier;
+@end
+
+@interface SBApplicationController
++(SBApplicationController *)sharedInstance;
+-(NSArray *)allApplications;
+@end
+
