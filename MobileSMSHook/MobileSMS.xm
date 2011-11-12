@@ -25,6 +25,9 @@ extern "C" {
 #import "DeliveryDateView.h"
 #import <dispatch/dispatch.h>
 
+// it pollutes a lot
+#undef DEBUG
+
 #if !defined(DEBUG)
 #define NSLog(...) 
 #endif

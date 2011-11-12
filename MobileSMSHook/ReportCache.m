@@ -3,6 +3,8 @@
 
 #define MAX_CACHE_SIZE 256
 
+#undef DEBUG
+
 #if !defined(DEBUG)
 #define NSLog(...) 
 #endif

@@ -21,6 +21,8 @@
 
 #import "MarkView.h"
 
+#undef DEBUG
+
 extern bool showMark;
 
 static UIImage *get_image_for_status(int status) {
