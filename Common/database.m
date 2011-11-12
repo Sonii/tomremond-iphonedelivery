@@ -51,12 +51,18 @@ enum {
  * @return retulting number without the prefix
  */
 static const char *trim_international_prefix(const char *num) {
-    // 1
+	char c = num[0];
+
+	// 1
     // 20 21X 22X 23X ... 27 28..29
     // 30 -> 34 35X 36 37X 38X 39
     // 40 41 43 -> 49 42X
     //  etc..
-    if (num[0] == '+') {
+	if (num[0] == '0' && num[1] == '0') {
+		num++;
+		c = '+';
+	}
+    if (c == '+') {
         switch (num[1]) {
             case '1':
                 num += 2; // skip +1
