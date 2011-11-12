@@ -57,6 +57,12 @@ uint8_t *unpack_if_applicable(const char *message) {
 		free(payload);
 		return NULL;
 	}
+	
+	if (len < 5) {
+		LOG("short number. We don't accept them");
+		free(payload);
+		return NULL;
+	}
 	xtract_phone_number(payload+index, len, last_number);
 	LOG("to = %s", last_number);
 
