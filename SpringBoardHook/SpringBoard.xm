@@ -283,12 +283,17 @@ static CFDataRef handle_report (
         int sent_date = get_sent_time_for_sms(who, ref);
         int group_id = get_groupid_for_smsc_ref(ref);
 
+        if (sent_date <= 0) {
+            NSLog(@"SMS to %s not in database", who);
+            goto not_in_db;
+        }
+
         localizer = [Localizer sharedInstance];
 
         if (status == 0) {
             time_t d_date = [[dict objectForKey:@"WHENDELIVERED"] intValue];
             int delta = d_date - s_date;
-            if (delta == 0) delta = 1;  // a wero delay disturbs some
+            if (delta <= 0) delta = 1;  // a wero delay disturbs some fragile minds
             if (sent_date < 3600*24*365*10) { // ten years. There were no SMS in 1981?
                 // HACK in case we don't get the sent date
                 sent_date = time(NULL) - delta;
@@ -398,6 +403,7 @@ static CFDataRef handle_report (
             }
         }
         refreshMobileSMS(dict);
+not_in_db:
         [dict release];
 
         NSLog(@"CommCenter has received a report %@", dict);
