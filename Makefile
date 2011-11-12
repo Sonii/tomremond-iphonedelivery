@@ -21,18 +21,14 @@ export TARGET_LD=$(CLANG)
 endif
 
 export DEBUG=0
-export USES_MS=NO
+export USES_MS=YES
 
-VERSION=0.5gm4
+VERSION=0.5.1
 REPO_URL=iphonedelivery@iphonedelivery.advinux.com
 ifeq ($(DEBUG),1)
 REPO=ios5debug
 else
-ifeq ($(USES_MS),YES)
-REPO=ios5ms
-else
-REPO=ios5beta
-endif
+REPO=cydia
 endif
 
 SDKVERSION = 5.0
@@ -59,16 +55,16 @@ publish:
 	scp Packages.bz2 $(REPO_URL):www/$(REPO)/
 	scp com.guilleme.iphonedelivery_$(shell cat .theos/Packages/com.guilleme.iphonedelivery-$(VERSION))_iphoneos-arm.deb $(REPO_URL):www/$(REPO)/
 	scp WeeSpaces/com.guilleme.WeeSpaces_$(shell cat ./WeeSpaces/.theos/Packages/com.guilleme.WeeSpaces-1.1)_iphoneos-arm.deb $(REPO_URL):www/$(REPO)/WeeSpaces/
+	scp iphonedelivery-0.3.8.10.deb $(REPO_URL):www/$(REPO)
 
 after-stage::
 	@mv  _/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeBrowseID.dylib \
 		_/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeBrowseID
 ifeq ("${USES_MS}","YES")
-	@echo cp CommCenterHook/libidcc.plist _/Library/MobileSubstrate/DynamicLibraries
+	@cp CommCenterHook/libidcc.plist _/Library/MobileSubstrate/DynamicLibraries
 
 before-package::
 	@sed -i "" 's/^#USES_MS/USES_MS/' _/DEBIAN/postinst
-	@sed -i "" 's/com.guilleme.iphonedelivery/&ms/' _/DEBIAN/control
 endif
 
 before-package::
