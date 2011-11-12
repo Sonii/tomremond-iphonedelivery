@@ -61,8 +61,15 @@ static inline uint8_t swapbcd(uint8_t val) {
  */
 time_t xtract_time(const uint8_t *p) {
 	struct tm tm;
+	uint8_t zero[] = { 0, 0, 0, 0 };
 
 	memset(&tm, 0, sizeof(tm));
+
+	// check the date. If the four 1st bytes are 0, consider the date invalid and use the
+	// current one
+	if (memcmp(zero, p, sizeof(zero)) == 0) {
+		return time(NULL);
+	}
 
 	tm.tm_year = 100 + swapbcd(p[0]);
 	tm.tm_mon = swapbcd(p[1]) - 1;
