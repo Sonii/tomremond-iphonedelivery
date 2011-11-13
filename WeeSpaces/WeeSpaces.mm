@@ -25,24 +25,6 @@
 - (UIView *)view;
 @end
 
-#if 0
-@interface ZZScrollView : UIScrollView
--(id)initWithFrame:(CGRect)r;
--(BOOL)touchesShouldBegin:(NSSet *)touches withEvent:(UIEvent *)event inContentView:(UIView *)view;
-@end
-
-@implementation ZZScrollView
--(id)initWithFrame:(CGRect)r {
-	return [super initWithFrame:r];
-}
-
-- (BOOL)touchesShouldBegin:(NSSet *)touches withEvent:(UIEvent *)event inContentView:(UIView *)view {
-	NSLog(@"%s", __FUNCTION__);
-	return YES;
-}
-@end
-#endif
-
 @implementation WeeSpacesController
 + (void)initialize {
 }
@@ -72,15 +54,13 @@
 	WeeAppView *v = [[WeeAppView alloc] initWithApplication:app];
 	if (v == nil) return NO;
 
-	dispatch_async(dispatch_get_main_queue(), ^{
-			CGRect r = v.frame;
-			r.origin.x = index * kPageWidth;
-			v.frame = r;
-			[v setNeedsDisplay];
-			[scrollView addSubview:v];
-			[scrollView setContentSize:CGSizeMake((index + 1) * kPageWidth, kReportHeight)];
-			[scrollView setNeedsDisplay];
-	});
+	CGRect r = v.frame;
+	r.origin.x = index * kPageWidth;
+	v.frame = r;
+	[v setNeedsDisplay];
+	[scrollView addSubview:v];
+	[scrollView setContentSize:CGSizeMake((index + 1) * kPageWidth, kReportHeight)];
+	[scrollView setNeedsDisplay];
 	[v release];
 	return YES;	
 }
@@ -102,30 +82,30 @@
 	// get a list of running app
 	NSArray *runningApplications =  [self runningApplications];
 
+	int i = 0;
+	int n = [runningApplications count];
+
+	// first the snapshots of the first app
+	for (SBApplication *a in runningApplications) {
+		if ([self loadApplication:a atIndex:(n - i - 1)])  {
+			i++;
+		}
+	}
+	// display the last snapshot
+	[scrollView setContentOffset:CGPointMake((i - 1) * kPageWidth, 0) animated:YES];
+	[scrollView setNeedsDisplay];
+
 	// async populate the scrollview with snapshots
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			int i = 0;
-			int n = [runningApplications count];
+		int ii = i;
 
-			// first the snapshots of the first app
-			for (SBApplication *a in runningApplications) {
-	 			if ([self loadApplication:a atIndex:(n - i - 1)])  {
-					i++;
-				}
-			}
-			// display the last snapshot
-			dispatch_async(dispatch_get_main_queue(), ^{
-				[scrollView setContentOffset:CGPointMake((i - 1) * kPageWidth, 0) animated:YES];
-				[scrollView setNeedsDisplay];
-			});
+		// then the springboard pages
+		int page = 0;
+		while ([self loadPage:page++ atIndex:ii++]) ;
 
-			// then the springboard pages
-			int page = 0;
-			while ([self loadPage:page++ atIndex:i++]) ;
-
-			// perform a gc to remove images for processes not active or sleeping anymore
-			[Snapshot gc];
 	});
+	// perform a gc to remove images for processes not active or sleeping anymore
+	[Snapshot gc];
 }
 
 - (void)viewDidDisappear {

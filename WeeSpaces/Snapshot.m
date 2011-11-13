@@ -61,29 +61,36 @@ static NSMutableDictionary *dict = NULL;
 }
 
 +(void)gc {
-	NSMutableArray *tbf = [[NSMutableArray alloc] initWithCapacity:16];
-	NSDate *now = [NSDate date];
+	/*
+	   perform garbage collection in async so it will be done serialized after all snaps
+	*/
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+		NSMutableArray *tbf = [[NSMutableArray alloc] initWithCapacity:16];
+		NSDate *now = [NSDate date];
 
-	for (NSString *key in [dict keyEnumerator]) {	
-		Snapshot *o = [dict objectForKey:key];
-		if ([now timeIntervalSinceDate:o.last] > 10.0) {
-			[tbf addObject:o];
+		for (NSString *key in [dict keyEnumerator]) {	
+			Snapshot *o = [dict objectForKey:key];
+			if ([now timeIntervalSinceDate:o.last] > 10.0) {
+				[tbf addObject:o];
+			}
 		}
-	}
-	[tbf enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) { 
-		NSLog(@"remove snapshot for %@", [[[tbf objectAtIndex:index] app] bundleIdentifier]);
-		[dict removeObjectForKey:[[[tbf objectAtIndex:index] app] bundleIdentifier]];
-	}];
-	[tbf removeAllObjects];
-	[tbf release];
+		[tbf enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) { 
+			NSLog(@"remove snapshot for %@", [[[tbf objectAtIndex:index] app] bundleIdentifier]);
+			[dict removeObjectForKey:[[[tbf objectAtIndex:index] app] bundleIdentifier]];
+		}];
+		[tbf removeAllObjects];
+		[tbf release];
+	});
 }
 
 +(UIImage *)snapshotWithApplication:(SBApplication *)app view:(UIView*)view{
+	// first time. build the dict holding the snaps
 	if (dict == nil) dict = [[NSMutableDictionary alloc] initWithCapacity:16];
 
 	Snapshot *s = [dict objectForKey:app.bundleIdentifier];
 
 	if (s == nil) {
+		// no snap for this id. make one and add it to the dict
 		s = [[Snapshot alloc] initWithApplication:app];
 		[dict setObject:s forKey:app.bundleIdentifier];
 		[s release];
@@ -93,6 +100,8 @@ static NSMutableDictionary *dict = NULL;
 		// we need to generate a new snaphot. do it async and notify the view when it's done
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
 			[s doSnap];
+
+			// tell the view the snap is ready
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[view setNeedsDisplay];
 			});
