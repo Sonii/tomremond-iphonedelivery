@@ -118,6 +118,7 @@ ID=/Users/francois/Dev/iphone-delivery-report filter="*.c *.h Makefile *.m*k *.x
   unpack.h
   utils.c
   utils.h
+  libidcc.plist
  }
  WeeBrowseID=WeeBrowseID {
   BBWeeAppController-Protocol.h
