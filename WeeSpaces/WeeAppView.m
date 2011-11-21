@@ -73,6 +73,9 @@
 
 	// display the name of the app on top
 	NSString *label = [app displayName];
+	NSLog(@"%s <%.0f %.0f %.0f %.0f> %@", 
+			__FUNCTION__, rect.origin.x, rect.origin.y, rect.size.width, rect.size.height, label);
+
 	[[UIColor whiteColor] set];
 	UIFont *f  = [UIFont systemFontOfSize:10];
 	CGSize size = [label sizeWithFont:f];

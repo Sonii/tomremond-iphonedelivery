@@ -45,6 +45,15 @@
     return image;
 }
 
++ (UIImage*)imageWithImage:(UIImage*)image scaledToSize:(CGSize)newSize
+{
+    [self beginImageContextWithSize:newSize];
+    [image drawInRect:CGRectMake(0,0,newSize.width,newSize.height)];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    [self endImageContext];
+    return newImage;
+}
+
 + (UIImage*)imageFromView:(UIView*)view scaledToSize:(CGSize)newSize
 {
     UIImage *image = [self imageFromView:view];
@@ -55,13 +64,5 @@
     return image;
 }
 
-+ (UIImage*)imageWithImage:(UIImage*)image scaledToSize:(CGSize)newSize
-{
-    [self beginImageContextWithSize:newSize];
-    [image drawInRect:CGRectMake(0,0,newSize.width,newSize.height)];
-    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
-    [self endImageContext];
-    return newImage;
-}
 @end
 
