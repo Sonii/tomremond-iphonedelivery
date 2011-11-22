@@ -35,32 +35,21 @@
 }
 
 -(BOOL)loadPage:(unsigned)n atIndex:(int)index {
-	WeeSpacesView *v = [[WeeSpacesView alloc] initWithPage:n];
+	WeeSpacesView *v = [[WeeSpacesView alloc] initWithPage:n withLocation:index * kPageWidth];
 	if (v == nil) return NO;
 
 	dispatch_async(dispatch_get_main_queue(), ^{
-			CGRect r = v.frame;
-			r.origin.x = index * kPageWidth;
-			v.frame = r;
 			[scrollView addSubview:v];
-			[scrollView setContentSize:CGSizeMake((index + 1) * kPageWidth, kReportHeight)];
-			[scrollView setNeedsDisplay];
 	});	
 	[v release];
 	return YES;
 }
 
 -(BOOL)loadApplication:(SBApplication *)app atIndex:(int)index {
-	WeeAppView *v = [[WeeAppView alloc] initWithApplication:app];
+	WeeAppView *v = [[WeeAppView alloc] initWithApplication:app withLocation:index*kPageWidth];
 	if (v == nil) return NO;
 
-	CGRect r = v.frame;
-	r.origin.x = index * kPageWidth;
-	v.frame = r;
-	[v setNeedsDisplay];
 	[scrollView addSubview:v];
-	[scrollView setContentSize:CGSizeMake((index + 1) * kPageWidth, kReportHeight)];
-	[scrollView setNeedsDisplay];
 	[v release];
 	return YES;	
 }
@@ -81,27 +70,27 @@
 -(void)viewWillAppear {
 	// get a list of running app
 	NSArray *runningApplications =  [self runningApplications];
-
-	int i = 0;
 	int n = [runningApplications count];
+	int i = 0;
+
+	[scrollView setContentSize:CGSizeMake(n * kPageWidth, kReportHeight)];
 
 	// first the snapshots of the first app
-	for (SBApplication *a in runningApplications) {
-		if ([self loadApplication:a atIndex:(n - i - 1)])  {
-			i++;
-		}
+	for (SBApplication *app in runningApplications) {
+		[self loadApplication:app atIndex:n - i - 1];
+		i++;
 	}
 	// display the last snapshot
 	[scrollView setContentOffset:CGPointMake((i - 1) * kPageWidth, 0) animated:YES];
-	[scrollView setNeedsDisplay];
 
 	// async populate the scrollview with snapshots
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 		int ii = i;
-
-		// then the springboard pages
 		int page = 0;
+
 		while ([self loadPage:page++ atIndex:ii++]) ;
+
+		[scrollView setContentSize:CGSizeMake((ii -1) * kPageWidth, kReportHeight)];
 
 	});
 	// perform a gc to remove images for processes not active or sleeping anymore

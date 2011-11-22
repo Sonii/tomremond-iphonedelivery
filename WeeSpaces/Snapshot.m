@@ -38,7 +38,7 @@ static NSMutableDictionary *dict = NULL;
 		// get the latest live snapshot of the app
 		UIView *zoom = [[objc_getClass("SBUIController") sharedInstance] _zoomViewForAppDosado:app includeStatusBar:NO includeBanner:NO];
 		// build a snapshot of the image
-		image = [[UIImage imageFromView:zoom scaled:1.0 / 3.0] retain];
+		image = [[UIImage imageFromView:zoom scaled:1.0 / 3.5] retain];
 
 		self.elapsedCPUTime = _app.process.elapsedCPUTime;
 	}
@@ -47,8 +47,10 @@ static NSMutableDictionary *dict = NULL;
 -(BOOL)needsNewSnap {
 	SBApplication *_app = app;
 	BOOL res = (image == nil || _app.process.elapsedCPUTime > self.elapsedCPUTime + 0.05);
+#if 0
 	if (res)
 		NSLog(@"%s %@ image = %@ %f", __FUNCTION__, [app bundleIdentifier], image, _app.process.elapsedCPUTime - self.elapsedCPUTime);
+#endif
 	return res;
 }
 

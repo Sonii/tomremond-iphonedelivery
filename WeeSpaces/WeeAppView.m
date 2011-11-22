@@ -47,34 +47,39 @@
 	}
 }
 
--(id)initWithApplication:(SBApplication *)_app{
+-(id)initWithApplication:(SBApplication *)_app withLocation:(CGFloat)x{
 	CGFloat width, height;
 
 	width = 320 / SCALE;
 	height = 480 / SCALE;
 
 	app = [_app retain];
-	self = [super initWithFrame:CGRectMake(0.0, 0.0, width, height)];
+	self = [super initWithFrame:CGRectMake(x, 0.0, width, height)];
 	[Snapshot snapshotWithApplication:app view:self];
 	return self;
 }
 
 -(void)dealloc {
-	NSLog(@"%s %@", __FUNCTION__, [app displayName]);
+	//NSLog(@"%s %@", __FUNCTION__, [app displayName]);
 	[app release];
 	[super dealloc];
 }
 
--(void)drawRect:(CGRect)rect {
+-(void)drawRect:(CGRect)r0 {
+	//CGRect rect = self.frame;
+
 	// draw the snapshot
 	CGRect r = CGRectInset(self.bounds, 8, 8);
 	UIImage *snapshot = [Snapshot snapshotWithApplication:app view:self];
-	[snapshot drawInRect:CGRectOffset(r, 0, -2)];
+	//[snapshot drawInRect:CGRectOffset(r, 0, -2)];
+	[snapshot drawAtPoint:CGPointMake(r.origin.x, r.origin.y)];
 
 	// display the name of the app on top
 	NSString *label = [app displayName];
+#if 0
 	NSLog(@"%s <%.0f %.0f %.0f %.0f> %@", 
 			__FUNCTION__, rect.origin.x, rect.origin.y, rect.size.width, rect.size.height, label);
+#endif
 
 	[[UIColor whiteColor] set];
 	UIFont *f  = [UIFont systemFontOfSize:10];

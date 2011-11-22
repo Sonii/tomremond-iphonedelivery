@@ -18,7 +18,7 @@
 
 @implementation WeeSpacesView
 
--(id)initWithPage:(unsigned)page {
+-(id)initWithPage:(unsigned)page withLocation:(CGFloat)xx {
 	CGFloat x, y, width, height, margin;
 
 	width = 320 / SCALE;
@@ -32,7 +32,7 @@
 		return nil;
 	}
 
-	self = [super initWithFrame:CGRectMake(width * page, 0.0, width, height)];
+	self = [super initWithFrame:CGRectMake(xx, 0.0, width, height)];
 
 	x = y = 0;
 	UIImageView *back = [[UIImageView alloc] initWithFrame:CGRectMake(x + 2 , y, width - 4 , height)];
@@ -71,7 +71,7 @@
 }
 
 -(void)dealloc {
-	NSLog(@"%s page %d", __FUNCTION__, self.tag);
+	//NSLog(@"%s page %d", __FUNCTION__, self.tag);
 	[super dealloc];
 }
 
