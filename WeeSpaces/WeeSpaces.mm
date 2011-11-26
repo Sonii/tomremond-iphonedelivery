@@ -54,48 +54,96 @@
 	return YES;	
 }
 
--(NSArray *)runningApplications {
-	return	[[[objc_getClass("SBApplicationController") sharedInstance] allApplications]
-					filteredArrayUsingPredicate:[NSPredicate 
-						predicateWithBlock:^BOOL(SBApplication *a, NSDictionary *d) {
-							if ([a.bundleIdentifier compare:@"com.apple.AdSheetPhone"] == 0)
-								return NO;
+/*
+	get a list of the running and 4 most recents pplications
+	ordered by last use time. (The last used being the first)
+   */
+-(NSMutableArray *)runningApplications {
+	const int MAX_INACTIVE = 4;
+	SBAppSwitcherModel *model = [objc_getClass("SBAppSwitcherModel") sharedInstance];
 
-							return a.process != nil;
-						}
-				]
-		];
+	// get a list of all apps
+	NSArray *runnings = [[objc_getClass("SBApplicationController") sharedInstance] allApplications];
+	NSMutableArray *recent = [NSMutableArray arrayWithArray:[model _recentsFromPrefs]];
+
+	// build a list for running apps
+	// and a list for inactives app  (up to four)
+	NSMutableArray *res = [NSMutableArray arrayWithCapacity:[runnings count]];
+	NSMutableArray *inactive = [NSMutableArray arrayWithCapacity:[runnings count]];
+	int ninac = 0;
+
+	// build a list of all recent starting by the running ones
+	for (NSString *s in recent) {
+		// do not display iAds app
+		if ([s compare:@"com.apple.AdSheetPhone"] == 0) continue;
+
+		// find the app with the given id
+		NSUInteger idx = [runnings indexOfObjectPassingTest:^BOOL (SBApplication *a, NSUInteger idx, BOOL *stop) {
+			return *stop = ([a.bundleIdentifier compare:s] == 0);
+		}];
+
+		if (idx == NSNotFound) continue;
+
+		SBApplication *app = [runnings objectAtIndex:idx];
+
+		// if it has a process atached it it it is active
+		// otherwise we add it to the inactive list up to MAX_INACTIVE items
+		if (app.process != nil)
+			[res addObject:app];
+		else if (ninac++ < MAX_INACTIVE)
+			[inactive addObject:app];
+	}
+
+	//  move the first app to the end if it is on the front
+	if ([[objc_getClass("SBUserAgent") sharedUserAgent] springBoardIsActive] == NO) {
+		id obj = [res objectAtIndex:0];
+		[res addObject:obj];
+		[res removeObjectAtIndex:0];
+	}
+	// merge both lists
+	[res addObjectsFromArray:inactive];
+	return res;
 }
 
 -(void)viewWillAppear {
+
+	static dispatch_queue_t q = NULL;
+	
+	if (q == NULL) 
+		//q = dispatch_queue_create("WeeSpace queue", NULL);
+		q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0);
+	
 	dispatch_async(dispatch_get_main_queue(), ^{
-	// get a list of running app
-	NSArray *runningApplications =  [self runningApplications];
-	int n = [runningApplications count];
-	int i = 0;
+		// get a list of running app
+		NSMutableArray *runningApplications =  [self runningApplications];
+		int n = [runningApplications count];
+		int i = n;
 
-	[scrollView setContentSize:CGSizeMake(n * kPageWidth, kReportHeight)];
+		[scrollView setContentSize:CGSizeMake(n * kPageWidth, kReportHeight)];
 
-	// first the snapshots of the first app
-	for (SBApplication *app in runningApplications) {
-		[self loadApplication:app atIndex:n - i - 1];
-		i++;
-	}
-	// display the last snapshot
-	[scrollView setContentOffset:CGPointMake((i - 1) * kPageWidth, 0) animated:YES];
+		[self loadApplication:[runningApplications objectAtIndex:0] atIndex:--i];
+		[runningApplications removeObjectAtIndex:0];
 
-	// async populate the scrollview with snapshots
-	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-		int ii = i;
-		int page = 0;
+		// first the snapshots of the first app
+		// display the last snapshot
+		[scrollView setContentOffset:CGPointMake((n - 1) * kPageWidth, 0) animated:YES];
 
-		while ([self loadPage:page++ atIndex:ii++]) ;
+		// async populate the scrollview with snapshots
+		dispatch_async(q, ^{
+			int j = n;
+			int page = 0;
 
-		[scrollView setContentSize:CGSizeMake((ii -1) * kPageWidth, kReportHeight)];
+			while ([self loadPage:page++ atIndex:j++]) ;
 
-	});
-	// perform a gc to remove images for processes not active or sleeping anymore
-	[Snapshot gc];
+			[scrollView setContentSize:CGSizeMake((j -1) * kPageWidth, kReportHeight)];
+		});
+		for (SBApplication *app in runningApplications) {
+			[self loadApplication:app atIndex:--i];
+		}
+		// perform a gc to remove images for processes not active or sleeping anymore
+		[Snapshot gc];
+
+
 	});
 }
 

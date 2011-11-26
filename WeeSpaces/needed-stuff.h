@@ -82,3 +82,13 @@
 //-(void)flushSnapshots;
 //-(id)defaultImage:(BOOL*)image preferredScale:(float)scale originalOrientation:(int*)orientation currentOrientation:(int*)orientation4 canUseIOSurface:(BOOL)surface;
 @end;
+
+@interface SBAppSwitcherController 
+@property(retain) NSString* topAppDisplayID;
++(id)sharedInstance;
+@end
+
+@interface SBAppSwitcherModel
++(id)sharedInstance;
+-(id)_recentsFromPrefs;
+@end

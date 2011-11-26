@@ -80,7 +80,11 @@
 			__FUNCTION__, rect.origin.x, rect.origin.y, rect.size.width, rect.size.height, label);
 #endif
 
-	[[UIColor whiteColor] set];
+	if (app.process != nil)
+		[[UIColor whiteColor] set];
+	else
+		[[UIColor grayColor] set];
+
 	UIFont *f  = [UIFont systemFontOfSize:10];
 	CGSize size = [label sizeWithFont:f];
 	CGFloat x = (CGRectGetWidth(self.frame) - size.width) / 2.0;
