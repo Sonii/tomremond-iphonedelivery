@@ -8,7 +8,8 @@
 #import "UIImage+scale.h"
 #import "Snapshot.h"
 
-static NSMutableDictionary *dict = NULL;
+static NSMutableArray *used = nil;
+static NSMutableDictionary *dict = nil;
 
 @interface Snapshot(__private)
 -(void)doSnap;
@@ -16,7 +17,7 @@ static NSMutableDictionary *dict = NULL;
 @end
 
 @implementation Snapshot
-@synthesize app, image, elapsedCPUTime, last;
+@synthesize app, image, elapsedCPUTime;
 
 -(id)initWithApplication:(id)_app {
 	self = [super init];
@@ -24,7 +25,6 @@ static NSMutableDictionary *dict = NULL;
 	self.app = _app;
 	self.elapsedCPUTime = 0;
 	self.image = nil;
-	self.last = nil;
 
 	return self;
 }
@@ -58,7 +58,6 @@ static NSMutableDictionary *dict = NULL;
 	NSLog(@"%s %@", __FUNCTION__, [app bundleIdentifier]);
 	image = nil;
 	app = nil;
-	last = nil;
 	[super dealloc];
 }
 
@@ -67,27 +66,28 @@ static NSMutableDictionary *dict = NULL;
 	   perform garbage collection in async so it will be done serialized after all snaps
 	*/
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-		NSMutableArray *tbf = [[NSMutableArray alloc] initWithCapacity:16];
-		NSDate *now = [NSDate date];
+			NSMutableArray *unused = [[NSMutableArray array] retain];
 
-		for (NSString *key in [dict keyEnumerator]) {	
-			Snapshot *o = [dict objectForKey:key];
-			if ([now timeIntervalSinceDate:o.last] > 10.0) {
-				[tbf addObject:o];
+			// enumarate unused ids
+			for (NSString *key in [dict keyEnumerator]) {	
+				if ([used containsObject:key] == NO) [unused addObject:key];
 			}
-		}
-		[tbf enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) { 
-			NSLog(@"remove snapshot for %@", [[[tbf objectAtIndex:index] app] bundleIdentifier]);
-			[dict removeObjectForKey:[[[tbf objectAtIndex:index] app] bundleIdentifier]];
-		}];
-		[tbf removeAllObjects];
-		[tbf release];
+
+			// remove all unused snapshots
+			for (NSString *key in unused) {
+				[dict removeObjectForKey:key];
+			}
+			[unused release];
+
+			// empty used list
+			[used removeAllObjects];
 	});
 }
 
 +(UIImage *)snapshotWithApplication:(SBApplication *)app view:(UIView*)view{
 	// first time. build the dict holding the snaps
 	if (dict == nil) dict = [[NSMutableDictionary alloc] initWithCapacity:16];
+	if (used == nil) used = [[NSMutableArray alloc] initWithCapacity:16];
 
 	Snapshot *s = [dict objectForKey:app.bundleIdentifier];
 
@@ -109,9 +109,10 @@ static NSMutableDictionary *dict = NULL;
 			});
 		});
 	}
+	
+	// add the id to the list of used bundles in the pass
+	[used addObject:app.bundleIdentifier];
 
-	// last time it was requested for gc
-	s.last = [NSDate date];
 	return s.image;
 }
 @end
