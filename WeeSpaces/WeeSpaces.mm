@@ -68,6 +68,7 @@
 }
 
 -(void)viewWillAppear {
+	dispatch_async(dispatch_get_main_queue(), ^{
 	// get a list of running app
 	NSArray *runningApplications =  [self runningApplications];
 	int n = [runningApplications count];
@@ -95,6 +96,7 @@
 	});
 	// perform a gc to remove images for processes not active or sleeping anymore
 	[Snapshot gc];
+	});
 }
 
 - (void)viewDidDisappear {
