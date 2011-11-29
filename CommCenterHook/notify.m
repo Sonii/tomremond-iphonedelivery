@@ -36,7 +36,7 @@ static NSData *remote_call(NSString *method, NSData *data) {
         CFMessagePortSendRequest (port, 0, (CFDataRef)data, 1.0, 1.0, kCFRunLoopDefaultMode, &rv);
         CFRelease(port);
     }
-	return [[[NSData dataWithBytes:CFDataGetBytePtr(rv) length:CFDataGetLength(rv)] retain] autorelease];
+	return rv != NULL ? [[[NSData dataWithBytes:CFDataGetBytePtr(rv) length:CFDataGetLength(rv)] retain] autorelease] : nil;
 }
 
 /** 
