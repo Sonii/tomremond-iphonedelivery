@@ -21,14 +21,18 @@
 #import <Foundation/Foundation.h>
 #include "debug.h"
 
-#ifdef DEBUG
+int debug_mode = false;
+
 void DUMP(const uint8_t *p, size_t n, const char *label, ...) {
     va_list va;
     va_start(va, label);
 
+	if (!debug_mode) return;
+
     if (label != NULL) {
-        vfprintf(stderr, label, va);
-		fprintf(stderr, "\n");
+        NSString *ll = [[NSString alloc] initWithUTF8String:label];
+        NSLogv(ll, va);
+		[ll release];
 	}
 
     if (p != NULL && n > 0)  {
@@ -61,9 +65,12 @@ void TRACE(const char *p, size_t n, const char *label, ...) {
     va_list va;
     va_start(va, label);
 
+	if (!debug_mode) return;
+
     if (label != NULL) {
-        vfprintf(stderr, label, va);
-		fprintf(stderr, "\n");
+        NSString *ll = [[NSString alloc] initWithUTF8String:label];
+        NSLogv(ll, va);
+		[ll release];
 	}
     if (p != NULL && n > 0)  {
 		char s[256], *str = s;
@@ -102,5 +109,4 @@ void TRACE(const char *p, size_t n, const char *label, ...) {
 
     va_end(va);     // noop
 }
-#endif
 // vim: set ts=4 expandtab

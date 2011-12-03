@@ -182,6 +182,28 @@
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Experts settings</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>get</key>
+			<string>isDebugEnabled:</string>
+			<key>set</key>
+			<string>setDebugEnabled:specifier:</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.guilleme.deliveryreports</string>
+			<key>key</key>
+			<string>debug</string>
+			<key>label</key>
+			<string>Debug (produce log file)</string>
 		</dict>
 		<dict>
 			<key>cell</key>

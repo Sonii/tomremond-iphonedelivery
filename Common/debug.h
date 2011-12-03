@@ -16,19 +16,14 @@
 */
 #ifndef DEBUG_H_INCLUDED
 #define DEBUG_H_INCLUDED
-#if defined(DEBUG) 
-#undef DEBUG
-#define DEBUG
 #include <stdio.h>
 #include <stdarg.h>
+
+extern int debug_mode;
+
 void TRACE(const char *p, size_t n, const char *label, ...);
 void DUMP(const uint8_t *p, size_t n, const char *label, ...);
 #define LOG(...) do { fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); } while(0)
-#else
-#define TRACE(...) do { } while (0)
-#define DUMP(...) do { } while (0)
-#define LOG(...) do { } while (0)
-#endif
 #endif
 
 // vim: set ts=4 expandtab

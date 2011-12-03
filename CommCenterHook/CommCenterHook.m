@@ -33,6 +33,8 @@
 #include "submit.h"
 #include "rewrite.h"
 
+static void set_debug_mode();
+
 #ifndef USES_MS
 #define MSHook(type,name,param...) static type __ ## name(param)
 #define _open open
@@ -181,6 +183,7 @@ MSHook(int, open, char *name, int oflag, ...) {
 		if (crashed++ == 0)
 			notify_started(); 
 		create_spy();
+		set_debug_mode();
 		sms_fd = ret;
 	}
 	//LOG("open(\"%s\", 0x%x) => %d", name, mode, ret);	
@@ -364,26 +367,25 @@ MSHook(size_t, write, int fd, void *p, size_t n) {
 	return _write(fd, p, n);
 }
 
-#ifdef USES_MS
 static NSNumber *get_setting(CFStringRef user, CFStringRef app, CFStringRef str) {
     CFStringRef key [1]= { str };
     CFDictionaryRef dict;
     CFArrayRef keys ;
     void *res = NULL;
 
-    NSLog(@"%s: user=%@, appid=%@, setting=%@\n", __FUNCTION__, user, app, str);
+    //NSLog(@"%s: user=%@, appid=%@, setting=%@\n", __FUNCTION__, user, app, str);
 
     CFPreferencesSynchronize(app, user, kCFPreferencesCurrentHost);
 
     keys = CFArrayCreate(NULL, (const void **)&key, 1, NULL);
     dict = CFPreferencesCopyMultiple(keys, app, user, kCFPreferencesCurrentHost);
 
-	NSLog(@"%s => %@", __FUNCTION__, dict);
+	//NSLog(@"%s => %@", __FUNCTION__, dict);
 
     if (dict != NULL){
         res = (void *)CFDictionaryGetValue(dict, str);
 	}
-	NSLog(@"%@ => %@", keys, res);
+	//NSLog(@"%@ => %@", keys, res);
 
     if (dict != NULL) CFRelease(dict);
     CFRelease(keys);
@@ -391,6 +393,12 @@ static NSNumber *get_setting(CFStringRef user, CFStringRef app, CFStringRef str)
     return res;
 }
 
+static void set_debug_mode() {
+    NSNumber *debug = get_setting(CFSTR("mobile"), CFSTR("com.guilleme.deliveryreports"), CFSTR("debug"));
+	debug_mode = [debug boolValue];
+}
+
+#ifdef USES_MS
 static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
 
 #if 0
@@ -485,7 +493,7 @@ extern void idccInitialize() {
             CFSTR("iphonedelivery.restartcc"), NULL,
             CFNotificationSuspensionBehaviorCoalesce);
 
-    NSNumber *ms = get_setting(CFSTR("mobile"), CFSTR("com.apple.iphonedelivery"), CFSTR("ms-mode"));
+    NSNumber *ms = get_setting(CFSTR("mobile"), CFSTR("com.guilleme.deliveryreports"), CFSTR("ms-mode"));
 
 	if (ms == nil || [ms boolValue]) {
 		NSLog(@"Hooking with MS");

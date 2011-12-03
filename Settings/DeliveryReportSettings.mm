@@ -58,6 +58,47 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
     [super setTitle:[[self bundle] localizedStringForKey:title value:title table:nil]];
 }
 
+-(void)setDebugEnabled:(id)value specifier:(id)specifier {
+    CFStringRef app = CFSTR("com.guilleme.deliveryreports");
+    CFPreferencesSetAppValue(CFSTR("debug"), value, app);
+    CFPreferencesSynchronize(app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
+
+    // notify the CommCenter to reload
+    CFStringRef s= CFSTR("iphonedelivery.restartcc");
+    CFNotificationCenterRef nc = CFNotificationCenterGetDarwinNotifyCenter();
+    if (nc != nil) CFNotificationCenterPostNotification(nc, s, NULL, NULL, NO);
+
+    UIAlertView *alert;
+ 
+    alert = [[[UIAlertView alloc] initWithTitle:@"Restart CommCenter\nPlease Wait..." 
+                                        message:nil 
+                                       delegate:self 
+                              cancelButtonTitle:nil 
+                              otherButtonTitles: nil] autorelease];
+    [alert show];
+     
+    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+     
+    // Adjust the indicator so it is up a few pixels from the bottom of the alert
+    indicator.center = CGPointMake(alert.bounds.size.width / 2, alert.bounds.size.height - 50);
+    [indicator startAnimating];
+    [alert addSubview:indicator];
+    [indicator release];
+
+    // remove the alert after a couple of seconds
+    // acyually we should do it when the CommCenter is restarted
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 7*1000LL*1000LL*1000LL), dispatch_get_current_queue(), ^{
+                [alert dismissWithClickedButtonIndex:0 animated:YES];
+            });
+
+}
+
+-(id)isDebugEnabled:(id)specifier {
+    CFPreferencesSynchronize(app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
+    NSNumber *val = (NSNumber *)CFPreferencesCopyAppValue(CFSTR("debug"), app);
+    return val == nil ? [NSNumber numberWithBool:NO] : val;
+}
+
 -(void)setMobileSubstrateEnabled:(id)value specifier:(id)specifier {
     CFStringRef app = CFSTR("com.guilleme.deliveryreports");
     CFPreferencesSetAppValue(CFSTR("ms-mode"), value, app);
@@ -87,7 +128,7 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
 
     // remove the alert after a couple of seconds
     // acyually we should do it when the CommCenter is restarted
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5*1000LL*1000LL*1000LL), dispatch_get_current_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 7*1000LL*1000LL*1000LL), dispatch_get_current_queue(), ^{
                 [alert dismissWithClickedButtonIndex:0 animated:YES];
             });
 

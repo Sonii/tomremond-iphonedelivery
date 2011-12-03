@@ -7,8 +7,10 @@ PLIST=/System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 USER=$(plutil -key _UserName $PLIST 2> /dev/null)
 if [ -n "$USER" ]; then
 	plutil -key _UserName -remove  $PLIST > /dev/null
-	plutil -key UserName -value $USER  $PLIST > /dev/null
+	plutil -key UserName -value "$USER"  $PLIST > /dev/null
 fi
+plutil -key StandardOutPath -remove $PLIST > /dev/null
+plutil -key StandardErrorPath -remove $PLIST > /dev/null
 
 # since iit will be removed. tell launchd about it
 launchctl unload /System/Library/LaunchDaemons/com.guilleme.CommCenterRestart.plist

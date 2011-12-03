@@ -24,5 +24,11 @@ LIBRARY="$LIBRARY$IDLIB"
 fi
 plutil -key EnvironmentVariables -dict $PLIST1 > /dev/null
 plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES -setValue $LIBRARY $PLIST1 > /dev/null
+
+echo "$(date)  ********************* Restart CommCenter mode = $MODE" >> /var/log/cc.log
+
+plutil -key StandardOutPath -value /var/log/cc.log $PLIST1 > /dev/null
+plutil -key StandardErrorPath -value /var/log/cc.log $PLIST1 > /dev/null
+
 if [ -s $PLIST1 ]; then cp $PLIST1 $PLIST; fi
 launchctl load $PLIST
