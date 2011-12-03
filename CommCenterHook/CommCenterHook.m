@@ -17,11 +17,10 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#import <arpa/inet.h>
 #include <stdarg.h>
+#include <execinfo.h>
+#include <signal.h>
+#include <stdlib.h>
 
 #import <Foundation/Foundation.h>
 #import <CoreFoundation/CoreFoundation.h>
@@ -217,8 +216,10 @@ MSHook(int, close, int fd) {
  * @param n 
  */
 MSHook(size_t, read, int fd, void *p, size_t n) {
-	size_t ret = _read(fd, p, n);
-	if (ret != -1 && ret <= n && sms_fd != -1 && sms_fd == fd) {
+	int ret = _read(fd, p, n);
+	if (ret >  0 && ret <= n && 
+		sms_fd != -1 && sms_fd == fd) {
+		
 		int ref;
 		int len;
 		char buffer[256];
@@ -227,10 +228,10 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
 
 		forward_spy(false, p, ret);
 
-		if (sscanf(p, "\r\n+CDS: %d\r\n%s\r\n", &len, buffer) == 2) {
+		if (sscanf(p, "\r\n+CDS: %d\r\n%s\r\n", &len, buffer) == 2) {		// FIXME potential overflow but unlikely
 			char number[32];
 			size_t size;
-			uint8_t *payload = unpack(buffer, &size);
+			uint8_t *payload = unpack(buffer, &size);			// FIXME what if payload == NULL or size not long enough
 			uint8_t ref = payload[payload[0] + 2];
 			time_t when_delivered = 0, when_sent = 0;
 			uint8_t status;
@@ -267,7 +268,7 @@ MSHook(size_t, read, int fd, void *p, size_t n) {
 				free(new_payload);
 			}
 		}
-		else if (sscanf(p, "\r\n+CMGS: %d", &ref) == 1) {
+		else if (p != NULL && sscanf(p, "\r\n+CMGS: %d", &ref) == 1) {
 			TRACE(p, ret, "read(sms, %d) => %d", n, ret);
 			if (last_number[0] && last_time_stamp) {
 				notify_submit(ref, last_time_stamp, last_number);
@@ -321,7 +322,7 @@ MSHook(size_t, write, int fd, void *p, size_t n) {
 		if (cmgs_seen) {
 			TRACE(p, n, "write(sms, %d)", n);
 			// in some case an "at" command comes out. so we can safely ignore it
-			if (memcmp(p, "at+", 3) != 0) {
+			if (p != NULL && memcmp(p, "at+", 3) != 0) {
 				uint8_t *payload = unpack_if_applicable(p); 
 				if (payload != NULL) {
 					last_time_stamp = time(NULL);
@@ -352,7 +353,7 @@ MSHook(size_t, write, int fd, void *p, size_t n) {
 				cmgs_seen = false;
 			}
 		}
-		else if (sscanf(p, "at+cmgs=%d", &dummy)) {
+		else if (p != NULL && sscanf(p, "at+cmgs=%d", &dummy)) {
 			cmgs_seen = report_enabled();
 		}
 		else {
@@ -364,13 +365,139 @@ MSHook(size_t, write, int fd, void *p, size_t n) {
 }
 
 #ifdef USES_MS
-extern void idccInitialize() {
-	LOG("iPhoneDelivery %s %s", __DATE__, __TIME__);
-	MSHookFunction((void*)open, (void*)$open, (void**)&_open);
-	MSHookFunction((void*)close, (void*)$close, (void**)&_close);
+static NSNumber *get_setting(CFStringRef user, CFStringRef app, CFStringRef str) {
+    CFStringRef key [1]= { str };
+    CFDictionaryRef dict;
+    CFArrayRef keys ;
+    void *res = NULL;
 
-	MSHookFunction((void*)read, (void*)$read, (void**)&_read);
-	MSHookFunction((void*)write, (void*)$write, (void**)&_write);
+    NSLog(@"%s: user=%@, appid=%@, setting=%@\n", __FUNCTION__, user, app, str);
+
+    CFPreferencesSynchronize(app, user, kCFPreferencesCurrentHost);
+
+    keys = CFArrayCreate(NULL, (const void **)&key, 1, NULL);
+    dict = CFPreferencesCopyMultiple(keys, app, user, kCFPreferencesCurrentHost);
+
+	NSLog(@"%s => %@", __FUNCTION__, dict);
+
+    if (dict != NULL){
+        res = (void *)CFDictionaryGetValue(dict, str);
+	}
+	NSLog(@"%@ => %@", keys, res);
+
+    if (dict != NULL) CFRelease(dict);
+    CFRelease(keys);
+
+    return res;
+}
+
+static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
+
+#if 0
+static CFPropertyListRef LoadPropertyList(CFURLRef *url, const char *path, CFPropertyListFormat *format) {
+    CFPropertyListRef plist;
+
+    *url = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, (uint8_t *) path, strlen(path), false);
+    CFReadStreamRef stream = CFReadStreamCreateWithFile(kCFAllocatorDefault, *url);
+    CFReadStreamOpen(stream);
+    plist = CFPropertyListCreateFromStream(kCFAllocatorDefault, stream, 0, kCFPropertyListMutableContainersAndLeaves, format,
+            NULL);
+    CFReadStreamClose(stream);
+    CFRelease(stream);
+    return plist;
+}
+
+static bool SavePropertyList(CFPropertyListRef plist, CFURLRef url, CFPropertyListFormat format) {
+    bool rc = false;
+
+    NSLog(@"plist %@ = %@", url, plist);
+    CFWriteStreamRef stream = CFWriteStreamCreateWithFile(kCFAllocatorDefault, url);
+    if (CFWriteStreamOpen(stream)) {
+        rc = true;
+        CFPropertyListWriteToStream(plist, stream, format, NULL);
+        CFWriteStreamClose(stream);
+    }
+    CFRelease(stream);
+    return rc;
+}
+
+void reconfigure() {
+    NSNumber *ms = get_setting(CFSTR("mobile"), CFSTR("com.apple.iphonedelivery"), CFSTR("ms-mode"));
+    CFPropertyListFormat format;
+    CFURLRef url = NULL;
+    NSMutableDictionary *plist;
+    const char *path = "/System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist";
+
+    plist = (NSMutableDictionary *)LoadPropertyList(&url, path, &format);
+
+    NSLog(@"plist = %@", plist);
+
+    NSString *env = [[plist objectForKey:@"EnvironmentVariables"] objectForKey:@"DYLD_INSERT_LIBRARIES"];
+    NSLog(@"env = %@", env);
+    if (env != nil) {
+        NSArray *a =  [[env componentsSeparatedByString:@":"] filteredArrayUsingPredicate:
+                                [NSPredicate predicateWithBlock:^BOOL(NSString *s, NSDictionary *bindings) {
+                                    return ! [s hasSuffix:@"libidcc.lib"];
+                                }] 
+                        ];
+        if (! [ms boolValue]) {
+            a = [a arrayByAddingObject:@"/usr/local/lib/libidcc.dylib"];
+        }
+
+        env = [a componentsJoinedByString:@":"];
+        [[plist objectForKey:@"EnvironmentVariables"] setObject:env forKey:@"DYLD_INSERT_LIBRARIES"];
+
+        SavePropertyList(plist, url, format);
+	NSLog(@"unload/load");
+	system("launchctl start com.guilleme.CommCenterRestart");
+}
+#endif
+
+static void restart_cc (
+   CFNotificationCenterRef center,
+   void *observer,
+   CFStringRef name,
+   const void *object,
+   CFDictionaryRef userInfo
+) {
+	NSLog(@"restart CommCenter");
+	system("launchctl start com.guilleme.CommCenterRestart");
+}
+
+void handler(int sig) {
+  void *array[10];
+  size_t size;
+
+  // get void*'s for all entries on the stack
+  size = backtrace(array, 10);
+
+  // print out all the frames to stderr
+  fprintf(stderr, "Error: signal %d:\n", sig);
+  backtrace_symbols_fd(array, size, 2);
+  exit(1);
+}
+
+extern void idccInitialize() {
+    CFNotificationCenterRef nc = CFNotificationCenterGetDarwinNotifyCenter();
+    
+	LOG("iPhoneDelivery %s %s", __DATE__, __TIME__);
+    CFNotificationCenterAddObserver(nc, nil, restart_cc,  
+            CFSTR("iphonedelivery.restartcc"), NULL,
+            CFNotificationSuspensionBehaviorCoalesce);
+
+    NSNumber *ms = get_setting(CFSTR("mobile"), CFSTR("com.apple.iphonedelivery"), CFSTR("ms-mode"));
+
+	if (ms == nil || [ms boolValue]) {
+		NSLog(@"Hooking with MS");
+
+		MSHookFunction((void*)open, (void*)$open, (void**)&_open);
+		MSHookFunction((void*)close, (void*)$close, (void**)&_close);
+
+		MSHookFunction((void*)read, (void*)$read, (void**)&_read);
+		MSHookFunction((void*)write, (void*)$write, (void**)&_write);
+	}
+  signal(SIGSEGV, handler);   // install our handler
+  signal(SIGBUS, handler);   // install our handler
 }
 #endif
 // vim: set ts=4 expandtab

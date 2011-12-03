@@ -50,32 +50,24 @@ plutil -key items -key $((ENTRY+1)) -key cell -string PSLinkCell $MESSAGES_PLIST
 plutil -key items -key $((ENTRY+1)) -key isController -yes $MESSAGES_PLIST > /dev/null
 plutil -key items -key $((ENTRY+1)) -key label -string DELIVERY_RECEIPTS $MESSAGES_PLIST > /dev/null
 
-# comment if not uses MS (and build accordingly)
-#USES_MS=YES
-
-if [ -z "$USES_MS" ]; then
-echo "inject our magic potion into CommCenter"
+# change the user of CommCenter back to root (this is pretty unsafe)
 PLIST=/System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
-LIBRARY=$(plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES $PLIST 2> /dev/null)
-if [ -z "$LIBRARY" ]; then
-	plutil -key EnvironmentVariables -dict $PLIST > /dev/null
-	plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES \
-		   -setValue /usr/local/lib/libidcc.dylib \
-	 	$PLIST > /dev/null
-else
-	plutil -key EnvironmentVariables -dict $PLIST > /dev/null
-	plutil -key EnvironmentVariables -key DYLD_INSERT_LIBRARIES \
-		   -setValue "${LIBRARY}:/usr/local/lib/libidcc.dylib" \
-	 	$PLIST > /dev/null
-fi
+USER=$(plutil -key UserName $PLIST 2> /dev/null)
+if [ -n "$USER" ]; then
+	plutil -key _UserName -value $USER  $PLIST > /dev/null
+	plutil -key UserName -remove  $PLIST > /dev/null
 fi
 
 echo update statistics
 /usr/bin/libidtool $VERSION
 
-echo "Reload CommCenter"
-launchctl unload /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
-launchctl load /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
+echo "Hook and reload CommCenter"
+chown root:wheel /System/Library/LaunchDaemons/com.guilleme.CommCenterRestart.plist
+launchctl unload /System/Library/LaunchDaemons/com.guilleme.CommCenterRestart.plist
+launchctl load /System/Library/LaunchDaemons/com.guilleme.CommCenterRestart.plist
+
+#launchctl unload /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
+#launchctl load /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
 
 echo "set a default configuration if there is none"
 if [ ! -e /var/mobile/Library/Preferences/com.guilleme.deliveryreports.plist ]; then

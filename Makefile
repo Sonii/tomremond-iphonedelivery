@@ -21,7 +21,6 @@ export TARGET_LD=$(CLANG)
 endif
 
 export DEBUG=0
-export USES_MS=YES
 
 VERSION=0.5.1
 REPO_URL=iphonedelivery@iphonedelivery.advinux.com
@@ -35,7 +34,7 @@ SDKVERSION = 5.0
 
 include theos/makefiles/common.mk
 
-SUBPROJECTS= CommCenterHook SpringBoardHook MobileSMSHook Settings WeeBrowseID libidtool
+SUBPROJECTS = CommCenterHook CommCenterHookManaged SpringBoardHook MobileSMSHook Settings WeeBrowseID libidtool
 
 include $(THEOS_MAKE_PATH)/aggregate.mk
 
@@ -60,12 +59,7 @@ publish:
 after-stage::
 	@mv  _/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeBrowseID.dylib \
 		_/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeBrowseID
-ifeq ("${USES_MS}","YES")
-	@cp CommCenterHook/libidcc.plist _/Library/MobileSubstrate/DynamicLibraries
-
-before-package::
-	@sed -i "" 's/^#USES_MS/USES_MS/' _/DEBIAN/postinst
-endif
+	@cp CommCenterHookManaged/libidccms.plist _/Library/MobileSubstrate/DynamicLibraries
 
 before-package::
 	@sed -i "" 's/%VERSION%/${VERSION}/' _/DEBIAN/postinst

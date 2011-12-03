@@ -432,7 +432,7 @@ static CFDataRef handle_start (
    CFDataRef data,
    void *info
 ) {
-    showBulletin( @"iPhoneDelivery", @"",  @"Started...", nil, 0, nil);
+    //showBulletin( @"iPhoneDelivery", @"",  @"Started...", nil, 0, nil);
     return nil;
 }
 

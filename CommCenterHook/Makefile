@@ -8,13 +8,6 @@ libidcc_FRAMEWORKS = CoreFoundation Foundation
 libidcc_INSTALL_PATH = /usr/local/lib
 
 libidcc_CFLAGS = -std=gnu99 -I../Common
-libidcc_LDFLAGS = -lsubstrate
-
-ifeq ("${USES_MS}","YES")
-libidcc_CFLAGS +=  -DUSES_MS
-libidcc_LDFLAGS += -init _idccInitialize
-libidcc_INSTALL_PATH = /Library/MobileSubstrate/DynamicLibraries
-endif
 
 include $(THEOS_MAKE_PATH)/library.mk
 
