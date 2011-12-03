@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>DATE</key>
-	<string>在 %DATE% </string>
+	<string>%DATE% </string>
 	<key>DELIVERED</key>
-	<string>在 %DATESPEC% %TIMESPEC% 寄出</string>
+	<string>%DATESPEC% %TIMESPEC% 送達</string>
 	<key>STATUS</key>
 	<string>錯誤碼=%STATUS%</string>
 	<key>STATUS_48</key>
@@ -13,11 +13,11 @@
 	<key>STATUS_70</key>
 	<string>過期</string>
 	<key>SUBMIT</key>
-	<string>在 %DATESPEC% %TIMESPEC% 寄出</string>
+	<string>%DATESPEC% %TIMESPEC% 寄出</string>
 	<key>TIME</key>
-	<string>在 %TIME% </string>
+	<string>%TIME% </string>
 	<key>TITLE</key>
-	<string>由 %NAME% %SURNAME% 寄出</string>
+	<string>傳送給 %SURNAME% %NAME% 的訊息</string>
 	<key>TODAY</key>
 	<string>今日</string>
 	<key>YESTERDAY</key>
