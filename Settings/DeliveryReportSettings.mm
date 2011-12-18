@@ -5,23 +5,75 @@
 
 static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
 
+#define MAGIC_YES 1234567
+
 @interface DeliveryReportSettingsListController: PSListController {
+    int reloading;
 }
 - (NSArray *)localizedSpecifiersForSpecifiers:(NSArray *)s;
 -(void)setTitle:(id)title;
 -(void)setDeliveryEnabled:(id)value specifier:(id)specifier;
 -(id)isDeliveryEnabled:(id)specifier;
 -(id)tableView:(id)view cellForRowAtIndexPath:(id)indexPath;
+-(void)restartWithkey:(NSString *)key value:(NSNumber*)value;
+-(void)reloadSpecifiers;
 @end
 
 @implementation DeliveryReportSettingsListController
+-(void)reloadSpecifiers {
+    reloading = MAGIC_YES;
+    [super reload];
+    reloading = NO;
+}
+
+-(void)restartWithkey:(NSString *)key value:(NSNumber*)value {
+    CFPreferencesSetAppValue((CFStringRef)key, (CFPropertyListRef)value, app);
+    CFPreferencesSynchronize(app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
+
+    // notify the CommCenter to reload
+    CFStringRef s= CFSTR("iphonedelivery.restartcc");
+    CFNotificationCenterRef nc = CFNotificationCenterGetDarwinNotifyCenter();
+    if (nc != nil) CFNotificationCenterPostNotification(nc, s, NULL, NULL, NO);
+
+    UIAlertView *alert;
+ 
+    alert = [[[UIAlertView alloc] initWithTitle:@"Restart CommCenter\nPlease Wait..." 
+                                        message:nil 
+                                       delegate:self 
+                              cancelButtonTitle:nil 
+                              otherButtonTitles: nil] autorelease];
+    [alert show];
+     
+    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+     
+    // Adjust the indicator so it is up a few pixels from the bottom of the alert
+    indicator.center = CGPointMake(alert.bounds.size.width / 2, alert.bounds.size.height - 50);
+    [indicator startAnimating];
+    [alert addSubview:indicator];
+    [indicator release];
+
+    // remove the alert after a couple of seconds
+    // acyually we should do it when the CommCenter is restarted
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 7*1000LL*1000LL*1000LL), dispatch_get_current_queue(), ^{
+                [alert dismissWithClickedButtonIndex:0 animated:YES];
+            });
+
+}
 - (id)specifiers {
     if(_specifiers == nil) {
         _specifiers = [[self loadSpecifiersFromPlistName:@"DeliveryReportSettings" target:self] retain];
         _specifiers = [self localizedSpecifiersForSpecifiers:_specifiers];
 
-        // In order to disable item if they need to when opening the settings page
-        [self setDeliveryEnabled:[self isDeliveryEnabled:nil] specifier:nil];
+        CFPreferencesSynchronize(app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
+        NSNumber *value = (NSNumber *)CFPreferencesCopyAppValue(CFSTR("dr-enabled"), app);
+        if (reloading != MAGIC_YES && ![value boolValue] && [self indexOfSpecifierID:@"DELIVERY_NOTIFICATION_STYLE"] != NSNotFound) {
+            [self removeSpecifierID:@"DELIVERY_NOTIFICATION_STYLE"];
+            [self removeSpecifierID:@"DELIVERY_VIBRATE"];
+            [self removeSpecifierID:@"DELIVERY_SOUND"];
+            [self removeSpecifierID:@"EXPERT_MODE"];
+            [self removeSpecifierID:@"DEBUG_MODE"];
+            [self removeSpecifierID:@"MS_MODE"];
+        }
     }
     return _specifiers;
 }
@@ -59,38 +111,7 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
 }
 
 -(void)setDebugEnabled:(id)value specifier:(id)specifier {
-    CFStringRef app = CFSTR("com.guilleme.deliveryreports");
-    CFPreferencesSetAppValue(CFSTR("debug"), value, app);
-    CFPreferencesSynchronize(app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
-
-    // notify the CommCenter to reload
-    CFStringRef s= CFSTR("iphonedelivery.restartcc");
-    CFNotificationCenterRef nc = CFNotificationCenterGetDarwinNotifyCenter();
-    if (nc != nil) CFNotificationCenterPostNotification(nc, s, NULL, NULL, NO);
-
-    UIAlertView *alert;
- 
-    alert = [[[UIAlertView alloc] initWithTitle:@"Restart CommCenter\nPlease Wait..." 
-                                        message:nil 
-                                       delegate:self 
-                              cancelButtonTitle:nil 
-                              otherButtonTitles: nil] autorelease];
-    [alert show];
-     
-    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-     
-    // Adjust the indicator so it is up a few pixels from the bottom of the alert
-    indicator.center = CGPointMake(alert.bounds.size.width / 2, alert.bounds.size.height - 50);
-    [indicator startAnimating];
-    [alert addSubview:indicator];
-    [indicator release];
-
-    // remove the alert after a couple of seconds
-    // acyually we should do it when the CommCenter is restarted
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 7*1000LL*1000LL*1000LL), dispatch_get_current_queue(), ^{
-                [alert dismissWithClickedButtonIndex:0 animated:YES];
-            });
-
+    [self restartWithkey:@"debug" value:value];
 }
 
 -(id)isDebugEnabled:(id)specifier {
@@ -100,38 +121,7 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
 }
 
 -(void)setMobileSubstrateEnabled:(id)value specifier:(id)specifier {
-    CFStringRef app = CFSTR("com.guilleme.deliveryreports");
-    CFPreferencesSetAppValue(CFSTR("ms-mode"), value, app);
-    CFPreferencesSynchronize(app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
-
-    // notify the CommCenter to reload
-    CFStringRef s= CFSTR("iphonedelivery.restartcc");
-    CFNotificationCenterRef nc = CFNotificationCenterGetDarwinNotifyCenter();
-    if (nc != nil) CFNotificationCenterPostNotification(nc, s, NULL, NULL, NO);
-
-    UIAlertView *alert;
- 
-    alert = [[[UIAlertView alloc] initWithTitle:@"Restart CommCenter\nPlease Wait..." 
-                                        message:nil 
-                                       delegate:self 
-                              cancelButtonTitle:nil 
-                              otherButtonTitles: nil] autorelease];
-    [alert show];
-     
-    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-     
-    // Adjust the indicator so it is up a few pixels from the bottom of the alert
-    indicator.center = CGPointMake(alert.bounds.size.width / 2, alert.bounds.size.height - 50);
-    [indicator startAnimating];
-    [alert addSubview:indicator];
-    [indicator release];
-
-    // remove the alert after a couple of seconds
-    // acyually we should do it when the CommCenter is restarted
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 7*1000LL*1000LL*1000LL), dispatch_get_current_queue(), ^{
-                [alert dismissWithClickedButtonIndex:0 animated:YES];
-            });
-
+    [self restartWithkey:@"ms-mode" value:value];
 }
 
 -(id)isMobileSubstrateEnabled:(id)specifier {
@@ -141,8 +131,7 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
 }
 
 -(void)setDeliveryEnabled:(id)value specifier:(id)specifier {
-    CFPreferencesSetAppValue(CFSTR("dr-enabled"), value, app);
-    CFPreferencesSynchronize(app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
+    [self restartWithkey:@"dr-enabled" value:value];
 
 #if 0
     // gray the settings insyead of hiding them
@@ -161,6 +150,9 @@ static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
         [self removeSpecifierID:@"DELIVERY_NOTIFICATION_STYLE"];
         [self removeSpecifierID:@"DELIVERY_VIBRATE"];
         [self removeSpecifierID:@"DELIVERY_SOUND"];
+        [self removeSpecifierID:@"EXPERT_MODE"];
+        [self removeSpecifierID:@"DEBUG_MODE"];
+        [self removeSpecifierID:@"MS_MODE"];
     }
 #endif
     [self reload];

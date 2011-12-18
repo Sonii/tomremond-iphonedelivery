@@ -32,10 +32,6 @@
 #define AB_DB "/private/var/mobile/Library/AddressBook/AddressBook.sqlitedb"
 #define MAX_STR_SIZE 128
 
-#if !defined(DEBUG) && !defined(YESDEBUG)
-#define NSLog(...) 
-#endif
-
 enum {
 	PARAM_END,
     PARAM_INT,
@@ -382,9 +378,9 @@ int get_sent_time_for_sms(const char *num, uint8_t ref) {
 int update_sms_for_delivery(const char *num, uint8_t ref, uint8_t status, time_t s_date, time_t d_date) {
 
     return exec_sql("update message set smsc_ref=null, delivery_status=%d, s_date=%lu, r_date=%lu " 
-					"where address like '%s' and smsc_ref=%d",
+					"where  smsc_ref=%d and address like '%s'",
                     status, s_date, d_date, 
-					build_phone_number_pattern(num), ref);
+					ref, build_phone_number_pattern(num));
 }
 
 int get_status_for_rowid(uint8_t rowid) {

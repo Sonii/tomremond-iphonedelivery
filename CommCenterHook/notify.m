@@ -25,6 +25,7 @@
 #include "debug.h"
 #include "notify.h"
 
+#if 0
 /*
    calls a remote method and pass it data
    return a data
@@ -38,6 +39,7 @@ static NSData *remote_call(NSString *method, NSData *data) {
     }
 	return rv != NULL ? [[[NSData dataWithBytes:CFDataGetBytePtr(rv) length:CFDataGetLength(rv)] retain] autorelease] : nil;
 }
+#endif
 
 /** 
  * @brief send a signal to another process
@@ -111,27 +113,8 @@ void notify_started() {
  * @return 
  */
 bool report_enabled() {
-	static time_t last_time = 0;
-	static bool cached_enabled = true;
-	bool rc = true;
-
-	time_t now = time(NULL);
-	if (now - last_time > 60) { 
-		NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-		NSData *data = remote_call(@"id.enabled", NULL);
-		if (data != nil) {
-			NSDictionary *dict = [[data unserialize] autorelease];
-			rc = [[dict objectForKey:@"ENABLED"] boolValue];
-		}
-		[pool release];
-
-		cached_enabled = rc;
-		last_time = now;
-	}
-	else {
-		rc = cached_enabled;
-	}
-	return rc;
+	extern bool id_enabled;
+	return id_enabled;
 }
 
 bool notify_received(uint8_t *payload, size_t size) {

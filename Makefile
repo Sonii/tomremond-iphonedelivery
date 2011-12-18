@@ -20,9 +20,9 @@ endif
 export TARGET_LD=$(CLANG)
 endif
 
-export DEBUG=0
+export DEBUG=1
 
-VERSION=0.5.1
+VERSION=0.5.2
 REPO_URL=iphonedelivery@iphonedelivery.advinux.com
 ifeq ($(DEBUG),1)
 REPO=ios5debug
@@ -53,8 +53,10 @@ publish:
 	ssh $(REPO_URL) mkdir -p www/$(REPO)/WeeSpaces/
 	scp Packages.bz2 $(REPO_URL):www/$(REPO)/
 	scp com.guilleme.iphonedelivery_$(shell cat .theos/Packages/com.guilleme.iphonedelivery-$(VERSION))_iphoneos-arm.deb $(REPO_URL):www/$(REPO)/
-	scp WeeSpaces/com.guilleme.WeeSpaces_$(shell cat ./WeeSpaces/.theos/Packages/com.guilleme.WeeSpaces-1.1)_iphoneos-arm.deb $(REPO_URL):www/$(REPO)/WeeSpaces/
+	scp WeeSpaces/com.guilleme.WeeSpaces_$(shell cat ./WeeSpaces/.theos/Packages/com.guilleme.WeeSpaces-1.5)_iphoneos-arm.deb $(REPO_URL):www/$(REPO)/WeeSpaces/
+ifneq ($(DEBUG),1)
 	scp iphonedelivery-0.3.8.10.deb $(REPO_URL):www/$(REPO)
+endif
 
 after-stage::
 	@mv  _/System/Library/WeeAppPlugins/WeeBrowseID.bundle/WeeBrowseID.dylib \
@@ -63,8 +65,3 @@ after-stage::
 
 before-package::
 	@sed -i "" 's/%VERSION%/${VERSION}/' _/DEBIAN/postinst
-
-ifeq ($(DEBUG),1)
-before-package::
-	@sed -i "" '/^Depends:/s/$$/, syslogd/' _/DEBIAN/control 
-endif

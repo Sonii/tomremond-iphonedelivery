@@ -182,16 +182,20 @@
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
+			<key>id</key>
+			<string>EXPERT_MODE</string>
 			<key>label</key>
 			<string>Experts settings</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>http://code.google.com/p/iphone-delivery-report/wiki</string>
+			<key>action</key>
+			<string>translate:</string>
 		</dict>
 		<dict>
 			<key>cell</key>
 			<string>PSSwitchCell</string>
+			<key>id</key>
+			<string>DEBUG_MODE</string>
 			<key>get</key>
 			<string>isDebugEnabled:</string>
 			<key>set</key>
@@ -210,6 +214,8 @@
 			<string>PSSwitchCell</string>
 			<key>alternateColors</key>
 			<true/>
+			<key>id</key>
+			<string>MS_MODE</string>
 			<key>get</key>
 			<string>isMobileSubstrateEnabled:</string>
 			<key>set</key>

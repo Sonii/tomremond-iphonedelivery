@@ -1,7 +1,7 @@
 Package: com.guilleme.iphonedelivery
 Replaces: com.guilleme.iphonedeliveryms
 Name: iPhoneDelivery
-Version: 0.5.1
+Version: 0.5.2
 Architecture: iphoneos-arm
 Description: Delivery reports for iOS5
 Maintainer: F. Guillemé

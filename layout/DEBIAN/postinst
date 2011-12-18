@@ -35,6 +35,8 @@ if [ $? -eq 1 ]; then
 	sqlite3 $SMS_DATABASE 'ALTER TABLE message ADD COLUMN delivery_status INTEGER DEFAULT NULL'
 fi
 
+sqlite3 $SMS_DATABASE 'CREATE INDEX IF NOT EXISTS smscref_index ON Message(smsc_ref)'
+
 echo "Modify Settings's Message pane to add our settings"
 MESSAGES_PLIST=/System/Library/PrivateFrameworks/Conference.framework/Messages.plist
 # save the plist for an easier restore (if nobody touched it....)

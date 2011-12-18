@@ -61,6 +61,7 @@ struct interpose {
 #include <substrate.h>
 #endif
 
+bool id_enabled = false;
 static int sms_fd = -1;
 
 char last_number[32];
@@ -396,70 +397,13 @@ static NSNumber *get_setting(CFStringRef user, CFStringRef app, CFStringRef str)
 static void set_debug_mode() {
     NSNumber *debug = get_setting(CFSTR("mobile"), CFSTR("com.guilleme.deliveryreports"), CFSTR("debug"));
 	debug_mode = [debug boolValue];
+
+	NSNumber *enabled = get_setting(CFSTR("mobile"), CFSTR("com.guilleme.deliveryreports"), CFSTR("dr-enabled"));
+	id_enabled = [enabled boolValue];
 }
 
 #ifdef USES_MS
 static CFStringRef app = CFSTR("com.guilleme.deliveryreports");
-
-#if 0
-static CFPropertyListRef LoadPropertyList(CFURLRef *url, const char *path, CFPropertyListFormat *format) {
-    CFPropertyListRef plist;
-
-    *url = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, (uint8_t *) path, strlen(path), false);
-    CFReadStreamRef stream = CFReadStreamCreateWithFile(kCFAllocatorDefault, *url);
-    CFReadStreamOpen(stream);
-    plist = CFPropertyListCreateFromStream(kCFAllocatorDefault, stream, 0, kCFPropertyListMutableContainersAndLeaves, format,
-            NULL);
-    CFReadStreamClose(stream);
-    CFRelease(stream);
-    return plist;
-}
-
-static bool SavePropertyList(CFPropertyListRef plist, CFURLRef url, CFPropertyListFormat format) {
-    bool rc = false;
-
-    NSLog(@"plist %@ = %@", url, plist);
-    CFWriteStreamRef stream = CFWriteStreamCreateWithFile(kCFAllocatorDefault, url);
-    if (CFWriteStreamOpen(stream)) {
-        rc = true;
-        CFPropertyListWriteToStream(plist, stream, format, NULL);
-        CFWriteStreamClose(stream);
-    }
-    CFRelease(stream);
-    return rc;
-}
-
-void reconfigure() {
-    NSNumber *ms = get_setting(CFSTR("mobile"), CFSTR("com.apple.iphonedelivery"), CFSTR("ms-mode"));
-    CFPropertyListFormat format;
-    CFURLRef url = NULL;
-    NSMutableDictionary *plist;
-    const char *path = "/System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist";
-
-    plist = (NSMutableDictionary *)LoadPropertyList(&url, path, &format);
-
-    NSLog(@"plist = %@", plist);
-
-    NSString *env = [[plist objectForKey:@"EnvironmentVariables"] objectForKey:@"DYLD_INSERT_LIBRARIES"];
-    NSLog(@"env = %@", env);
-    if (env != nil) {
-        NSArray *a =  [[env componentsSeparatedByString:@":"] filteredArrayUsingPredicate:
-                                [NSPredicate predicateWithBlock:^BOOL(NSString *s, NSDictionary *bindings) {
-                                    return ! [s hasSuffix:@"libidcc.lib"];
-                                }] 
-                        ];
-        if (! [ms boolValue]) {
-            a = [a arrayByAddingObject:@"/usr/local/lib/libidcc.dylib"];
-        }
-
-        env = [a componentsJoinedByString:@":"];
-        [[plist objectForKey:@"EnvironmentVariables"] setObject:env forKey:@"DYLD_INSERT_LIBRARIES"];
-
-        SavePropertyList(plist, url, format);
-	NSLog(@"unload/load");
-	system("launchctl start com.guilleme.CommCenterRestart");
-}
-#endif
 
 static void restart_cc (
    CFNotificationCenterRef center,
