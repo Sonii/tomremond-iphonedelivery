@@ -6,7 +6,5 @@
 	<string>com.guilleme.CommCenterRestart</string>
 	<key>Program</key>
 	<string>/usr/local/bin/CommCenterRestart.sh</string>
-	<key>RunAtLoad</key>
-	<true/>
 </dict>
 </plist>
