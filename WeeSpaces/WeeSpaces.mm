@@ -16,6 +16,8 @@
 #define kReportHeight (320.0 / SCALE)
 #define kPageWidth (320.0 / SCALE)
 
+dispatch_queue_t ws_q = NULL;
+	
 @interface WeeSpacesController : NSObject <BBWeeAppController, UIScrollViewDelegate> {
 	UIScrollView *scrollView;
     UIView *_view;
@@ -59,7 +61,7 @@
 	ordered by last use time. (The last used being the first)
    */
 -(NSMutableArray *)runningApplications {
-	const int MAX_INACTIVE = 4;
+	const int MAX_INACTIVE = 1;
 	SBAppSwitcherModel *model = [objc_getClass("SBAppSwitcherModel") sharedInstance];
 
 	// get a list of all apps
@@ -107,11 +109,9 @@
 
 -(void)viewWillAppear {
 
-	static dispatch_queue_t q = NULL;
-	
-	if (q == NULL) 
-		//q = dispatch_queue_create("WeeSpace queue", NULL);
-		q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0);
+	if (ws_q == NULL) 
+		//ws_q = dispatch_queue_create("WeeSpace queue", NULL);
+		ws_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		// get a list of running app
@@ -129,7 +129,7 @@
 		[scrollView setContentOffset:CGPointMake((n - 1) * kPageWidth, 0) animated:YES];
 
 		// async populate the scrollview with snapshots
-		dispatch_async(q, ^{
+		dispatch_async(ws_q, ^{
 			int j = n;
 			int page = 0;
 

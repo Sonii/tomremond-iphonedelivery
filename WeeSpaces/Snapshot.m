@@ -99,8 +99,14 @@ static NSMutableDictionary *dict = nil;
 	}
 
 	if ([s needsNewSnap]) {
+		extern dispatch_queue_t ws_q;
+		dispatch_queue_t q = ws_q;
+
+		if (q == NULL) 
+			q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0);
+
 		// we need to generate a new snaphot. do it async and notify the view when it's done
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+		dispatch_async(q, ^{
 			[s doSnap];
 
 			// tell the view the snap is ready
