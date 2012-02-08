@@ -22,7 +22,7 @@ endif
 
 export DEBUG=1
 
-VERSION=0.5.2
+VERSION=0.5.2.2
 REPO_URL=iphonedelivery@iphonedelivery.advinux.com
 ifeq ($(DEBUG),1)
 REPO=ios5debug
