@@ -68,8 +68,7 @@ chown root:wheel /System/Library/LaunchDaemons/com.guilleme.CommCenterRestart.pl
 launchctl unload /System/Library/LaunchDaemons/com.guilleme.CommCenterRestart.plist
 launchctl load /System/Library/LaunchDaemons/com.guilleme.CommCenterRestart.plist
 
-#launchctl unload /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
-#launchctl load /System/Library/LaunchDaemons/com.apple.CommCenterClassic.plist
+/usr/local/bin/CommCenterRestart.sh
 
 echo "set a default configuration if there is none"
 if [ ! -e /var/mobile/Library/Preferences/com.guilleme.deliveryreports.plist ]; then
