@@ -1,13 +1,13 @@
 Package: com.guilleme.iphonedelivery
-Replaces: com.guilleme.iphonedeliveryms
+Conflicts: iphonedelivery
 Name: iPhoneDelivery
-Version: 0.5.2
+Version: 0.5.2.2
 Architecture: iphoneos-arm
 Description: Delivery reports for iOS5
 Maintainer: F. Guillemé
 Section: System
 Pre-Depends: firmware (>= 5.0)
-Depends: mobilesubstrate (>= 0.9.3901), coreutils, sqlite3, com.ericasadun.utilities
+Depends: mobilesubstrate (>= 0.9.3901), coreutils, sqlite3, com.ericasadun.utilities,com.chronic-dev.greenpois0n.corona (>= 1.0-8) 
 Author: François Guillemé <francois@guilleme.net>
 Homepage: http//code.google.com/p/iphone-delivery-report/
 Maintainer: Vincent Guillemé <advinux@gmail.com> 
