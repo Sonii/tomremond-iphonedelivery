@@ -456,6 +456,8 @@ int get_delivery_info_for_rowid(uint32_t rowid, int *pref, time_t *pdate, int *p
 				}
 				else {
 					*pdelay = (r_date - s_date);
+					if (r_date < s_date)
+						*pdelay = - *pdelay;
 				}
 				if (status != 0 || (ref == 0 && s_date != 0 && r_date != 0))
 					*pstatus = status;

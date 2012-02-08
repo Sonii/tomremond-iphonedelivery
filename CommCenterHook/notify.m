@@ -89,6 +89,12 @@ void notify_report(int ref, time_t when_sent, time_t when_delivered, const char 
 	LOG("Report from %s sent at %s delivered at %s ref = %d status %d", who, tmp1, tmp2, ref, status);
 #endif
 
+	if (when_delivered > 0 && when_sent > 0 && when_delivered < when_sent) {
+		time_t tmp = when_delivered;
+		when_delivered = when_sent;
+		when_sent = tmp;
+	}
+
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 		NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
 			[NSString stringWithUTF8String:who], @"WHO",
