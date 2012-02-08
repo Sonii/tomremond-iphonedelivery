@@ -227,7 +227,7 @@
 			<key>key</key>
 			<string>ms-mode</string>
 			<key>label</key>
-			<string>Use MS (Semi tether)</string>
+			<string>Use MobileSubstrate</string>
 		</dict>
 		<!--
 		<dict>
