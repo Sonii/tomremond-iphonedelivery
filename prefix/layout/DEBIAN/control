@@ -1,0 +1,10 @@
+Package: com.guilleme.smsprefix
+Name: SMSPrefix
+Pre-Depends: firmware (>= 5.0)
+Depends: mobilesubstrate, preferenceloader
+Version: 1.01
+Architecture: iphoneos-arm
+Description: A poor man delivery report. Just add a prefix to the SMS
+Maintainer: François Guillemé
+Author: François Guillemé
+Section: Tweaks
