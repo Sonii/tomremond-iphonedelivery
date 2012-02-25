@@ -97,7 +97,7 @@ dispatch_queue_t ws_q = NULL;
 	}
 
 	//  move the first app to the end if it is on the front
-	if ([[objc_getClass("SBUserAgent") sharedUserAgent] springBoardIsActive] == NO) {
+	if ([res count] > 0 && [[objc_getClass("SBUserAgent") sharedUserAgent] springBoardIsActive] == NO) {
 		id obj = [res objectAtIndex:0];
 		[res addObject:obj];
 		[res removeObjectAtIndex:0];
@@ -121,12 +121,15 @@ dispatch_queue_t ws_q = NULL;
 
 		[scrollView setContentSize:CGSizeMake(n * kPageWidth, kReportHeight)];
 
-		[self loadApplication:[runningApplications objectAtIndex:0] atIndex:--i];
-		[runningApplications removeObjectAtIndex:0];
+		if ([runningApplications count] > 0) {
+			[self loadApplication:[runningApplications objectAtIndex:0] atIndex:--i];
+			[runningApplications removeObjectAtIndex:0];
 
-		// first the snapshots of the first app
-		// display the last snapshot
-		[scrollView setContentOffset:CGPointMake((n - 1) * kPageWidth, 0) animated:YES];
+			// first the snapshots of the first app
+			// display the last snapshot
+			[scrollView setContentOffset:CGPointMake((n - 1) * kPageWidth, 0) animated:YES];
+
+		}
 
 		// async populate the scrollview with snapshots
 		dispatch_async(ws_q, ^{
