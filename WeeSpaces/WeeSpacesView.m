@@ -28,7 +28,6 @@
 	NSArray *icons = [[[objc_getClass("SBIconController") sharedInstance] rootIconListAtIndex:page] icons];
 
 	if ([icons count] == 0) {
-		[self release];
 		return nil;
 	}
 
@@ -42,7 +41,6 @@
 				  stretchableImageWithLeftCapWidth:5 
 									  topCapHeight:5]; 
 	[self addSubview:back];
-	[back release];
 
 	x = y = margin / 2;
 	for (SBApplicationIcon *icon in icons) {
@@ -56,7 +54,6 @@
 			v.image = [icon generateIconImage:2];
 			[self addSubview:v];
 		});
-		[v release];
 
 		x += width / 4;
 		if (x >= width) {
@@ -70,10 +67,6 @@
 	return self;
 }
 
--(void)dealloc {
-	//NSLog(@"%s page %d", __FUNCTION__, self.tag);
-	[super dealloc];
-}
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	NSLog(@"%s", __FUNCTION__);

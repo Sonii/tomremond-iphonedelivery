@@ -12,6 +12,8 @@
 
 #import "needed-stuff.h"
 
+#include <execinfo.h>
+
 #define SCALE 3.0
 #define kReportHeight (320.0 / SCALE)
 #define kPageWidth (320.0 / SCALE)
@@ -21,6 +23,7 @@ dispatch_queue_t ws_q = NULL;
 @interface WeeSpacesController : NSObject <BBWeeAppController, UIScrollViewDelegate> {
 	UIScrollView *scrollView;
     UIView *_view;
+	NSMutableArray *running;
 }
 
 + (void)initialize;
@@ -31,10 +34,6 @@ dispatch_queue_t ws_q = NULL;
 + (void)initialize {
 }
 
-- (void)dealloc {
-    [_view release];
-	[super dealloc];
-}
 
 -(BOOL)loadPage:(unsigned)n atIndex:(int)index {
 	WeeSpacesView *v = [[WeeSpacesView alloc] initWithPage:n withLocation:index * kPageWidth];
@@ -43,18 +42,21 @@ dispatch_queue_t ws_q = NULL;
 	dispatch_async(dispatch_get_main_queue(), ^{
 			[scrollView addSubview:v];
 	});	
-	[v release];
 	return YES;
 }
 
 -(BOOL)loadApplication:(SBApplication *)app atIndex:(int)index {
-	WeeAppView *v = [[WeeAppView alloc] initWithApplication:app withLocation:index*kPageWidth];
-	if (v == nil) return NO;
+	WeeAppView *v = (WeeAppView *)[scrollView viewWithTag:1000+index];
 
-	[scrollView addSubview:v];
-	[v release];
+	if (v == nil) {
+		v = [[WeeAppView alloc] initWithApplication:app withLocation:index*kPageWidth];
+		if (v == nil) return NO;
+		v.tag = 1000 + index;
+		[scrollView addSubview:v];
+	}
 	return YES;	
 }
+
 
 /*
 	get a list of the running and 4 most recents pplications
@@ -104,31 +106,31 @@ dispatch_queue_t ws_q = NULL;
 	}
 	// merge both lists
 	[res addObjectsFromArray:inactive];
+
 	return res;
 }
 
 -(void)viewWillAppear {
 
 	if (ws_q == NULL) 
-		//ws_q = dispatch_queue_create("WeeSpace queue", NULL);
-		ws_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
+		ws_q = dispatch_queue_create("WeeSpace queue", NULL);
+		//ws_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		// get a list of running app
-		NSMutableArray *runningApplications =  [self runningApplications];
-		int n = [runningApplications count];
-		int i = n;
+		int n, i;
+		running =  [self runningApplications];
+		i = n = [running count];
 
 		[scrollView setContentSize:CGSizeMake(n * kPageWidth, kReportHeight)];
 
-		if ([runningApplications count] > 0) {
-			[self loadApplication:[runningApplications objectAtIndex:0] atIndex:--i];
-			[runningApplications removeObjectAtIndex:0];
+		if ([running count] > 0) {
+			[self loadApplication:[running objectAtIndex:0] atIndex:--i];
+			[running removeObjectAtIndex:0];
 
 			// first the snapshots of the first app
 			// display the last snapshot
-			[scrollView setContentOffset:CGPointMake((n - 1) * kPageWidth, 0) animated:YES];
-
+			[scrollView setContentOffset:CGPointMake((n - 1) * kPageWidth, 0) animated:NO];
 		}
 
 		// async populate the scrollview with snapshots
@@ -140,20 +142,23 @@ dispatch_queue_t ws_q = NULL;
 
 			[scrollView setContentSize:CGSizeMake((j -1) * kPageWidth, kReportHeight)];
 		});
-		for (SBApplication *app in runningApplications) {
+
+#if 0
+		// postpone loading to when the snap is shown
+		for (SBApplication *app in running) {
 			[self loadApplication:app atIndex:--i];
 		}
+#endif
+
 		// perform a gc to remove images for processes not active or sleeping anymore
 		[Snapshot gc];
-
-
 	});
 }
 
 - (void)viewDidDisappear {
 	for (UIView *v in scrollView.subviews)  
 		[v removeFromSuperview];
-	[_view release];
+
 	_view = nil;
 }
 
@@ -187,4 +192,40 @@ dispatch_queue_t ws_q = NULL;
 - (float)viewHeight {
     return kReportHeight;
 }
+
+-(void)scrollViewDidScroll:(UIScrollView *)scrollview {
+	int n = scrollview.contentOffset.x /  kPageWidth;
+
+	if ([running count] > n) {
+		[self loadApplication:[running objectAtIndex:[running count] - n - 1] atIndex:n];
+	}
+	n++;
+	if ([running count] > n) {
+		[self loadApplication:[running objectAtIndex:[running count] - n - 1] atIndex:n];
+	}
+}
 @end
+
+#if 0
+extern "C" {
+	
+void zzhandler(int sig) {
+  void *array[10];
+  size_t size;
+
+  // get void*'s for all entries on the stack
+  size = backtrace(array, 10);
+
+  // print out all the frames to stderr
+  fprintf(stderr, "Error: signal %d:\n", sig);
+  backtrace_symbols_fd(array, size, 2);
+  exit(1);
+}
+}
+
+extern "C" void hookinit() {
+  signal(SIGSEGV, zzhandler);   // install our handler
+  signal(SIGBUS, zzhandler);   // install our handler
+}
+#endif
+

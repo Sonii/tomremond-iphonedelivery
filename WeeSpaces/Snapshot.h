@@ -1,6 +1,6 @@
 @interface Snapshot  : NSObject
-@property(retain) id app;
-@property(retain) UIImage *image;
+@property(strong) id app;
+@property(strong) UIImage *image;
 @property double elapsedCPUTime;
 
 -(id)initWithApplication:(id)app;

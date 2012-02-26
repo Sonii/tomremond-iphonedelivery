@@ -17,6 +17,8 @@
 #define kPageWidth (320.0 / SCALE)
 
 @implementation WeeAppView 
+@synthesize snap;
+
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	NSLog(@"%s", __FUNCTION__);
 	SBUserAgent *agent = [objc_getClass("SBUserAgent") sharedUserAgent] ;
@@ -47,38 +49,29 @@
 	}
 }
 
--(id)initWithApplication:(SBApplication *)_app withLocation:(CGFloat)x{
+-(id)initWithApplication:(SBApplication *)_app withLocation:(CGFloat)x {
 	CGFloat width, height;
 
 	width = 320 / SCALE;
 	height = 480 / SCALE;
 
-	app = [_app retain];
+	app = _app;
+	snap = nil;
+
 	self = [super initWithFrame:CGRectMake(x, 0.0, width, height)];
-	[Snapshot snapshotWithApplication:app view:self];
+	snap = [Snapshot snapshotWithApplication:app view:self];
 	return self;
 }
 
--(void)dealloc {
-	//NSLog(@"%s %@", __FUNCTION__, [app displayName]);
-	[app release];
-	[super dealloc];
-}
 
 -(void)drawRect:(CGRect)r0 {
-//	CGRect rect = self.frame;
-
 	// draw the snapshot
 	CGRect r = CGRectInset(self.bounds, 8, 8);
-	UIImage *snapshot = [Snapshot snapshotWithApplication:app view:self];
-	[snapshot drawAtPoint:CGPointMake(r.origin.x, r.origin.y)];
+
+	[snap drawAtPoint:CGPointMake(r.origin.x, r.origin.y)];
 
 	// display the name of the app on top
 	NSString *label = [app displayName];
-#if 0
-	NSLog(@"%s <%.0f %.0f %.0f %.0f> %@", 
-			__FUNCTION__, rect.origin.x, rect.origin.y, rect.size.width, rect.size.height, label);
-#endif
 
 	if (app.process != nil)
 		[[UIColor whiteColor] set];

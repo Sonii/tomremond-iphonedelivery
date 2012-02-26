@@ -5,6 +5,7 @@
 
 #import "needed-stuff.h"
 
+#import "WeeAppView.h"
 #import "UIImage+scale.h"
 #import "Snapshot.h"
 
@@ -33,12 +34,12 @@ static NSMutableDictionary *dict = nil;
 	if ([self needsNewSnap]) {
 		SBApplication *_app = app;
 
-		NSLog(@"make snapshot for %@", _app.bundleIdentifier);
+		//NSLog(@"make snapshot for %@", _app.bundleIdentifier);
 
 		// get the latest live snapshot of the app
 		UIView *zoom = [[objc_getClass("SBUIController") sharedInstance] _zoomViewForAppDosado:app includeStatusBar:NO includeBanner:NO];
 		// build a snapshot of the image
-		image = [[UIImage imageFromView:zoom scaled:1.0 / 3.5] retain];
+		image = [UIImage imageFromView:zoom scaled:1.0 / 3.5];
 
 		self.elapsedCPUTime = _app.process.elapsedCPUTime;
 	}
@@ -54,19 +55,12 @@ static NSMutableDictionary *dict = nil;
 	return res;
 }
 
--(void)dealloc {
-	NSLog(@"%s %@", __FUNCTION__, [app bundleIdentifier]);
-	image = nil;
-	app = nil;
-	[super dealloc];
-}
-
 +(void)gc {
 	/*
 	   perform garbage collection in async so it will be done serialized after all snaps
 	*/
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-			NSMutableArray *unused = [[NSMutableArray array] retain];
+			NSMutableArray *unused = [NSMutableArray array];
 
 			// enumarate unused ids
 			for (NSString *key in [dict keyEnumerator]) {	
@@ -77,14 +71,13 @@ static NSMutableDictionary *dict = nil;
 			for (NSString *key in unused) {
 				[dict removeObjectForKey:key];
 			}
-			[unused release];
 
 			// empty used list
 			[used removeAllObjects];
 	});
 }
 
-+(UIImage *)snapshotWithApplication:(SBApplication *)app view:(UIView*)view{
++(UIImage *)snapshotWithApplication:(SBApplication *)app view:(WeeAppView*)view{
 	// first time. build the dict holding the snaps
 	if (dict == nil) dict = [[NSMutableDictionary alloc] initWithCapacity:16];
 	if (used == nil) used = [[NSMutableArray alloc] initWithCapacity:16];
@@ -95,24 +88,21 @@ static NSMutableDictionary *dict = nil;
 		// no snap for this id. make one and add it to the dict
 		s = [[Snapshot alloc] initWithApplication:app];
 		[dict setObject:s forKey:app.bundleIdentifier];
-		[s release];
 	}
 
 	if ([s needsNewSnap]) {
 		extern dispatch_queue_t ws_q;
 		dispatch_queue_t q = ws_q;
 
-		if (q == NULL) 
-			q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0);
-
 		// we need to generate a new snaphot. do it async and notify the view when it's done
 		dispatch_async(q, ^{
 			[s doSnap];
+			//NSLog(@"snap %@ generated", app.bundleIdentifier);
+
+			view.snap = s.image;
 
 			// tell the view the snap is ready
-			dispatch_async(dispatch_get_main_queue(), ^{
-				[view setNeedsDisplay];
-			});
+			dispatch_async(dispatch_get_main_queue(), ^{ [view setNeedsDisplay]; });
 		});
 	}
 	
