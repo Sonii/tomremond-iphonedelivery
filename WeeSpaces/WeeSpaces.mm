@@ -24,6 +24,7 @@ dispatch_queue_t ws_q = NULL;
 	UIScrollView *scrollView;
     UIView *_view;
 	NSMutableArray *running;
+	int orientation;
 }
 
 + (void)initialize;
@@ -34,13 +35,13 @@ dispatch_queue_t ws_q = NULL;
 + (void)initialize {
 }
 
-
 -(BOOL)loadPage:(unsigned)n atIndex:(int)index {
 	WeeSpacesView *v = [[WeeSpacesView alloc] initWithPage:n withLocation:index * kPageWidth];
 	if (v == nil) return NO;
 
+	//NSLog(@"%s %d -> %@", __FUNCTION__, index, v);
 	dispatch_async(dispatch_get_main_queue(), ^{
-			[scrollView addSubview:v];
+		[scrollView addSubview:v];
 	});	
 	return YES;
 }
@@ -48,9 +49,11 @@ dispatch_queue_t ws_q = NULL;
 -(BOOL)loadApplication:(SBApplication *)app atIndex:(int)index {
 	WeeAppView *v = (WeeAppView *)[scrollView viewWithTag:1000+index];
 
+	//NSLog(@"%s %d -> %@", __FUNCTION__, index, v);
 	if (v == nil) {
 		v = [[WeeAppView alloc] initWithApplication:app withLocation:index*kPageWidth];
 		if (v == nil) return NO;
+
 		v.tag = 1000 + index;
 		[scrollView addSubview:v];
 	}
@@ -63,7 +66,7 @@ dispatch_queue_t ws_q = NULL;
 	ordered by last use time. (The last used being the first)
    */
 -(NSMutableArray *)runningApplications {
-	const int MAX_INACTIVE = 1;
+	const int MAX_INACTIVE = 4;
 	SBAppSwitcherModel *model = [objc_getClass("SBAppSwitcherModel") sharedInstance];
 
 	// get a list of all apps
@@ -110,62 +113,11 @@ dispatch_queue_t ws_q = NULL;
 	return res;
 }
 
--(void)viewWillAppear {
-
-	if (ws_q == NULL) 
-		ws_q = dispatch_queue_create("WeeSpace queue", NULL);
-		//ws_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-	
-	dispatch_async(dispatch_get_main_queue(), ^{
-		// get a list of running app
-		int n, i;
-		running =  [self runningApplications];
-		i = n = [running count];
-
-		[scrollView setContentSize:CGSizeMake(n * kPageWidth, kReportHeight)];
-
-		if ([running count] > 0) {
-			[self loadApplication:[running objectAtIndex:0] atIndex:--i];
-			[running removeObjectAtIndex:0];
-
-			// first the snapshots of the first app
-			// display the last snapshot
-			[scrollView setContentOffset:CGPointMake((n - 1) * kPageWidth, 0) animated:NO];
-		}
-
-		// async populate the scrollview with snapshots
-		dispatch_async(ws_q, ^{
-			int j = n;
-			int page = 0;
-
-			while ([self loadPage:page++ atIndex:j++]) ;
-
-			[scrollView setContentSize:CGSizeMake((j -1) * kPageWidth, kReportHeight)];
-		});
-
-#if 0
-		// postpone loading to when the snap is shown
-		for (SBApplication *app in running) {
-			[self loadApplication:app atIndex:--i];
-		}
-#endif
-
-		// perform a gc to remove images for processes not active or sleeping anymore
-		[Snapshot gc];
-	});
-}
-
-- (void)viewDidDisappear {
-	for (UIView *v in scrollView.subviews)  
-		[v removeFromSuperview];
-
-	_view = nil;
-}
-
-- (UIView *)view {
+-(void)createView {
     if (_view == nil)
     {
-		int orientation = [[UIApplication sharedApplication] activeInterfaceOrientation];
+		//NSLog(@"%s", __FUNCTION__);
+
 		CGSize size = [UIScreen mainScreen].bounds.size;
 		CGFloat w = size.width;
 		if (orientation == 3 || orientation == 4)
@@ -185,7 +137,68 @@ dispatch_queue_t ws_q = NULL;
 
 		[_view addSubview:scrollView];
 	}
-    
+}
+
+-(void)viewWillAppear {
+	NSLog(@"%s", __FUNCTION__);
+}
+
+
+- (void)viewDidAppear {
+	NSLog(@"%s", __FUNCTION__);
+
+	if (ws_q == NULL) 
+		ws_q = dispatch_queue_create("WeeSpace queue", NULL);
+	//ws_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+
+	// get a list of running app
+	int n, i;
+	running =  [self runningApplications];
+	i = n = [running count];
+
+	[scrollView setContentSize:CGSizeMake(n * kPageWidth, kReportHeight)];
+
+	if ([running count] > 0) {
+		[self loadApplication:[running objectAtIndex:0] atIndex:--i];
+		[running removeObjectAtIndex:0];
+
+		// first the snapshots of the first app
+		// display the last snapshot
+		[scrollView setContentOffset:CGPointMake((n - 1) * kPageWidth, 0) animated:NO];
+	}
+
+	// async populate the scrollview with snapshots
+	dispatch_async(ws_q, ^{
+			int j = n;
+			int page = 0;
+
+			NSLog(@"%@ create pages", self);
+			while ([self loadPage:page++ atIndex:j++]) ;
+
+			[scrollView setContentSize:CGSizeMake((j -1) * kPageWidth, kReportHeight)];
+	});
+
+#if 0
+	// postpone loading to when the snap is shown
+	for (SBApplication *app in running) {
+		[self loadApplication:app atIndex:--i];
+	}
+#endif
+}
+
+- (void)viewWillDisappear {
+	NSLog(@"%s", __FUNCTION__);
+}
+
+- (void)viewDidDisappear {
+	NSLog(@"%s", __FUNCTION__);
+
+	for (UIView *v in scrollView.subviews)  
+		[v removeFromSuperview];
+}
+
+- (UIView *)view {
+	[self createView];
     return _view;
 }
 
@@ -204,6 +217,20 @@ dispatch_queue_t ws_q = NULL;
 		[self loadApplication:[running objectAtIndex:[running count] - n - 1] atIndex:n];
 	}
 }
+
+- (void)willRotateToInterfaceOrientation:(int)arg1 {
+	NSLog(@"%s %d", __FUNCTION__, arg1);
+	if (arg1 != orientation) {
+		orientation = arg1;
+		CGSize size = [UIScreen mainScreen].bounds.size;
+		CGFloat w = size.width;
+		if (orientation == 3 || orientation == 4)
+			w = 480.0; // w = size.height;
+
+		scrollView.frame = CGRectMake(0, 0, w - 4, kReportHeight);
+	}
+}
+
 @end
 
 #if 0

@@ -1,4 +1,5 @@
 export THEOS_DEVICE_IP=192.168.17.144
+export THEOS_DEVICE_IP=192.168.17.203
 CLANG=clang
 CLANG=~/llvm_build/Release+Asserts/bin/clang
 
